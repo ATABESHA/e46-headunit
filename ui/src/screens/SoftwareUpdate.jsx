@@ -1,7 +1,7 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { command, useConnected, useTopic } from '../hub.js';
-
-const RELOAD_SECONDS = 3;
+import { usePref } from '../prefs.js';
+import { restartApp, restartWhenCarOff } from '../system.js';
 
 const formatDate = (iso) =>
   iso ? new Date(iso).toLocaleString([], { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) : '';
@@ -10,18 +10,8 @@ export default function SoftwareUpdate() {
   const connected = useConnected();
   const version = useTopic('system.version');
   const update = useTopic('system.update');
-  const [reloadIn, setReloadIn] = useState(null);
-
-  // After a successful update the screen reloads itself to show the new version.
-  useEffect(() => {
-    if (reloadIn === null) return undefined;
-    if (reloadIn <= 0) {
-      window.location.reload();
-      return undefined;
-    }
-    const timer = setTimeout(() => setReloadIn(reloadIn - 1), 1000);
-    return () => clearTimeout(timer);
-  }, [reloadIn]);
+  const [askRestart, setAskRestart] = useState(false);
+  const [pending] = usePref('update.restartPending', false);
 
   if (!update) {
     return (
@@ -37,7 +27,7 @@ export default function SoftwareUpdate() {
   const apply = () =>
     command('system.update.apply')
       .then((result) => {
-        if (result?.status === 'done' && !result.needsTerminal && !result.restartApp) setReloadIn(RELOAD_SECONDS);
+        if (result?.status === 'done' && !result.needsTerminal) setAskRestart(true);
       })
       .catch(() => {}); // The error is shown from system.update.
 
@@ -102,8 +92,33 @@ export default function SoftwareUpdate() {
           <code className="block">{update.needsTerminal}</code>
         </div>
       )}
-      {update.restartApp && <div className="notice">Close the app (Ctrl+Shift+Q) and open it again to finish.</div>}
-      {reloadIn !== null && <div className="notice">Restarting the screen in {reloadIn}…</div>}
+      {askRestart && (
+        <div className="restart-choice">
+          <strong>Update installed. Restart to use the new version.</strong>
+          <div className="button-row">
+            <button className="btn primary" onClick={restartApp}>
+              Restart now
+            </button>
+            <button
+              className="btn"
+              onClick={() => {
+                restartWhenCarOff();
+                setAskRestart(false);
+              }}
+            >
+              Later - when the car is turned off
+            </button>
+          </div>
+        </div>
+      )}
+      {pending && !askRestart && (
+        <div className="notice">
+          Restart waiting: it happens by itself when the key is turned off.{' '}
+          <button className="btn small" onClick={restartApp}>
+            Restart now
+          </button>
+        </div>
+      )}
 
       <div className="button-row update-buttons">
         <button className="btn" disabled={!connected || busy} onClick={() => command('system.update.check').catch(() => {})}>

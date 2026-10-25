@@ -10,7 +10,7 @@
 //   Ctrl+Shift+1   move the head unit to the next screen
 //   Ctrl+Shift+2   move the cluster to the next screen
 // The chosen screens are remembered.
-const { app, BrowserWindow, session, screen } = require('electron');
+const { app, BrowserWindow, ipcMain, session, screen } = require('electron');
 const fs = require('node:fs');
 const path = require('node:path');
 
@@ -88,6 +88,7 @@ function createWindow(role, display) {
       contextIsolation: true,
       nodeIntegration: false,
       sandbox: true,
+      preload: path.join(__dirname, 'preload.cjs'),
       // Parking beeps must play without a tap first.
       autoplayPolicy: 'no-user-gesture-required',
       // Keep the needles smooth even when the window is behind another one.
@@ -138,6 +139,12 @@ function moveToNextScreen(role) {
   prefs[role] = next.id;
   savePrefs(prefs);
 }
+
+// Restart the whole app (after an update). Starts again with the same options (--kiosk …).
+ipcMain.on('e46:restart', () => {
+  app.relaunch();
+  app.exit(0);
+});
 
 app.whenReady().then(() => {
   // The app only loads its own files, so it may use the camera (reverse

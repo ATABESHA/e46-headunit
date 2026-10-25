@@ -178,13 +178,27 @@ const DOORS = [
   ['trunk', 'Trunk'],
 ];
 
+const KEY = [
+  ['off', 'Key off'],
+  ['acc', 'Accessory'],
+  ['run', 'Engine on'],
+];
+
 function Simulator() {
   const scenario = useTopic('sim.scenario');
+  const ignition = useTopic('vehicle.ignition');
   const doors = useTopic('vehicle.doors', {});
   if (scenario === undefined) return <div className="settings-body muted">Simulator is switched off.</div>;
   return (
     <div className="settings-body">
       <p className="muted">Fake car data for testing without the car.</p>
+      <div className="segmented">
+        {KEY.map(([id, label]) => (
+          <button key={id} className={ignition === id ? 'active' : ''} onClick={() => command('sim.ignition', id).catch(() => {})}>
+            {label}
+          </button>
+        ))}
+      </div>
       <div className="segmented">
         {SCENARIOS.map(([id, label]) => (
           <button key={id} className={scenario === id ? 'active' : ''} onClick={() => command('sim.scenario', id).catch(() => {})}>

@@ -1975,3 +1975,14 @@ code.block {
   background: var(--bad);
   color: #fff;
 }
+
+.restart-choice {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px 14px;
+  margin-bottom: 10px;
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--accent) 14%, var(--surface-2));
+  border: 1px solid color-mix(in srgb, var(--accent) 50%, transparent);
+}

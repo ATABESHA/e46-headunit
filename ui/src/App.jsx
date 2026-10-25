@@ -5,6 +5,7 @@ import { applySound } from './player.js';
 import { usePref } from './prefs.js';
 import { useTheme } from './theme.js';
 import { FxBackground, PerfHud, useFx } from './fx.jsx';
+import { restartApp } from './system.js';
 import Home from './screens/Home.jsx';
 import Radio from './screens/Radio.jsx';
 import Media from './screens/Media.jsx';
@@ -138,6 +139,15 @@ export default function App() {
   };
 
   useEffect(() => applySound(sound), [sound]);
+
+  // An update chose "restart later": do it a few seconds after the key is turned off.
+  const [restartPending] = usePref('update.restartPending', false);
+  const ignition = useTopic('vehicle.ignition');
+  useEffect(() => {
+    if (!restartPending || !ignition || ignition === 'run') return undefined;
+    const timer = setTimeout(restartApp, 3000);
+    return () => clearTimeout(timer);
+  }, [restartPending, ignition]);
 
   // The "car" button inside CarPlay brings you back to the home screen.
   const firstHostUI = useRef(hostUI);

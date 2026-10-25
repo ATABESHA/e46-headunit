@@ -29,6 +29,7 @@
  *   sim.scenario  "drive" | "park" | "idle"
  *   sim.door      { door: "fl", open: true }
  *   sim.lamp      { name: "oil", on: true }   force a warning light (testing)
+ *   sim.ignition  "off" | "acc" | "run"        turn the key
  *   body.lock     { locked: true }
  *   ambient.set   { on?, color?, brightness? }
  *   diag.scan
@@ -65,7 +66,8 @@ export default function simulator(hub, options = {}) {
   let odometer = options.odometer ?? 187_432;
   const forcedLamps = {};
 
-  hub.set('vehicle.ignition', 'run');
+  let ignition = 'run';
+  hub.set('vehicle.ignition', ignition);
   hub.set('vehicle.outsideTemp', 18);
   hub.set('vehicle.locked', false);
   hub.set('vehicle.lights', { parking: true, low: true, high: false, fogFront: false, fogRear: false });
@@ -80,7 +82,9 @@ export default function simulator(hub, options = {}) {
     let speed = 0;
     let rpm = 0;
 
-    if (scenario === 'drive') {
+    if (ignition !== 'run') {
+      // Engine off: car stands still.
+    } else if (scenario === 'drive') {
       speed = 55 + 35 * Math.sin(t / 12) + 4 * Math.sin(t * 1.3);
       // Rough E46 5-speed: shift up every ~35 km/h.
       const gearRatio = [0, 120, 70, 48, 37, 30][clamp(Math.ceil(speed / 35), 1, 5)];
@@ -104,7 +108,7 @@ export default function simulator(hub, options = {}) {
 
     odometer += (Math.max(0, speed) * tickMs) / 3_600_000;
     hub.set('vehicle.odometer', Math.floor(odometer));
-    const gear = scenario === 'park' ? 'R' : scenario === 'idle' ? 'N' : String(clamp(Math.ceil(speed / 35), 1, 5));
+    const gear = ignition !== 'run' ? 'N' : scenario === 'park' ? 'R' : scenario === 'idle' ? 'N' : String(clamp(Math.ceil(speed / 35), 1, 5));
     hub.set('vehicle.gear', gear);
 
     // Turn signal for 4 s every 20 s while driving, blinking ~1.4 times a second.
@@ -121,7 +125,7 @@ export default function simulator(hub, options = {}) {
       ...Object.fromEntries(WARNING_LAMPS.map((name) => [name, bulbCheck || Boolean(forcedLamps[name])])),
     });
 
-    const reverse = scenario === 'park';
+    const reverse = ignition === 'run' && scenario === 'park';
     hub.set('vehicle.reverse', reverse);
     if (reverse) {
       const d = parkDistance;
@@ -137,6 +141,13 @@ export default function simulator(hub, options = {}) {
   }
 
   const unregister = [
+    hub.onCommand('sim.ignition', (value) => {
+      if (!['off', 'acc', 'run'].includes(value)) throw new Error('Ignition must be off, acc or run');
+      ignition = value;
+      hub.set('vehicle.ignition', ignition);
+      return ignition;
+    }),
+
     hub.onCommand('sim.scenario', (value) => {
       if (!SCENARIOS.includes(value)) throw new Error(`Scenario must be one of: ${SCENARIOS.join(', ')}`);
       scenario = value;
