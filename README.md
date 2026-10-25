@@ -12,7 +12,7 @@ Open Terminal (Ctrl + Alt + T):
 
 ```bash
 sudo apt install -y git
-git clone https://github.com/<your-user>/<your-repo>.git ~/e46-headunit
+git clone https://github.com/ATABESHA/e46-headunit.git ~/e46-headunit
 cd ~/e46-headunit
 bash scripts/install.sh
 ```
