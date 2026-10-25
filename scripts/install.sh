@@ -31,6 +31,11 @@ step "3/5 Building the screen app"
 npm run build
 
 ELECTRON="$(cd "$REPO/ui" && node -p "require('electron')")"
+if [[ "$ELECTRON" == *" "* ]]; then
+  echo "The folder path contains a space: $ELECTRON" >&2
+  echo "Move the e46-headunit folder to a path without spaces and run this again." >&2
+  exit 1
+fi
 
 step "4/5 Allowing the screen app to run (AppArmor)"
 # Ubuntu blocks Electron's security sandbox unless the app has a profile.
@@ -38,7 +43,7 @@ sudo tee /etc/apparmor.d/e46-headunit >/dev/null <<EOF
 abi <abi/4.0>,
 include <tunables/global>
 
-profile e46-headunit "$ELECTRON" flags=(unconfined) {
+profile e46-headunit $ELECTRON flags=(unconfined) {
   userns,
   include if exists <local/e46-headunit>
 }
