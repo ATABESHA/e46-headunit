@@ -15,6 +15,10 @@
  *   vehicle.doors         { fl, fr, rl, rr, trunk }  true = open
  *   vehicle.locked        true | false
  *   vehicle.lights        { parking, low, high, fogFront, fogRear }
+ *   vehicle.lamps         cluster lights: { turnLeft, turnRight, highBeam, fogFront, fogRear,
+ *                         checkEngine, oil, battery, brake, abs, airbag, seatbelt }
+ *   vehicle.gear          "R" | "N" | "1".."5"
+ *   vehicle.odometer      km
  *   parking.distances     { rearLeft, rearMidLeft, rearMidRight, rearRight }  cm, null = nothing seen
  *   ambient.state         { on, color "#rrggbb", brightness 0-100 }
  *   diag.codes            [{ module, code, text, status }]
@@ -24,6 +28,7 @@
  * Commands it handles:
  *   sim.scenario  "drive" | "park" | "idle"
  *   sim.door      { door: "fl", open: true }
+ *   sim.lamp      { name: "oil", on: true }   force a warning light (testing)
  *   body.lock     { locked: true }
  *   ambient.set   { on?, color?, brightness? }
  *   diag.scan
@@ -31,6 +36,8 @@
  */
 
 const SCENARIOS = ['drive', 'park', 'idle'];
+const WARNING_LAMPS = ['checkEngine', 'oil', 'battery', 'brake', 'abs', 'airbag', 'seatbelt'];
+const BULB_CHECK_S = 2.5; // all warning lights are on briefly at start, like a real cluster
 const DOORS = ['fl', 'fr', 'rl', 'rr', 'trunk'];
 
 // Clearly marked as simulated; real codes come from the car once the
@@ -55,6 +62,8 @@ export default function simulator(hub, options = {}) {
   const doors = Object.fromEntries(DOORS.map((d) => [d, false]));
   let ambient = { on: true, color: '#ff7a1a', brightness: 60 };
   let scanTimer = null;
+  let odometer = options.odometer ?? 187_432;
+  const forcedLamps = {};
 
   hub.set('vehicle.ignition', 'run');
   hub.set('vehicle.outsideTemp', 18);
@@ -93,6 +102,25 @@ export default function simulator(hub, options = {}) {
     hub.set('vehicle.coolant', round(coolant));
     hub.set('vehicle.fuel', round(fuel, 1));
 
+    odometer += (Math.max(0, speed) * tickMs) / 3_600_000;
+    hub.set('vehicle.odometer', Math.floor(odometer));
+    const gear = scenario === 'park' ? 'R' : scenario === 'idle' ? 'N' : String(clamp(Math.ceil(speed / 35), 1, 5));
+    hub.set('vehicle.gear', gear);
+
+    // Turn signal for 4 s every 20 s while driving, blinking ~1.4 times a second.
+    const signalling = scenario === 'drive' && t % 20 > 16;
+    const blinkOn = signalling && Math.floor(t / 0.35) % 2 === 0;
+    const lights = hub.get('vehicle.lights') ?? {};
+    const bulbCheck = t < BULB_CHECK_S;
+    hub.set('vehicle.lamps', {
+      turnLeft: blinkOn && Math.floor(t / 40) % 2 === 0,
+      turnRight: blinkOn && Math.floor(t / 40) % 2 === 1,
+      highBeam: Boolean(lights.high),
+      fogFront: Boolean(lights.fogFront),
+      fogRear: Boolean(lights.fogRear),
+      ...Object.fromEntries(WARNING_LAMPS.map((name) => [name, bulbCheck || Boolean(forcedLamps[name])])),
+    });
+
     const reverse = scenario === 'park';
     hub.set('vehicle.reverse', reverse);
     if (reverse) {
@@ -121,6 +149,11 @@ export default function simulator(hub, options = {}) {
       if (!DOORS.includes(door)) throw new Error(`Door must be one of: ${DOORS.join(', ')}`);
       doors[door] = Boolean(open);
       hub.set('vehicle.doors', { ...doors });
+    }),
+
+    hub.onCommand('sim.lamp', ({ name, on } = {}) => {
+      if (!WARNING_LAMPS.includes(name)) throw new Error(`Lamp must be one of: ${WARNING_LAMPS.join(', ')}`);
+      forcedLamps[name] = Boolean(on);
     }),
 
     hub.onCommand('body.lock', ({ locked } = {}) => {

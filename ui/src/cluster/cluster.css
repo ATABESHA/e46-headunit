@@ -1,0 +1,415 @@
+/* Instrument cluster, designed at 1920 x 720. Colours come from the chosen style. */
+
+.cluster-viewport {
+  position: fixed;
+  inset: 0;
+  background: #000;
+  overflow: hidden;
+}
+
+.cluster {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 1920px;
+  height: 720px;
+  transform-origin: 0 0;
+  display: grid;
+  grid-template-columns: 660px 1fr 660px;
+  align-items: center;
+  padding: 0 30px;
+  background: radial-gradient(1100px 600px at 50% 50%, color-mix(in srgb, var(--surface) 70%, transparent), transparent 70%), var(--bg);
+  color: var(--text);
+  --lamp-red: #ff3b30;
+  --lamp-amber: #ffb000;
+  --lamp-green: #2ee66b;
+  --lamp-blue: #2f7bff;
+  --needle: var(--accent);
+}
+
+/* ---------- Dials ---------- */
+
+.dial {
+  position: relative;
+  width: 640px;
+  height: 640px;
+}
+
+.dial svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.dial-face {
+  fill: color-mix(in srgb, var(--surface) 80%, #000);
+  stroke: var(--border);
+  stroke-width: 2;
+}
+
+.dial-track {
+  fill: none;
+  stroke: var(--surface-3);
+  stroke-width: 10;
+  stroke-linecap: round;
+}
+
+.dial-glow {
+  fill: none;
+  stroke: var(--needle);
+  stroke-width: 10;
+  stroke-linecap: round;
+  opacity: 0.85;
+  filter: drop-shadow(0 0 8px var(--needle));
+}
+
+.dial-red {
+  fill: none;
+  stroke: var(--lamp-red);
+  stroke-width: 8;
+  opacity: 0.8;
+}
+
+.tick {
+  stroke: var(--muted);
+  stroke-width: 2;
+}
+
+.tick.major {
+  stroke: var(--text);
+  stroke-width: 4;
+}
+
+.tick.red {
+  stroke: var(--lamp-red);
+}
+
+.tick-label {
+  fill: var(--text);
+  font-size: 34px;
+  font-weight: 600;
+  text-anchor: middle;
+  dominant-baseline: middle;
+  font-variant-numeric: tabular-nums;
+}
+
+.tick-label.red {
+  fill: var(--lamp-red);
+}
+
+.dial-unit {
+  fill: var(--muted);
+  font-size: 22px;
+  text-anchor: middle;
+}
+
+.needle {
+  fill: var(--needle);
+  filter: drop-shadow(0 0 6px var(--needle));
+}
+
+.needle.red,
+g.red .needle {
+  fill: var(--lamp-red);
+}
+
+.dial-hub {
+  fill: var(--bg);
+  stroke: var(--border);
+  stroke-width: 3;
+}
+
+.dial-center {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.digital-speed,
+.gear {
+  font-size: 64px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.gear {
+  color: var(--accent);
+}
+
+/* Small gauges in the bottom of the dials */
+
+.sub-track {
+  fill: none;
+  stroke: var(--surface-3);
+  stroke-width: 12;
+  stroke-linecap: round;
+}
+
+.sub-fill {
+  fill: none;
+  stroke: var(--text);
+  stroke-width: 12;
+  stroke-linecap: round;
+}
+
+.sub-gauge.warn .sub-fill {
+  stroke: var(--lamp-red);
+}
+
+.sub-label {
+  fill: var(--muted);
+  font-size: 22px;
+  font-weight: 600;
+  text-anchor: middle;
+  dominant-baseline: middle;
+}
+
+/* ---------- Middle ---------- */
+
+.cluster-middle {
+  position: relative;
+  height: 100%;
+  display: grid;
+  grid-template-rows: 110px 1fr 70px 60px;
+  align-items: center;
+  padding: 20px 10px;
+}
+
+.indicator-row,
+.warning-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+}
+
+.warning-row {
+  justify-content: center;
+}
+
+.indicator-group {
+  display: flex;
+  gap: 18px;
+}
+
+.lamp {
+  width: 46px;
+  height: 46px;
+  fill: currentColor;
+  color: color-mix(in srgb, var(--muted) 18%, transparent);
+  transition: color 0.08s;
+}
+
+.indicator-row > .lamp {
+  width: 64px;
+  height: 64px;
+}
+
+.lamp .stroke {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.lamp .stroke.thick {
+  stroke-width: 3.4;
+}
+
+.lamp .wave {
+  stroke-dasharray: 3 3;
+}
+
+.lamp-text {
+  fill: currentColor;
+  font-size: 11px;
+  font-weight: 800;
+  text-anchor: middle;
+}
+
+.lamp.on.red {
+  color: var(--lamp-red);
+  filter: drop-shadow(0 0 6px var(--lamp-red));
+}
+
+.lamp.on.amber {
+  color: var(--lamp-amber);
+  filter: drop-shadow(0 0 6px var(--lamp-amber));
+}
+
+.lamp.on.green {
+  color: var(--lamp-green);
+  filter: drop-shadow(0 0 6px var(--lamp-green));
+}
+
+.lamp.on.blue {
+  color: var(--lamp-blue);
+  filter: drop-shadow(0 0 6px var(--lamp-blue));
+}
+
+.cluster-info {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 0;
+}
+
+.info-stack {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  align-items: stretch;
+}
+
+.check-control {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 18px;
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--lamp-amber) 15%, transparent);
+  color: var(--lamp-amber);
+  font-size: 22px;
+  font-weight: 600;
+}
+
+.info-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 20px;
+  border-radius: 14px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+}
+
+.info-card svg {
+  color: var(--accent);
+  flex: none;
+}
+
+.info-card div {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.info-card strong {
+  font-size: 26px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.info-card span {
+  color: var(--muted);
+  font-size: 18px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.info-card.call {
+  flex-direction: column;
+  gap: 6px;
+  padding: 26px;
+  text-align: center;
+}
+
+.info-card.call svg {
+  color: var(--lamp-green);
+}
+
+.info-card.call strong {
+  font-size: 34px;
+}
+
+.info-card.call span {
+  font-size: 22px;
+}
+
+.trip-line {
+  display: flex;
+  justify-content: space-around;
+  font-size: 26px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.trip-line span {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.trip-line small {
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.cluster-bottom {
+  display: flex;
+  justify-content: space-between;
+  font-size: 26px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--text);
+  padding: 0 20px;
+}
+
+.cluster-offline {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  padding: 16px 28px;
+  border-radius: 14px;
+  background: var(--lamp-red);
+  color: #fff;
+  font-size: 26px;
+  font-weight: 700;
+}
+
+/* ---------- Style tweaks ---------- */
+
+[data-theme='classic'] .cluster {
+  /* E46 night lighting: orange-red */
+  --needle: #ff4a12;
+}
+
+[data-theme='classic'] .tick-label,
+[data-theme='classic'] .digital-speed,
+[data-theme='classic'] .trip-line,
+[data-theme='classic'] .cluster-bottom {
+  fill: #ff7a1a;
+  color: #ff7a1a;
+}
+
+[data-theme='msport'] .dial-glow {
+  stroke: var(--m-light);
+}
+
+[data-theme='msport'] .digital-speed,
+[data-theme='msport'] .gear,
+[data-theme='msport'] .tick-label {
+  font-style: italic;
+  font-weight: 800;
+}
+
+[data-theme='idrive'] .digital-speed,
+[data-theme='idrive'] .tick-label {
+  font-weight: 300;
+}
+
+[data-theme='idrive'] .cluster {
+  background: radial-gradient(1000px 520px at 50% 40%, #13243f, transparent 70%), var(--bg);
+}

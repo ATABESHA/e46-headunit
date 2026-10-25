@@ -1,5 +1,5 @@
 import { useSyncExternalStore } from 'react';
-import { HUB_HTTP, command } from './hub.js';
+import { HUB_HTTP, command, publish } from './hub.js';
 
 /**
  * One player for music and radio. It keeps playing while you switch screens.
@@ -65,9 +65,28 @@ let state = {
   error: null,
 };
 const listeners = new Set();
+// Tell the core what is playing, so the instrument cluster can show it too.
+let lastShared = '';
+function share() {
+  const info = state.kind
+    ? {
+        kind: state.kind,
+        title: state.kind === 'radio' ? state.station?.name : state.track?.title,
+        artist: state.kind === 'radio' ? state.station?.tags || 'Radio' : state.track?.artist,
+        playing: state.playing,
+      }
+    : null;
+  const key = JSON.stringify(info);
+  if (key !== lastShared) {
+    lastShared = key;
+    publish('media.nowPlaying', info);
+  }
+}
+
 const set = (patch) => {
   state = { ...state, ...patch };
   listeners.forEach((l) => l());
+  share();
 };
 
 const active = () => (state.kind === 'radio' && state.direct ? directAudio : audio);

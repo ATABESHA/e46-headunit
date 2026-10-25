@@ -39,6 +39,27 @@ To make it open fullscreen at every login (for the car):
 bash scripts/install.sh --autostart
 ```
 
+## Instrument cluster (second screen)
+
+A digital instrument cluster runs in a second window, made for a **1920 × 720** cluster screen
+(the common 12.3" size) and scaled to any screen:
+rev counter with gear, speedometer with digital speed, coolant and fuel, turn signals,
+lights, warning lights (with bulb check at start), Check Control messages, calls, music,
+trip and odometer. It follows the style chosen on the head unit.
+
+- **Two screens connected:** the cluster opens on the second screen by itself.
+- **One screen (testing):** press **Ctrl + Shift + C** to open or close the cluster window.
+- **Ctrl + Shift + 1 / 2:** move the head unit / the cluster to the next screen
+  (remembered, so you set this up once).
+
+The XPS 15 9550 can drive two external screens: one on **HDMI**, one on the **USB-C
+(Thunderbolt 3)** port.
+
+**Before relying on it in traffic:** keep the original cluster working until the new one
+has proven itself. The speedometer and the red warning lights are required by law
+(ITV inspection) and must show real car data, not the simulator. For smooth needles the
+cluster needs fast data from the car's CAN bus (a USB-CAN adapter) rather than the slow K-Bus.
+
 ## Update
 
 **From the app:** Settings → Software update → **Check for updates** → **Update now**.
@@ -152,7 +173,8 @@ npm test              # core tests
 6. K-Bus: lights, locks, windows, reverse signal, steering wheel buttons
 7. ESP32: parking sensors, ambient LED lighting
 8. FM/DAB radio with an RTL-SDR USB receiver
-9. Installation in the car: screen, 12 V power, sleep/wake with ignition
+9. ✅ Digital instrument cluster on a second screen (simulator data); real data from the CAN bus next
+10. Installation in the car: screen, 12 V power, sleep/wake with ignition
 
 ## Hardware notes (E46, before 2001)
 

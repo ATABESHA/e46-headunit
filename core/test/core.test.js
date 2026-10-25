@@ -117,3 +117,21 @@ test('simulator: clearing codes keeps active faults', async () => {
     sim.stop();
   }
 });
+
+test('simulator: cluster lights do a bulb check, then follow forced warnings', async () => {
+  const hub = new Hub();
+  const sim = simulator(hub, { tickMs: 500 });
+  try {
+    assert.equal(hub.get('vehicle.lamps').oil, true, 'all warnings on at start');
+    await new Promise((r) => setTimeout(r, 2700));
+    assert.equal(hub.get('vehicle.lamps').oil, false);
+    await hub.command('sim.lamp', { name: 'oil', on: true });
+    await new Promise((r) => setTimeout(r, 600));
+    assert.equal(hub.get('vehicle.lamps').oil, true);
+    assert.match(hub.get('vehicle.gear'), /^[1-5]$/);
+    assert.ok(hub.get('vehicle.odometer') >= 187_432);
+    await assert.rejects(hub.command('sim.lamp', { name: 'nope', on: true }), /Lamp must be/);
+  } finally {
+    sim.stop();
+  }
+});

@@ -77,6 +77,11 @@ export function command(topic, value) {
   });
 }
 
+/** Set a topic yourself (e.g. what is playing), so other screens can show it. */
+export function publish(topic, value) {
+  if (connected) ws.send(JSON.stringify({ type: 'publish', topic, value }));
+}
+
 /** Current value of one topic; the component re-renders when it changes. */
 export function useTopic(topic, fallback) {
   const value = useSyncExternalStore(subscribe, () => state[topic]);
