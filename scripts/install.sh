@@ -30,25 +30,23 @@ npm ci --no-audit --no-fund || npm install --no-audit --no-fund
 step "3/5 Building the screen app"
 npm run build
 
-ELECTRON="$(cd "$REPO/ui" && node -p "require('electron')")"
-if [[ "$ELECTRON" == *" "* ]]; then
-  echo "The folder path contains a space: $ELECTRON" >&2
-  echo "Move the e46-headunit folder to a path without spaces and run this again." >&2
+# Electron downloads its program the first time it is asked for its location.
+# Do that first (with progress shown), then read the clean location.
+(cd "$REPO/ui" && node -e "require('electron')")
+ELECTRON="$(cd "$REPO/ui" && node -p "require('electron')" | tail -n 1)"
+if [[ ! -x "$ELECTRON" ]]; then
+  echo "Could not find the Electron program (got: $ELECTRON)" >&2
   exit 1
 fi
 
-step "4/5 Allowing the screen app to run (AppArmor)"
-# Ubuntu blocks Electron's security sandbox unless the app has a profile.
-sudo tee /etc/apparmor.d/e46-headunit >/dev/null <<EOF
-abi <abi/4.0>,
-include <tunables/global>
-
-profile e46-headunit $ELECTRON flags=(unconfined) {
-  userns,
-  include if exists <local/e46-headunit>
-}
-EOF
-sudo apparmor_parser -r /etc/apparmor.d/e46-headunit
+step "4/5 Allowing the screen app to run"
+# Ubuntu blocks Electron's normal sandbox. Electron's documented fix is its
+# own sandbox helper, which must be owned by root. (npm resets this, so
+# update.sh does it again.)
+sudo rm -f /etc/apparmor.d/e46-headunit   # leftover from an older version of this script
+SANDBOX="$(dirname "$ELECTRON")/chrome-sandbox"
+sudo chown root:root "$SANDBOX"
+sudo chmod 4755 "$SANDBOX"
 
 step "5/5 Setting up start-up"
 # Core service: runs in the background and restarts by itself if it crashes.
