@@ -1,0 +1,146 @@
+/*
+ * Styles. "classic" is the default in styles.css; the others override it.
+ * Selected in Settings → Appearance. To make your own: copy a block,
+ * give it a new name, and add it to THEMES in src/theme.js.
+ */
+
+/* ---------- Modern iDrive style: deep blue-black, glass panels, light numbers ---------- */
+
+[data-theme='idrive'] {
+  --bg: #060a11;
+  --surface: rgba(255, 255, 255, 0.045);
+  --surface-2: rgba(255, 255, 255, 0.08);
+  --surface-3: rgba(255, 255, 255, 0.13);
+  --border: rgba(255, 255, 255, 0.08);
+  --text: #f2f5f9;
+  --muted: #8d99ab;
+  --accent: #3d8bff;
+  --on-accent: #ffffff;
+  --radius: 22px;
+}
+
+[data-theme='idrive'] body {
+  background:
+    radial-gradient(1200px 600px at 15% -10%, #16294a 0%, transparent 60%),
+    radial-gradient(900px 500px at 110% 110%, #0f1d33 0%, transparent 55%),
+    var(--bg);
+}
+
+[data-theme='idrive'] .nav {
+  background: rgba(255, 255, 255, 0.02);
+  backdrop-filter: blur(24px);
+}
+
+[data-theme='idrive'] .card {
+  backdrop-filter: blur(24px);
+  box-shadow: 0 10px 40px -20px rgba(0, 0, 0, 0.8);
+}
+
+[data-theme='idrive'] .nav-item.active {
+  background: linear-gradient(135deg, rgba(61, 139, 255, 0.25), rgba(61, 139, 255, 0.08));
+  color: #fff;
+  box-shadow: inset 0 0 0 1px rgba(61, 139, 255, 0.45);
+}
+
+[data-theme='idrive'] .speed-value {
+  font-weight: 200;
+  letter-spacing: -0.04em;
+}
+
+[data-theme='idrive'] .tile-value,
+[data-theme='idrive'] .statusbar-time {
+  font-weight: 300;
+}
+
+[data-theme='idrive'] .rpm-fill,
+[data-theme='idrive'] .bar-fill {
+  background: linear-gradient(90deg, #1f6fff, #6fb2ff);
+}
+
+[data-theme='idrive'] .overlay {
+  background: var(--bg);
+}
+
+/* ---------- M Sport: carbon black, red accent, tricolor stripes ---------- */
+
+[data-theme='msport'] {
+  --bg: #08080a;
+  --surface: #121216;
+  --surface-2: #1b1b21;
+  --surface-3: #26262e;
+  --border: #2a2a32;
+  --text: #f4f4f6;
+  --muted: #9a9aa6;
+  --accent: #e7222e;
+  --on-accent: #ffffff;
+  --m-light: #81c4ff;
+  --m-dark: #16588e;
+  --m-red: #e7222e;
+  --m-stripe: linear-gradient(90deg, var(--m-light) 0 33.3%, var(--m-dark) 33.3% 66.6%, var(--m-red) 66.6% 100%);
+  --radius: 10px;
+}
+
+[data-theme='msport'] body {
+  background:
+    repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.012) 0 2px, transparent 2px 6px),
+    var(--bg);
+}
+
+[data-theme='msport'] .statusbar {
+  position: relative;
+  border-bottom: none;
+}
+
+[data-theme='msport'] .statusbar::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 3px;
+  background: var(--m-stripe);
+}
+
+[data-theme='msport'] .nav-item.active {
+  position: relative;
+  background: var(--surface-2);
+  color: var(--text);
+}
+
+[data-theme='msport'] .nav-item.active::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 12px;
+  bottom: 12px;
+  width: 4px;
+  border-radius: 2px;
+  background: linear-gradient(180deg, var(--m-light) 0 33.3%, var(--m-dark) 33.3% 66.6%, var(--m-red) 66.6% 100%);
+}
+
+[data-theme='msport'] .speed-value,
+[data-theme='msport'] .tile-value,
+[data-theme='msport'] .closest {
+  font-style: italic;
+  font-weight: 800;
+}
+
+[data-theme='msport'] .rpm-fill,
+[data-theme='msport'] .bar-fill {
+  background: var(--m-stripe);
+}
+
+[data-theme='msport'] .speed-card {
+  position: relative;
+  overflow: hidden;
+}
+
+[data-theme='msport'] .speed-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: var(--m-stripe);
+}

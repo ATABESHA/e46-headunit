@@ -27,10 +27,28 @@ bash scripts/install.sh --autostart
 
 ## Update
 
+**From the app:** Settings → Software update → **Check for updates** → **Update now**.
+The app also checks by itself shortly after starting and then every 6 hours; a dot on
+Settings means something new is waiting.
+
+**From Terminal** (needed only if the app says so):
+
 ```bash
 cd ~/e46-headunit
 bash scripts/update.sh
 ```
+
+The update never overwrites files changed on the laptop itself — it stops and lists them.
+Make your changes on GitHub (or upload them from the laptop with `git commit` + `git push`).
+
+## Styles and logo
+
+Settings → Appearance: **E46 Classic**, **Modern iDrive** or **M Sport**.
+
+- Your logo: replace [`ui/public/logo.svg`](ui/public/logo.svg) (SVG works best; for PNG,
+  change `logo.svg` to `logo.png` in [`ui/src/App.jsx`](ui/src/App.jsx)).
+- Your own style: add a block in [`ui/src/themes.css`](ui/src/themes.css) and list it in
+  [`ui/src/theme.js`](ui/src/theme.js).
 
 ## Testing with the simulator
 
@@ -51,6 +69,7 @@ You can also open and close doors there.
          │
    Plugins (core/src/plugins/)
      simulator.js   fake data (phase 1)
+     updater.js     software updates from GitHub
      kbus.js        lights, locks, windows, reverse, wheel buttons   (later)
      diag.js        fault codes through the K+DCAN cable             (later)
      esp32.js       parking sensors, ambient LEDs                    (later)

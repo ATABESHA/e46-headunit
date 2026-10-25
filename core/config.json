@@ -2,6 +2,12 @@
   "host": "127.0.0.1",
   "port": 8765,
   "plugins": {
-    "simulator": { "enabled": true }
+    "simulator": {
+      "enabled": true
+    },
+    "updater": {
+      "enabled": true,
+      "autoCheckMinutes": 360
+    }
   }
 }

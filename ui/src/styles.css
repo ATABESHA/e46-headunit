@@ -6,7 +6,8 @@
   --border: #2a313a;
   --text: #e8eaed;
   --muted: #8b949e;
-  --accent: #ff7a1a; /* E46 cluster orange */
+  --accent: #ff6a1a; /* E46 cluster orange */
+  --on-accent: #1a0900;
   --good: #3fb950;
   --warn: #e3a21a;
   --bad: #f85149;
@@ -240,7 +241,7 @@ p {
 .btn.primary {
   background: var(--accent);
   border-color: var(--accent);
-  color: #160a00;
+  color: var(--on-accent);
 }
 
 .btn.danger {
@@ -358,7 +359,7 @@ p {
 .segmented button.active {
   background: var(--accent);
   border-color: var(--accent);
-  color: #160a00;
+  color: var(--on-accent);
   font-weight: 600;
 }
 
@@ -597,7 +598,7 @@ p {
 
 .toggle.on {
   background: var(--accent);
-  color: #160a00;
+  color: var(--on-accent);
 }
 
 .swatches {
@@ -784,5 +785,151 @@ p {
 
   .overlay {
     inset: 48px 0 0 0;
+  }
+}
+
+/* ---------- Logo, badges ---------- */
+
+.statusbar-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.logo {
+  height: 34px;
+  width: auto;
+  max-width: 120px;
+  object-fit: contain;
+}
+
+.nav-item {
+  position: relative;
+}
+
+.nav-badge {
+  position: absolute;
+  top: 10px;
+  right: 22px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 0 2px var(--surface);
+}
+
+/* ---------- Settings: appearance, updates ---------- */
+
+.theme-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.theme-option {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  padding: 12px;
+  border-radius: 14px;
+  background: var(--surface-2);
+  border: 2px solid transparent;
+  text-align: left;
+}
+
+.theme-option.active {
+  border-color: var(--accent);
+}
+
+.theme-option small {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.theme-preview {
+  width: 100%;
+  height: 54px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: flex-end;
+  padding: 10px;
+}
+
+.theme-preview span {
+  width: 45%;
+  height: 6px;
+  border-radius: 3px;
+}
+
+.version code,
+code {
+  font-family: ui-monospace, monospace;
+  color: var(--accent);
+}
+
+code.block {
+  display: block;
+  margin-top: 8px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: var(--bg);
+  user-select: text;
+}
+
+.version-message {
+  margin: 0 0 12px;
+}
+
+.small {
+  font-size: 14px;
+  margin: 12px 0 0;
+}
+
+.update-status {
+  padding: 12px 0;
+  font-weight: 600;
+}
+
+.update-status.available {
+  color: var(--accent);
+}
+
+.update-status.up-to-date,
+.update-status.done {
+  color: var(--good);
+}
+
+.error-notice {
+  color: var(--bad);
+}
+
+.changes {
+  list-style: none;
+  margin: 0 0 12px;
+  padding: 0;
+}
+
+.changes li {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 0;
+  border-top: 1px solid var(--border);
+}
+
+.changes small {
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.update-buttons {
+  margin-top: 4px;
+}
+
+@media (max-width: 900px) {
+  .theme-grid {
+    grid-template-columns: 1fr;
   }
 }

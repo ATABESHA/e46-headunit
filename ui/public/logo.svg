@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <!-- Placeholder logo. Replace this file (ui/public/logo.svg) with your own, then run an update. -->
+  <circle cx="32" cy="32" r="29" fill="none" stroke="#9aa3ad" stroke-width="3"/>
+  <circle cx="32" cy="32" r="21" fill="none" stroke="#9aa3ad" stroke-width="1.5" opacity="0.5"/>
+  <text x="32" y="38.5" text-anchor="middle" font-family="system-ui, sans-serif" font-size="17" font-weight="700" fill="#e8eaed">E46</text>
+</svg>

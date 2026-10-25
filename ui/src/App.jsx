@@ -38,8 +38,12 @@ function StatusBar() {
 
   return (
     <header className="statusbar">
-      <div className="statusbar-time">
-        {now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+      <div className="statusbar-left">
+        {/* Your logo: replace ui/public/logo.svg */}
+        <img className="logo" src="./logo.svg" alt="" onError={(e) => (e.currentTarget.style.display = 'none')} />
+        <div className="statusbar-time">
+          {now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+        </div>
       </div>
       <div className="statusbar-items">
         {codes.length > 0 && (
@@ -66,6 +70,7 @@ function StatusBar() {
 export default function App() {
   const [screen, setScreen] = useState('home');
   const reverse = useTopic('vehicle.reverse', false);
+  const update = useTopic('system.update');
   const [parkingDismissed, setParkingDismissed] = useState(false);
 
   // Reverse gear opens the parking view automatically. Closing it lasts
@@ -88,6 +93,7 @@ export default function App() {
           >
             <Icon name={s.icon} size={28} />
             <span>{s.label}</span>
+            {s.id === 'settings' && update?.status === 'available' && <i className="nav-badge" title="Update available" />}
           </button>
         ))}
       </nav>
