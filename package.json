@@ -1,0 +1,20 @@
+{
+  "name": "e46-headunit",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Custom infotainment system for a BMW E46, running on Linux.",
+  "workspaces": [
+    "core",
+    "ui"
+  ],
+  "scripts": {
+    "dev": "concurrently -k -n core,ui -c blue,magenta \"npm run dev -w core\" \"npm run dev -w ui\"",
+    "dev:browser": "concurrently -k -n core,ui -c blue,magenta \"npm run dev -w core\" \"npm run dev:browser -w ui\"",
+    "build": "npm run build -w ui",
+    "start": "concurrently -k -n core,ui -c blue,magenta \"npm run start -w core\" \"npm run start -w ui\"",
+    "test": "npm test -w core"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.5"
+  }
+}
