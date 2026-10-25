@@ -14,10 +14,7 @@
   width: 1920px;
   height: 720px;
   transform-origin: 0 0;
-  display: grid;
-  grid-template-columns: 660px 1fr 660px;
-  align-items: center;
-  padding: 0 30px;
+  overflow: hidden;
   background: radial-gradient(1100px 600px at 50% 50%, color-mix(in srgb, var(--surface) 70%, transparent), transparent 70%), var(--bg);
   color: var(--text);
   --lamp-red: #ff3b30;
@@ -25,6 +22,36 @@
   --lamp-green: #2ee66b;
   --lamp-blue: #2f7bff;
   --needle: var(--accent);
+}
+
+/* Every face fills the whole 1920 x 720 cluster. */
+.face {
+  position: absolute;
+  inset: 0;
+}
+
+/* Original design: two dials, info in between */
+.face-classic {
+  display: grid;
+  grid-template-columns: 660px 1fr 660px;
+  align-items: center;
+  padding: 0 30px;
+}
+
+/* Swap button (one screen): back to the head unit */
+.cluster-swap {
+  position: fixed;
+  top: 12px;
+  right: 12px;
+  z-index: 50;
+  width: 48px;
+  height: 48px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.45);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  color: #fff;
 }
 
 /* ---------- Dials ---------- */
@@ -191,7 +218,7 @@ g.red .needle {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 18px;
+  gap: var(--lamp-gap, 18px);
 }
 
 .warning-row {
@@ -200,20 +227,20 @@ g.red .needle {
 
 .indicator-group {
   display: flex;
-  gap: 18px;
+  gap: var(--lamp-gap, 18px);
 }
 
 .lamp {
-  width: 46px;
-  height: 46px;
+  width: var(--lamp-size, 46px);
+  height: var(--lamp-size, 46px);
   fill: currentColor;
   color: color-mix(in srgb, var(--muted) 18%, transparent);
   transition: color 0.08s;
 }
 
 .indicator-row > .lamp {
-  width: 64px;
-  height: 64px;
+  width: var(--turn-size, 64px);
+  height: var(--turn-size, 64px);
 }
 
 .lamp .stroke {
@@ -413,11 +440,1049 @@ g.red .needle {
   font-weight: 800;
 }
 
-[data-theme='idrive'] .digital-speed,
-[data-theme='idrive'] .tick-label {
+[data-theme='midnight'] .digital-speed,
+[data-theme='midnight'] .tick-label {
   font-weight: 300;
 }
 
-[data-theme='idrive'] .cluster {
+[data-theme='midnight'] .cluster {
   background: radial-gradient(1000px 520px at 50% 40%, #13243f, transparent 70%), var(--bg);
+}
+
+/* =====================================================================
+ * Shared parts of the newer faces
+ * Everything that moves is either a thin SVG line or a whole layer that
+ * turns or fades: no live blur, so old graphics chips stay smooth.
+ * ===================================================================== */
+
+.face-svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.arc-track,
+.arc-fill {
+  fill: none;
+}
+
+.arc-needle {
+  stroke-linecap: round;
+}
+
+.scale-tick {
+  stroke: var(--muted);
+  stroke-width: 2;
+}
+
+.scale-tick.major {
+  stroke: var(--text);
+  stroke-width: 3;
+}
+
+.scale-tick.red {
+  stroke: var(--lamp-red);
+}
+
+.scale-label {
+  fill: var(--text);
+  font-size: 30px;
+  font-weight: 600;
+  text-anchor: middle;
+  dominant-baseline: middle;
+  font-variant-numeric: tabular-nums;
+}
+
+.scale-label.red {
+  fill: var(--lamp-red);
+}
+
+.music-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  max-width: 100%;
+  padding: 10px 20px;
+  border-radius: 99px;
+  background: color-mix(in srgb, var(--surface) 85%, transparent);
+  border: 1px solid var(--border);
+  font-size: 20px;
+}
+
+.music-pill svg {
+  flex: none;
+  color: var(--accent);
+}
+
+.music-pill strong,
+.music-pill span {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.music-pill span {
+  color: var(--muted);
+}
+
+.gear-strip {
+  display: flex;
+  gap: 16px;
+  font-size: 24px;
+  font-weight: 700;
+  color: color-mix(in srgb, var(--muted) 60%, transparent);
+}
+
+.gear-strip .on {
+  color: var(--accent);
+}
+
+/* Narrow middles need smaller lamps */
+.face-minimal,
+.face-neon,
+.face-sport {
+  --lamp-size: 38px;
+  --turn-size: 50px;
+  --lamp-gap: 12px;
+}
+
+/* ---------- Sport capsule ---------- */
+
+.sport-capsule {
+  position: absolute;
+  inset: 34px 56px;
+  border-radius: 330px;
+  background:
+    radial-gradient(900px 340px at 50% 108%, color-mix(in srgb, var(--accent) 34%, transparent), transparent 70%),
+    radial-gradient(520px 420px at 22% 50%, color-mix(in srgb, var(--accent) 14%, transparent), transparent 70%),
+    radial-gradient(520px 420px at 78% 50%, color-mix(in srgb, var(--accent) 14%, transparent), transparent 70%),
+    linear-gradient(180deg, color-mix(in srgb, var(--accent) 7%, #0c0c0e), #050506);
+  border: 2px solid color-mix(in srgb, var(--accent) 30%, transparent);
+  box-shadow: inset 0 0 70px rgba(0, 0, 0, 0.7);
+}
+
+.sport-face {
+  fill: rgba(0, 0, 0, 0.35);
+  stroke: color-mix(in srgb, var(--accent) 22%, transparent);
+  stroke-width: 2;
+}
+
+.sport-bar .arc-track {
+  stroke: color-mix(in srgb, var(--accent) 16%, transparent);
+  stroke-width: 34;
+}
+
+.sport-bar .arc-fill {
+  stroke: var(--accent);
+  stroke-width: 34;
+  stroke-dasharray: 9 4;
+}
+
+.sport-bar .arc-needle {
+  stroke: #fff;
+  stroke-width: 6;
+}
+
+.sport-red {
+  fill: none;
+  stroke: var(--lamp-red);
+  stroke-width: 8;
+}
+
+.sport-scale .scale-label {
+  font-size: 28px;
+  font-style: italic;
+  font-weight: 700;
+}
+
+.sport-center {
+  position: absolute;
+  transform: translate(-50%, -54%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.sport-center strong {
+  font-size: 128px;
+  font-weight: 800;
+  font-style: italic;
+  line-height: 0.95;
+  font-variant-numeric: tabular-nums;
+}
+
+.sport-center .sport-gear {
+  font-size: 150px;
+}
+
+.sport-center small {
+  color: var(--accent);
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.sport-center.speed small {
+  color: var(--muted);
+  letter-spacing: 0.1em;
+}
+
+.sport-center span {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 8px;
+  color: var(--muted);
+  font-size: 22px;
+}
+
+.sport-middle {
+  position: absolute;
+  left: 720px;
+  right: 720px;
+  top: 58px;
+  bottom: 120px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
+
+.sport-middle .cluster-info {
+  flex: 1;
+  width: 100%;
+}
+
+.sport-bottom {
+  position: absolute;
+  left: 230px;
+  right: 230px;
+  bottom: 62px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 22px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.sport-bottom .big {
+  font-size: 36px;
+}
+
+.sport-bottom small {
+  color: var(--muted);
+  font-size: 15px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+/* ---------- Halo ---------- */
+
+.cluster.face-is-halo {
+  background:
+    radial-gradient(900px 520px at 50% 48%, color-mix(in srgb, var(--accent) 9%, transparent), transparent 70%),
+    #03050a;
+}
+
+.halo-spot {
+  position: absolute;
+  width: 0;
+  height: 0;
+}
+
+.halo-glow {
+  position: absolute;
+  transition: opacity 0.4s;
+  will-change: opacity;
+}
+
+.halo-glow svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+  animation: halo-turn 60s linear infinite;
+  will-change: transform;
+}
+
+@keyframes halo-turn {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.halo-disc {
+  fill: #04070d;
+  stroke: rgba(255, 255, 255, 0.08);
+  stroke-width: 2;
+}
+
+.halo-arc .arc-track {
+  stroke: rgba(255, 255, 255, 0.07);
+  stroke-width: 6;
+}
+
+.halo-arc .arc-fill {
+  stroke: var(--accent);
+  stroke-width: 6;
+  stroke-linecap: round;
+}
+
+.halo-arc.red .arc-fill {
+  stroke: var(--lamp-red);
+}
+
+.halo-center {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: #f2f5fa;
+}
+
+.halo-center strong {
+  font-size: 170px;
+  font-weight: 300;
+  line-height: 0.95;
+  font-variant-numeric: tabular-nums;
+}
+
+.halo-center small {
+  color: #8592a8;
+  font-size: 22px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}
+
+.halo-center.small strong {
+  font-size: 86px;
+}
+
+.halo-center.small small {
+  font-size: 16px;
+}
+
+.halo-gear {
+  margin-top: 12px;
+  width: 56px;
+  height: 56px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  border: 2px solid var(--accent);
+  color: var(--accent);
+  font-size: 28px;
+  font-weight: 600;
+}
+
+.halo-top {
+  position: absolute;
+  top: 18px;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+}
+
+.halo-top .indicator-row {
+  width: 1000px;
+}
+
+.halo-right {
+  position: absolute;
+  left: 1290px;
+  right: 70px;
+  top: 120px;
+  bottom: 120px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 22px;
+}
+
+.halo-fuel {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  font-size: 22px;
+  font-weight: 600;
+}
+
+.halo-fuel .bar {
+  flex: 1;
+  height: 8px;
+}
+
+.halo-bottom {
+  position: absolute;
+  left: 110px;
+  right: 110px;
+  bottom: 30px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 24px;
+  font-weight: 600;
+  color: #c9d2e0;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- Minimal ---------- */
+
+.cluster.face-is-minimal {
+  background:
+    radial-gradient(800px 420px at 50% 60%, color-mix(in srgb, var(--text) 5%, transparent), transparent 70%),
+    var(--bg);
+}
+
+.min-face {
+  fill: none;
+  stroke: color-mix(in srgb, var(--text) 14%, transparent);
+  stroke-width: 2;
+}
+
+.min-go .arc-track,
+.min-rev .arc-track {
+  stroke: color-mix(in srgb, var(--text) 9%, transparent);
+  stroke-width: 3;
+}
+
+.min-go .arc-fill {
+  stroke: var(--go, #3ddc84);
+  stroke-width: 8;
+  stroke-linecap: round;
+}
+
+.min-rev .arc-fill {
+  stroke: none;
+}
+
+.min-go .arc-needle,
+.min-rev .arc-needle {
+  stroke: var(--text);
+  stroke-width: 7;
+}
+
+.min-red {
+  fill: none;
+  stroke: var(--lamp-red);
+  stroke-width: 16;
+}
+
+.min-scale .scale-tick {
+  stroke: color-mix(in srgb, var(--text) 35%, transparent);
+}
+
+.min-scale .scale-tick.major {
+  stroke: var(--text);
+}
+
+.min-scale .scale-label {
+  font-size: 32px;
+  font-weight: 400;
+}
+
+.min-disc {
+  fill: var(--min-disc, #000);
+  stroke: color-mix(in srgb, var(--text) 10%, transparent);
+  stroke-width: 2;
+}
+
+.min-center {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.min-center strong {
+  font-size: 140px;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+}
+
+.min-center small {
+  color: var(--muted);
+  font-size: 22px;
+}
+
+.min-under {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 24px;
+  font-variant-numeric: tabular-nums;
+}
+
+.min-under small {
+  color: var(--muted);
+  font-size: 18px;
+}
+
+.min-road {
+  fill: none;
+  stroke: color-mix(in srgb, var(--text) 12%, transparent);
+  stroke-width: 2;
+}
+
+.min-road.dashed {
+  stroke-dasharray: 18 16;
+}
+
+.min-middle {
+  position: absolute;
+  left: 772px;
+  right: 772px;
+  top: 22px;
+  bottom: 22px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.min-gear-row {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  margin-top: 6px;
+}
+
+.min-gear-row strong {
+  font-size: 96px;
+  font-weight: 600;
+  line-height: 1;
+}
+
+.min-gear-row span {
+  display: flex;
+  flex-direction: column;
+  font-size: 22px;
+  font-variant-numeric: tabular-nums;
+}
+
+.min-gear-row span:last-child {
+  align-items: flex-end;
+}
+
+.min-gear-row small,
+.min-mode {
+  color: var(--muted);
+  font-size: 13px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+}
+
+.min-mode {
+  font-size: 15px;
+  letter-spacing: 0.5em;
+  margin-top: -4px;
+}
+
+.min-middle .cluster-info {
+  flex: 1;
+  width: 100%;
+}
+
+.min-trip {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  color: var(--muted);
+  font-size: 16px;
+  border-top: 1px solid color-mix(in srgb, var(--text) 14%, transparent);
+  padding-top: 10px;
+}
+
+.min-trip strong {
+  color: var(--text);
+  font-size: 24px;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+
+[data-theme='mono'] .cluster {
+  --go: #3ddc84;
+  --min-disc: #000;
+}
+
+[data-theme='daylight'] .cluster {
+  --go: #1f9d55;
+  --min-disc: #fff;
+}
+
+[data-theme='daylight'] .face-minimal .min-face {
+  fill: #f6f7f9;
+}
+
+/* ---------- Neon rings ---------- */
+
+.cluster.face-is-neon {
+  background:
+    radial-gradient(700px 500px at 27% 50%, rgba(255, 106, 26, 0.07), transparent 70%),
+    radial-gradient(700px 500px at 73% 50%, rgba(30, 160, 255, 0.07), transparent 70%),
+    #000;
+}
+
+.neon-dial.speed,
+.neon-center.speed {
+  --dc: #ff7a1a;
+}
+
+.neon-dial.rev,
+.neon-center.rev {
+  --dc: #35b8ff;
+}
+
+.neon-metal {
+  fill: none;
+  stroke: #3b4047;
+  stroke-width: 7;
+}
+
+.neon-ring {
+  fill: none;
+  stroke-width: 5;
+}
+
+.neon-dots .dot {
+  fill: var(--dc);
+  opacity: 0.22;
+}
+
+.neon-dots .dot-glow {
+  fill: var(--dc);
+  opacity: 0;
+}
+
+.neon-dots .on .dot {
+  opacity: 1;
+}
+
+.neon-dots .on .dot-glow {
+  opacity: 0.28;
+}
+
+.neon-disc {
+  stroke: color-mix(in srgb, var(--dc) 55%, transparent);
+  stroke-width: 2;
+}
+
+.neon-needle .arc-fill {
+  display: none;
+}
+
+.neon-needle .arc-needle {
+  stroke: #fff;
+  stroke-width: 4;
+}
+
+.neon-sub .arc-track {
+  stroke: color-mix(in srgb, var(--dc) 18%, transparent);
+  stroke-width: 22;
+  stroke-dasharray: 6 4;
+}
+
+.neon-sub .arc-fill {
+  stroke: var(--dc);
+  stroke-width: 22;
+  stroke-dasharray: 6 4;
+}
+
+.neon-sub.warn .arc-fill {
+  stroke: var(--lamp-red);
+}
+
+.neon-small {
+  fill: #07080a;
+  stroke: #2a2e34;
+  stroke-width: 4;
+}
+
+.neon-fuel .arc-track {
+  stroke: rgba(255, 255, 255, 0.08);
+  stroke-width: 10;
+}
+
+.neon-fuel .arc-fill {
+  stroke: url(#neon-fuel);
+  stroke-width: 10;
+  stroke-linecap: round;
+}
+
+.neon-clock-face {
+  fill: #050f1b;
+  stroke: rgba(53, 184, 255, 0.6);
+  stroke-width: 2;
+}
+
+.neon-clock-tick {
+  stroke: #35b8ff;
+  stroke-width: 3;
+}
+
+.neon-hand {
+  stroke: #fff;
+  stroke-width: 4;
+  stroke-linecap: round;
+}
+
+.neon-hand.hour {
+  stroke-width: 6;
+}
+
+.neon-grid path {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.07);
+  stroke-width: 2;
+}
+
+.neon-route {
+  fill: none;
+  stroke: #ff3b1a;
+  stroke-width: 6;
+  stroke-linecap: round;
+  opacity: 0.45;
+}
+
+.neon-center {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: #fff;
+}
+
+.neon-center strong {
+  font-size: 140px;
+  font-weight: 200;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.neon-center small {
+  color: #cfd3d8;
+  font-size: 22px;
+}
+
+.neon-center span {
+  margin-top: 4px;
+  color: var(--dc);
+}
+
+.neon-fuel-text {
+  position: absolute;
+  left: 150px;
+  top: 520px;
+  transform: translate(-50%, -50%);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 30px;
+  font-weight: 300;
+  color: #fff;
+}
+
+.neon-middle {
+  position: absolute;
+  left: 786px;
+  right: 786px;
+  top: 20px;
+  bottom: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  color: #fff;
+}
+
+.neon-music {
+  max-width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.neon-music strong,
+.neon-music span {
+  max-width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+}
+
+.neon-music strong {
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+}
+
+.neon-music span {
+  color: #aab1bb;
+  font-size: 17px;
+}
+
+.neon-gear {
+  width: 120px;
+  height: 120px;
+  margin-top: 6px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  border: 4px solid #fff;
+  background: #000;
+  font-size: 64px;
+  font-weight: 300;
+}
+
+.neon-trip {
+  font-size: 28px;
+  font-weight: 600;
+}
+
+.neon-middle .cluster-info {
+  flex: 1;
+  width: 100%;
+}
+
+/* ---------- Turbine ---------- */
+
+.cluster.face-is-turbine {
+  background:
+    radial-gradient(900px 520px at 50% 50%, #0a1122, transparent 70%),
+    #020306;
+}
+
+.turbine-frame {
+  fill: none;
+  stroke: rgba(190, 200, 230, 0.32);
+  stroke-width: 4;
+}
+
+.turbine-frame.faint {
+  stroke-width: 2;
+  opacity: 0.45;
+}
+
+.turbine-rev .arc-track {
+  stroke: rgba(255, 255, 255, 0.07);
+  stroke-width: 30;
+}
+
+.turbine-rev .arc-fill {
+  stroke: #3d8bff;
+  stroke-width: 30;
+  stroke-dasharray: 4 3;
+  transition: stroke 0.4s;
+}
+
+.turbine-rev.hot .arc-fill {
+  stroke: #ff2a3a;
+}
+
+.turbine-red {
+  fill: none;
+  stroke: var(--lamp-red);
+  stroke-width: 4;
+}
+
+.turbine-label {
+  fill: #e6ebf5;
+  font-size: 34px;
+  font-style: italic;
+  font-weight: 500;
+  text-anchor: middle;
+  dominant-baseline: middle;
+}
+
+.turbine-label.red {
+  fill: var(--lamp-red);
+}
+
+.turbine {
+  position: absolute;
+  left: 960px;
+  top: 360px;
+  width: 560px;
+  height: 560px;
+  margin: -280px 0 0 -280px;
+}
+
+.turbine-spin {
+  position: absolute;
+  inset: 0;
+  will-change: transform;
+}
+
+.turbine-layer {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  transition: opacity 0.5s;
+}
+
+.turbine-layer.cold {
+  --blade: #4c8dff;
+  --blade-tip: #d6e6ff;
+  --blade-dark: rgba(40, 80, 180, 0);
+  --blade-fill: rgba(40, 100, 230, 0.2);
+  opacity: calc(1 - var(--heat, 0));
+}
+
+.turbine-layer.hot {
+  --blade: #ff3040;
+  --blade-tip: #ffc6ca;
+  --blade-dark: rgba(160, 20, 30, 0);
+  --blade-fill: rgba(230, 30, 40, 0.22);
+  opacity: var(--heat, 0);
+}
+
+.turbine-core {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 262px;
+  height: 262px;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: radial-gradient(#05070c 60%, #0b1222);
+  border: 2px solid rgba(255, 255, 255, 0.08);
+  color: #fff;
+}
+
+.turbine-core strong {
+  font-size: 120px;
+  font-weight: 200;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.turbine-core small {
+  color: #8a94a8;
+  font-size: 18px;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+}
+
+.turbine-gear {
+  margin-top: 8px;
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  border: 2px solid #5b6578;
+  font-size: 22px;
+  font-weight: 600;
+}
+
+.turbine-top {
+  position: absolute;
+  top: 54px;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  gap: 28px;
+  color: #c9d2e0;
+  font-size: 22px;
+  font-variant-numeric: tabular-nums;
+}
+
+.turbine-lamps {
+  position: absolute;
+  left: 1300px;
+  right: 90px;
+  top: 118px;
+}
+
+.turbine-left {
+  position: absolute;
+  left: 440px;
+  top: 470px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  color: #dfe5ef;
+  font-size: 22px;
+}
+
+.turbine-left > span {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.turbine-rpm strong {
+  font-size: 40px;
+  font-weight: 300;
+}
+
+.turbine-left .bar {
+  display: block;
+  width: 110px;
+  height: 6px;
+}
+
+.turbine-panel {
+  position: absolute;
+  left: 1290px;
+  right: 80px;
+  top: 196px;
+  bottom: 120px;
+  display: flex;
+  padding: 22px;
+  border-radius: 28px;
+  background:
+    repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.035) 0 2px, transparent 2px 46px),
+    repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.035) 0 2px, transparent 2px 46px),
+    #060910;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  color: #fff;
+}
+
+.turbine-panel .cluster-info {
+  flex: 1;
+}
+
+.turbine-bottom {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 22px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 40px;
+  color: #c9d2e0;
+  font-size: 22px;
+}
+
+.halo-fuel .bar,
+.turbine-left .bar {
+  margin-top: 0;
+}
+
+[data-theme='daylight'] .check-control {
+  color: #8a5a00;
+  background: rgba(227, 162, 26, 0.22);
 }

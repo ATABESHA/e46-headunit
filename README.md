@@ -48,7 +48,7 @@ lights, warning lights (with bulb check at start), Check Control messages, calls
 trip and odometer. It follows the style chosen on the head unit.
 
 - **Two screens connected:** the cluster opens on the second screen by itself.
-- **One screen (testing):** press **Ctrl + Shift + C** to open or close the cluster window.
+- **One screen (testing):** press **Ctrl + Shift + C** to open or close the cluster window, or use the **⇆ swap button** (see below).
 - **Ctrl + Shift + 1 / 2:** move the head unit / the cluster to the next screen
   (remembered, so you set this up once).
 
@@ -88,9 +88,32 @@ bash scripts/update.sh
 The update never overwrites files changed on the laptop itself — it stops and lists them.
 Make your changes on GitHub (or upload them from the laptop with `git commit` + `git push`).
 
-## Styles and logo
+## Styles, cluster designs and your car
 
-Settings → Display: **Media System** (Ibiza layout), **E46 Classic**, **Modern iDrive** or **M Sport**.
+Settings → Display → **Style** sets the colours of both screens and picks a cluster
+design and home screen to go with it:
+
+| Style | Look | Cluster | Home |
+|---|---|---|---|
+| **Media System** | Ibiza layout, black with copper | Classic dials | Tiles |
+| **E46 Classic** | Orange on black, like the original dash | Classic dials | Tiles |
+| **M Sport** | Carbon black, red, M stripes | Sport capsule | Car dashboard |
+| **Midnight** | Deep navy, soft blue glow | Halo | Car dashboard |
+| **Monochrome** | Pure black and white, thin lines | Minimal | Car dashboard |
+| **Daylight** | Light, for bright days | Minimal | Car dashboard |
+| **Neon** | Black, orange and electric blue | Neon rings | Tiles |
+
+- **Cluster:** any of the six designs can also be chosen by hand (Classic dials, Sport
+  capsule, Halo, Minimal, Neon rings, Turbine). Turbine is a ring of blades around the
+  speed that spins faster as you drive and turns red at high revs.
+- **Home screen:** *Tiles* (8 big buttons) or *Car dashboard* (your car, speed, coolant,
+  fuel, doors, music and trip on one screen).
+- **Car colour:** the car on the dashboard comes in ten E46 paint colours (on-screen
+  approximations). To use your own picture instead, put it in `ui/public` (a transparent
+  PNG works best) and set `CUSTOM_PICTURE` in [`ui/src/CarArt.jsx`](ui/src/CarArt.jsx).
+- All designs are made to be light on the graphics chip: nothing uses live blur, and
+  everything that moves is a thin line or a whole layer that turns or fades.
+
 The Media System colours are a starting point, not measured from a real Ibiza; send
 screenshots of the real screen to match them.
 
@@ -98,6 +121,15 @@ screenshots of the real screen to match them.
   change `logo.svg` to `logo.png` in [`ui/src/App.jsx`](ui/src/App.jsx)).
 - Your own style: add a block in [`ui/src/themes.css`](ui/src/themes.css) and list it in
   [`ui/src/theme.js`](ui/src/theme.js).
+- Your own cluster design: add a file in [`ui/src/cluster/faces/`](ui/src/cluster/faces/),
+  list it in `FACES` in [`ui/src/cluster/Cluster.jsx`](ui/src/cluster/Cluster.jsx) and in
+  `CLUSTER_FACES` in [`ui/src/theme.js`](ui/src/theme.js).
+
+## One screen: swap button
+
+With only one screen (or in a browser), the **⇆ button** at the top right of the head unit
+shows the instrument cluster in the same window; the same button on the cluster brings the
+head unit back. Music keeps playing. Turn the button off in Settings → Display.
 
 ## Testing with the simulator
 

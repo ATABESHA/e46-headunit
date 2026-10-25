@@ -6,6 +6,7 @@ import { usePref } from './prefs.js';
 import { useTheme } from './theme.js';
 import { FxBackground, PerfHud, useFx } from './fx.jsx';
 import { restartApp } from './system.js';
+import { useSwapButton, useView } from './view.js';
 import Home from './screens/Home.jsx';
 import Radio from './screens/Radio.jsx';
 import Media from './screens/Media.jsx';
@@ -49,6 +50,8 @@ function StatusBar({ title }) {
   const phone = useTopic('phone.state');
   const carplay = useTopic('carplay.state');
   const volume = useTopic('audio.volume');
+  const [, swap] = useView();
+  const [swapButton] = useSwapButton();
 
   return (
     <header className="statusbar">
@@ -88,6 +91,11 @@ function StatusBar({ title }) {
           </span>
         )}
         <span className={`status-dot ${connected ? 'ok' : 'bad'}`} title={connected ? 'Core connected' : 'Core not connected'} />
+        {swapButton && (
+          <button className="swap-btn" onClick={swap} title="Show the instrument cluster on this screen" aria-label="Swap screens">
+            <Icon name="swap" size={18} />
+          </button>
+        )}
       </div>
     </header>
   );

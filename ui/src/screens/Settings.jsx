@@ -3,7 +3,9 @@ import { command, useConnected, useTopic } from '../hub.js';
 import { Icon } from '../icons.jsx';
 import { CameraView, useCameras } from '../camera.jsx';
 import { usePref } from '../prefs.js';
-import { THEMES, useTheme } from '../theme.js';
+import { CLUSTER_FACES, HOME_LAYOUTS, THEMES, useClusterFace, useHomeLayout, useTheme } from '../theme.js';
+import { PAINTS, usePaint } from '../CarArt.jsx';
+import { useSwapButton } from '../view.js';
 import { Stepper } from '../widgets.jsx';
 import { FX_LEVELS, useFx } from '../fx.jsx';
 import SoftwareUpdate from './SoftwareUpdate.jsx';
@@ -32,11 +34,11 @@ function Toggle({ label, value, onChange, note }) {
   );
 }
 
-function Choice({ label, value, options, onChange }) {
+function Choice({ label, value, options, onChange, wide = false }) {
   return (
-    <div className="setting-row">
+    <div className={`setting-row ${wide ? 'column' : ''}`}>
       <span>{label}</span>
-      <div className="segmented">
+      <div className={`segmented ${wide ? 'wrap' : ''}`}>
         {options.map(([id, text]) => (
           <button key={id} className={value === id ? 'active' : ''} onClick={() => onChange(id)}>
             {text}
@@ -77,6 +79,10 @@ function Display() {
   const [clock24, setClock24] = usePref('clock24', true);
   const [fx, setFx] = useFx();
   const [hud, setHud] = usePref('fx.hud', false);
+  const [, face, setFace] = useClusterFace();
+  const [, home, setHome] = useHomeLayout();
+  const [[paint], setPaint] = usePaint();
+  const [swapButton, setSwapButton] = useSwapButton();
   return (
     <div className="settings-body">
       <div className="theme-grid">
@@ -90,6 +96,20 @@ function Display() {
           </button>
         ))}
       </div>
+      <Choice label="Cluster" value={face} onChange={setFace} options={CLUSTER_FACES} wide />
+      <Choice label="Home screen" value={home} onChange={setHome} options={HOME_LAYOUTS} />
+      <div className="setting-row column">
+        <span>Car colour</span>
+        <div className="paint-row">
+          {PAINTS.map(([id, name, color]) => (
+            <button key={id} className={`paint ${paint === id ? 'active' : ''}`} onClick={() => setPaint(id)} title={name}>
+              <i style={{ background: color }} />
+              <small>{name}</small>
+            </button>
+          ))}
+        </div>
+      </div>
+      <Toggle label="Swap screens button" value={swapButton} onChange={setSwapButton} note="In the status bar: shows the cluster on this screen when there is only one" />
       <Choice
         label="Screen size"
         value={mode}

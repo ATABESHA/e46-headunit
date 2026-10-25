@@ -4,8 +4,8 @@ import { useEffect, useRef } from 'react';
 const START = -135;
 const SWEEP = 270;
 
-const rad = (deg) => (deg * Math.PI) / 180;
-const polar = (cx, cy, r, deg) => [cx + r * Math.sin(rad(deg)), cy - r * Math.cos(rad(deg))];
+export const rad = (deg) => (deg * Math.PI) / 180;
+export const polar = (cx, cy, r, deg) => [cx + r * Math.sin(rad(deg)), cy - r * Math.cos(rad(deg))];
 
 export function arcPath(cx, cy, r, from, to) {
   const [x1, y1] = polar(cx, cy, r, from);
@@ -130,4 +130,59 @@ export function SubGauge({ value, min, max, warnBelow, warnAbove, left, right, c
       </text>
     </g>
   );
+}
+
+/**
+ * A curved bar that fills up to `value` (smoothly), on any circle.
+ * Angles: 0 = straight up, growing clockwise. For a segmented look give the
+ * fill a stroke-dasharray in CSS. `needle` adds a short line across the bar
+ * at the current value: [inner radius, outer radius].
+ */
+export function ArcFill({ value, min = 0, max, cx, cy, r, from = START, sweep = SWEEP, className = '', needle, track = true }) {
+  const fillRef = useRef(null);
+  const needleRef = useRef(null);
+  const angle = (v) => from + (sweep * (Math.min(max, Math.max(min, v ?? min)) - min)) / (max - min);
+  useSmooth(value ?? min, (v) => {
+    const a = angle(v);
+    if (sweep >= 0) fillRef.current?.setAttribute('d', arcPath(cx, cy, r, from, Math.max(from + 0.3, a)));
+    else fillRef.current?.setAttribute('d', arcPath(cx, cy, r, Math.min(from - 0.3, a), from));
+    needleRef.current?.setAttribute('transform', `rotate(${a.toFixed(2)} ${cx} ${cy})`);
+  });
+  const trackD = sweep >= 0 ? arcPath(cx, cy, r, from, from + sweep) : arcPath(cx, cy, r, from + sweep, from);
+  return (
+    <g className={className}>
+      {track && <path d={trackD} className="arc-track" />}
+      <path ref={fillRef} className="arc-fill" />
+      {needle && (
+        <g ref={needleRef}>
+          <line x1={cx} y1={cy - needle[0]} x2={cx} y2={cy - needle[1]} className="arc-needle" />
+        </g>
+      )}
+    </g>
+  );
+}
+
+/** Tick marks and numbers around a dial. */
+export function Scale({ cx, cy, r, min = 0, max, major, minor, from = START, sweep = SWEEP, labelR, labelDivisor = 1, labelEvery, redFrom, majorLen = 18, minorLen = 9, className = '' }) {
+  const angle = (v) => from + (sweep * (v - min)) / (max - min);
+  const out = [];
+  const every = labelEvery ?? major;
+  for (let v = min; v <= max + 1e-6; v += minor) {
+    const isMajor = Math.abs((v - min) % major) < 1e-6 || Math.abs(((v - min) % major) - major) < 1e-6;
+    const a = angle(v);
+    const [x1, y1] = polar(cx, cy, r, a);
+    const [x2, y2] = polar(cx, cy, r - (isMajor ? majorLen : minorLen), a);
+    const red = redFrom !== undefined && v >= redFrom;
+    out.push(<line key={`t${v}`} x1={x1} y1={y1} x2={x2} y2={y2} className={`scale-tick ${isMajor ? 'major' : ''} ${red ? 'red' : ''}`} />);
+    const labelled = Math.abs((v - min) % every) < 1e-6 || Math.abs(((v - min) % every) - every) < 1e-6;
+    if (labelR && labelled) {
+      const [lx, ly] = polar(cx, cy, labelR, a);
+      out.push(
+        <text key={`l${v}`} x={lx} y={ly} className={`scale-label ${red ? 'red' : ''}`}>
+          {Math.round(v / labelDivisor)}
+        </text>,
+      );
+    }
+  }
+  return <g className={className}>{out}</g>;
 }

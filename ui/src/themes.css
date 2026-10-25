@@ -1,5 +1,6 @@
 /*
  * Styles. "Media System" is the default (in styles.css); these override it.
+ * Each style also picks a cluster face and home screen (src/theme.js).
  * Selected in Settings → Display. To make your own: copy a block, give it a
  * new name, and add it to THEMES in src/theme.js.
  */
@@ -19,59 +20,73 @@
   --radius: 14px;
 }
 
-/* ---------- Modern iDrive style: deep blue-black, glass panels, light numbers ---------- */
+/* ---------- Midnight: deep navy, soft blue glow (was "Modern iDrive") ---------- */
 
-[data-theme='idrive'] {
-  --bg: #060a11;
-  --surface: rgba(255, 255, 255, 0.045);
-  --surface-2: rgba(255, 255, 255, 0.08);
-  --surface-3: rgba(255, 255, 255, 0.13);
-  --border: rgba(255, 255, 255, 0.08);
-  --text: #f2f5f9;
-  --muted: #8d99ab;
-  --accent: #3d8bff;
+[data-theme='midnight'] {
+  --bg: #090e18;
+  --surface: #131a28;
+  --surface-2: #1b2435;
+  --surface-3: #263145;
+  --border: rgba(160, 190, 255, 0.07);
+  --text: #eef2f8;
+  --muted: #8592a8;
+  --accent: #2f7bff;
   --on-accent: #ffffff;
   --radius: 16px;
 }
 
-[data-theme='idrive'] .app {
+[data-theme='midnight'] .app {
   background:
-    radial-gradient(900px 420px at 15% -10%, #16294a 0%, transparent 60%),
-    radial-gradient(700px 380px at 110% 110%, #0f1d33 0%, transparent 55%),
+    radial-gradient(700px 360px at 20% -10%, #15223d 0%, transparent 60%),
+    radial-gradient(700px 380px at 100% 110%, #0f1a30 0%, transparent 55%),
     var(--bg);
 }
 
-[data-theme='idrive'] .card,
-[data-theme='idrive'] .panel,
-[data-theme='idrive'] .tile,
-[data-theme='idrive'] .gauge {
-  backdrop-filter: blur(20px);
+/* Cards: dark glass with a blue glow rising from the bottom (a painted
+   gradient, not a live blur, so it costs nothing to draw) */
+[data-theme='midnight'] :is(.card, .panel, .tile, .gauge, .dash-card, .settings-menu, .settings-content) {
+  background:
+    radial-gradient(120% 60% at 50% 115%, rgba(47, 123, 255, 0.16), transparent 70%),
+    linear-gradient(180deg, #151d2d, #10161f);
+  border-color: rgba(160, 190, 255, 0.06);
 }
 
-[data-theme='idrive'] .nav-item.active {
-  background: linear-gradient(135deg, rgba(61, 139, 255, 0.28), rgba(61, 139, 255, 0.08));
+[data-theme='midnight'] .nav {
+  background: transparent;
+  border-right: none;
+}
+
+[data-theme='midnight'] .nav-item.active {
+  background: linear-gradient(135deg, rgba(47, 123, 255, 0.3), rgba(47, 123, 255, 0.08));
   color: #fff;
-  box-shadow: inset 0 0 0 1px rgba(61, 139, 255, 0.45);
+  box-shadow: inset 0 0 0 1px rgba(47, 123, 255, 0.45);
 }
 
-[data-theme='idrive'] .gauge-value,
-[data-theme='idrive'] .trip-grid strong,
-[data-theme='idrive'] .statusbar-time {
+[data-theme='midnight'] .statusbar {
+  background: transparent;
+  border-bottom-color: transparent;
+}
+
+[data-theme='midnight'] :is(.gauge-value, .trip-grid strong, .statusbar-time, .dash-car-head strong) {
   font-weight: 300;
 }
 
-[data-theme='idrive'] .tile-icon {
+[data-theme='midnight'] .tile-icon {
   color: #fff;
 }
 
-[data-theme='idrive'] .bar i,
-[data-theme='idrive'] .progress i,
-[data-theme='idrive'] .volume-track i {
+[data-theme='midnight'] .dash-stat-icon,
+[data-theme='midnight'] .icon-btn.primary {
+  background: #2f7bff;
+  box-shadow: 0 6px 18px -6px #2f7bff;
+}
+
+[data-theme='midnight'] :is(.bar i, .progress i, .volume-track i) {
   background: linear-gradient(90deg, #1f6fff, #6fb2ff);
 }
 
-[data-theme='idrive'] .overlay {
-  background: #060a11;
+[data-theme='midnight'] .overlay {
+  background: #090e18;
 }
 
 /* ---------- M Sport: carbon black, red accent, tricolor stripes ---------- */
@@ -157,4 +172,216 @@
   right: 0;
   height: 3px;
   background: var(--m-stripe);
+}
+
+[data-theme='msport'] .dash-car {
+  background:
+    radial-gradient(300px 140px at 50% 72%, rgba(231, 34, 46, 0.22), transparent 70%),
+    var(--surface);
+}
+
+[data-theme='msport'] .dash-car-head strong {
+  font-style: italic;
+  font-weight: 800;
+}
+
+/* ---------- Monochrome: pure black and white, thin lines ---------- */
+
+[data-theme='mono'] {
+  --bg: #000000;
+  --surface: #0e0f11;
+  --surface-2: #18191c;
+  --surface-3: #25262a;
+  --border: #1e1f22;
+  --text: #f5f5f5;
+  --muted: #84878d;
+  --accent: #f2f2f2;
+  --on-accent: #000000;
+  --good: #3ddc84;
+  --radius: 16px;
+}
+
+[data-theme='mono'] .nav {
+  background: #000;
+  border-right-color: #141517;
+}
+
+[data-theme='mono'] .nav-item.active {
+  background: #fff;
+  color: #000;
+}
+
+[data-theme='mono'] .statusbar {
+  background: #000;
+}
+
+[data-theme='mono'] :is(.gauge-value, .trip-grid strong, .statusbar-time, .dash-car-head strong, .np-title) {
+  font-weight: 300;
+  letter-spacing: 0.01em;
+}
+
+[data-theme='mono'] .tile-label {
+  font-weight: 500;
+}
+
+[data-theme='mono'] .tile.accent {
+  border-color: #fff;
+}
+
+[data-theme='mono'] :is(.bar i, .progress i, .volume-track i) {
+  background: #fff;
+}
+
+[data-theme='mono'] .dash-car {
+  background:
+    radial-gradient(240px 90px at 50% 82%, rgba(255, 255, 255, 0.07), transparent 70%),
+    var(--surface);
+}
+
+[data-theme='mono'] .dash-stat-icon {
+  background: #25262a;
+  color: #fff;
+}
+
+/* ---------- Daylight: light, for bright days ---------- */
+
+[data-theme='daylight'] {
+  --bg: #e8eaee;
+  --surface: #ffffff;
+  --surface-2: #f0f1f4;
+  --surface-3: #e1e4e9;
+  --border: #dde0e6;
+  --text: #121418;
+  --muted: #6a6f78;
+  --accent: #121418;
+  --on-accent: #ffffff;
+  --good: #1f9d55;
+  --warn: #c98700;
+  --bad: #d93a33;
+  --radius: 18px;
+  color-scheme: light;
+}
+
+[data-theme='daylight'] .app {
+  background: linear-gradient(180deg, #eef0f3, #dfe3e8);
+}
+
+[data-theme='daylight'] .nav {
+  background: #fff;
+  border-right: none;
+  box-shadow: 4px 0 18px -10px rgba(20, 30, 50, 0.25);
+}
+
+[data-theme='daylight'] .nav-item.active {
+  background: #e3e5ea;
+  color: #121418;
+}
+
+[data-theme='daylight'] .statusbar {
+  background: transparent;
+  border-bottom-color: transparent;
+}
+
+[data-theme='daylight'] :is(.card, .panel, .tile, .gauge, .dash-card, .dash-shortcut, .settings-menu, .settings-content) {
+  border-color: transparent;
+  box-shadow: 0 8px 22px -14px rgba(20, 30, 50, 0.35);
+}
+
+[data-theme='daylight'] .tile-icon {
+  color: #121418;
+}
+
+[data-theme='daylight'] .dash-car {
+  background:
+    radial-gradient(260px 100px at 50% 82%, rgba(20, 30, 50, 0.07), transparent 70%),
+    #fff;
+}
+
+[data-theme='daylight'] :is(.bar i, .progress i, .volume-track i) {
+  background: #2f7bff;
+}
+
+[data-theme='daylight'] .dash-media-text small {
+  color: #2f7bff;
+}
+
+[data-theme='daylight'] .overlay {
+  background: var(--bg);
+}
+
+/* ---------- Neon: black, orange and electric blue ---------- */
+
+[data-theme='neon'] {
+  --bg: #040506;
+  --surface: #0c0d10;
+  --surface-2: #15171b;
+  --surface-3: #20232a;
+  --border: #1b1e24;
+  --text: #f3f5f7;
+  --muted: #8a919c;
+  --accent: #ff6a1a;
+  --accent-2: #1ea0ff;
+  --on-accent: #140700;
+  --radius: 14px;
+}
+
+[data-theme='neon'] .app {
+  background:
+    radial-gradient(600px 300px at 0% 100%, rgba(255, 106, 26, 0.08), transparent 70%),
+    radial-gradient(600px 300px at 100% 100%, rgba(30, 160, 255, 0.08), transparent 70%),
+    var(--bg);
+}
+
+[data-theme='neon'] .nav {
+  background: transparent;
+  border-right-color: #121418;
+}
+
+[data-theme='neon'] .nav-item.active {
+  color: var(--accent);
+  background: rgba(255, 106, 26, 0.1);
+  box-shadow: inset 0 0 0 1px rgba(255, 106, 26, 0.5), 0 0 16px -6px var(--accent);
+}
+
+[data-theme='neon'] .statusbar {
+  background: transparent;
+}
+
+/* Orange and blue take turns; the glow is a painted shadow, drawn once */
+[data-theme='neon'] .tile:nth-child(even) .tile-icon,
+[data-theme='neon'] .dash-shortcut:nth-child(even) .tile-icon {
+  color: var(--accent-2);
+}
+
+[data-theme='neon'] .tile-icon svg {
+  filter: drop-shadow(0 0 6px currentColor);
+}
+
+[data-theme='neon'] :is(.tile, .card, .panel, .dash-card, .dash-shortcut) {
+  border-color: #1d2026;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+[data-theme='neon'] .tile.accent {
+  border-color: var(--accent);
+  box-shadow: 0 0 18px -8px var(--accent);
+}
+
+[data-theme='neon'] :is(.bar i, .progress i, .volume-track i) {
+  background: linear-gradient(90deg, var(--accent), var(--accent-2));
+}
+
+[data-theme='neon'] :is(.statusbar-time, .dash-car-head strong, .gauge-value) {
+  font-weight: 300;
+}
+
+[data-theme='neon'] .dash-car {
+  background:
+    radial-gradient(300px 120px at 50% 80%, rgba(255, 106, 26, 0.14), transparent 70%),
+    var(--surface);
+}
+
+[data-theme='neon'] .dash-stat:nth-child(2) .dash-stat-icon {
+  background: var(--accent-2);
+  color: #001220;
 }

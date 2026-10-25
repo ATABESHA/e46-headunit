@@ -1986,3 +1986,304 @@ code.block {
   background: color-mix(in srgb, var(--accent) 14%, var(--surface-2));
   border: 1px solid color-mix(in srgb, var(--accent) 50%, transparent);
 }
+
+/* ---------- Swap screens button (status bar) ---------- */
+
+.swap-btn {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  margin-left: 4px;
+  border-radius: 50%;
+  background: var(--surface-2);
+  color: var(--text);
+}
+
+.swap-btn:active {
+  background: var(--surface-3);
+}
+
+/* ---------- Home: car dashboard layout ---------- */
+
+.dash {
+  display: grid;
+  grid-template-columns: 392px 1fr;
+  gap: 10px;
+}
+
+.dash-card {
+  position: relative;
+  border-radius: calc(var(--radius) + 4px);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  min-height: 0;
+  overflow: hidden;
+}
+
+.dash-car {
+  display: flex;
+  flex-direction: column;
+  padding: 14px 14px 12px;
+  cursor: pointer;
+  background:
+    radial-gradient(260px 120px at 50% 70%, color-mix(in srgb, var(--accent) 16%, transparent), transparent 70%),
+    var(--surface);
+}
+
+.dash-car-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.dash-car-head small {
+  display: block;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.dash-car-head strong {
+  font-size: 46px;
+  font-weight: 500;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.dash-car-head em {
+  margin-left: 6px;
+  font-size: 16px;
+}
+
+.dash-alert {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border-radius: 99px;
+  background: color-mix(in srgb, var(--warn) 18%, transparent);
+  color: var(--warn);
+  font-weight: 600;
+}
+
+.dash-car-art {
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+  margin: 2px 0 8px;
+}
+
+.dash-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.dash-stat {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-template-rows: auto auto;
+  column-gap: 8px;
+  align-items: center;
+  padding: 8px 10px;
+  border-radius: var(--radius);
+  background: var(--surface-2);
+  text-align: left;
+  min-width: 0;
+}
+
+.dash-stat-icon {
+  grid-row: span 2;
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: var(--on-accent);
+}
+
+.dash-stat strong {
+  font-size: 16px;
+  font-variant-numeric: tabular-nums;
+}
+
+.dash-stat small {
+  color: var(--muted);
+  font-size: 12px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dash-stat.warn .dash-stat-icon {
+  background: var(--warn);
+  color: #1b1200;
+}
+
+.dash-right {
+  display: grid;
+  grid-template-rows: 1fr auto auto;
+  gap: 10px;
+  min-height: 0;
+}
+
+.dash-media {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 10px;
+  padding: 16px 18px;
+}
+
+.dash-media-open {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  text-align: left;
+  min-width: 0;
+}
+
+.dash-media .dash-art {
+  width: 104px;
+  height: 104px;
+  flex: none;
+  border-radius: var(--radius);
+  object-fit: cover;
+}
+
+.dash-media-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  gap: 2px;
+}
+
+.dash-media-text small {
+  color: var(--accent);
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.dash-media-text strong {
+  font-size: 24px;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dash-media-text span {
+  color: var(--muted);
+  font-size: 15px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dash-media .controls {
+  justify-content: center;
+}
+
+.dash-media.empty {
+  justify-content: center;
+}
+
+.dash-shortcuts {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 8px;
+}
+
+.dash-shortcut {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 12px 4px 10px;
+  border-radius: var(--radius);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.dash-shortcut .tile-icon {
+  margin: 0;
+}
+
+.dash-shortcut:active {
+  background: var(--surface-2);
+}
+
+/* Settings → Display → Car colour */
+.paint-row {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 6px;
+}
+
+.paint {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  min-width: 0;
+}
+
+.paint i {
+  width: 20px;
+  height: 20px;
+  flex: none;
+  border-radius: 50%;
+  box-shadow: inset 0 0 0 1px rgba(127, 127, 127, 0.4);
+}
+
+.paint small {
+  font-size: 11px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.paint.active {
+  border-color: var(--accent);
+}
+
+.dash-trip {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 18px;
+  font-size: 14px;
+  color: var(--muted);
+  text-align: left;
+}
+
+.dash-trip strong {
+  color: var(--text);
+  font-size: 20px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.dash-trip i {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--muted);
+}
+
+.dash-trip small {
+  font-size: 12px;
+}
+
+.dash-trip-odo {
+  margin-left: auto;
+  font-variant-numeric: tabular-nums;
+}

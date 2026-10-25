@@ -50,6 +50,8 @@ const paths = {
   check: 'M5 12.5l4.5 4.5L19 7.5',
   warning: 'M12 3.5 21.5 20h-19L12 3.5ZM12 10v4.5M12 17.5h.01',
   signal: 'M4 20v-3M9 20v-6M14 20V10M19 20V5',
+  swap: 'M8 3.5 4 7.5l4 4M4 7.5h15M16 12.5l4 4-4 4M20 16.5H5',
+  gauge: 'M4 16a8 8 0 1 1 16 0M12 16l4-5M3 16h2M19 16h2M12 6v2M6.3 9.3l1.4 1.4M17.7 9.3l-1.4 1.4',
 };
 
 export function Icon({ name, size = 24, className, filled = false }) {

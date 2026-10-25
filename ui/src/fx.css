@@ -23,8 +23,7 @@
   z-index: 1;
 }
 
-.cluster > .dial,
-.cluster > .cluster-middle {
+.cluster > .face {
   z-index: 1;
 }
 
