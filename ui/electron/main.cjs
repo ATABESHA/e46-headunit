@@ -14,6 +14,9 @@ const { app, BrowserWindow, session, screen } = require('electron');
 const fs = require('node:fs');
 const path = require('node:path');
 
+// Draw with the graphics chip wherever possible (effects, needles, video).
+app.commandLine.appendSwitch('enable-gpu-rasterization');
+
 const kiosk = process.argv.includes('--kiosk');
 const devUrl = process.env.E46_DEV_URL;
 

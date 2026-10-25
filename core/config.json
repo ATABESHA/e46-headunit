@@ -2,13 +2,37 @@
   "host": "127.0.0.1",
   "port": 8765,
   "plugins": {
-    "simulator": { "enabled": true },
-    "updater": { "enabled": true, "autoCheckMinutes": 360 },
-    "audio": { "enabled": true },
-    "media": { "enabled": true },
-    "radio": { "enabled": true, "country": "ES" },
-    "phone": { "enabled": true },
-    "trip": { "enabled": true },
-    "carplay": { "enabled": true, "width": 1008, "height": 480, "fps": 30 }
+    "simulator": {
+      "enabled": true
+    },
+    "updater": {
+      "enabled": true,
+      "autoCheckMinutes": 360
+    },
+    "audio": {
+      "enabled": true
+    },
+    "media": {
+      "enabled": true
+    },
+    "radio": {
+      "enabled": true,
+      "country": "ES"
+    },
+    "phone": {
+      "enabled": true
+    },
+    "trip": {
+      "enabled": true
+    },
+    "carplay": {
+      "enabled": true,
+      "width": 1008,
+      "height": 480,
+      "fps": 30
+    },
+    "sysinfo": {
+      "enabled": true
+    }
   }
 }

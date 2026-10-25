@@ -4,6 +4,7 @@ import { Icon } from '../icons.jsx';
 import { getPref } from '../prefs.js';
 import { Dial, SubGauge } from './Dial.jsx';
 import { INDICATORS, Lamp, WARNINGS } from './Lamps.jsx';
+import { FxBackground, PerfHud, useFx } from '../fx.jsx';
 
 // Designed for a 1920 x 720 cluster screen (common 12.3" size), scaled to any window.
 const DESIGN = { width: 1920, height: 720 };
@@ -142,6 +143,7 @@ function InfoPanel() {
 
 export default function Cluster() {
   useSharedTheme();
+  const [fx] = useFx();
   const ref = useRef(null);
   useFit(ref);
   const sweep = useSweep();
@@ -166,6 +168,7 @@ export default function Cluster() {
   return (
     <div className="cluster-viewport">
       <div className="cluster" ref={ref}>
+        <FxBackground level={fx} />
         <Dial
           className="rev"
           value={target(rpm, RPM_MAX)}
@@ -219,6 +222,7 @@ export default function Cluster() {
           <div className="digital-speed">{Math.round(speed)}</div>
         </Dial>
       </div>
+      <PerfHud label="Cluster" />
     </div>
   );
 }

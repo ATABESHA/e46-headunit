@@ -4,6 +4,7 @@ import { Icon } from './icons.jsx';
 import { applySound } from './player.js';
 import { usePref } from './prefs.js';
 import { useTheme } from './theme.js';
+import { FxBackground, PerfHud, useFx } from './fx.jsx';
 import Home from './screens/Home.jsx';
 import Radio from './screens/Radio.jsx';
 import Media from './screens/Media.jsx';
@@ -117,6 +118,7 @@ function useScreenFit(rootRef) {
 
 export default function App() {
   useTheme();
+  const [fx] = useFx();
   const rootRef = useRef(null);
   useScreenFit(rootRef);
 
@@ -156,6 +158,7 @@ export default function App() {
   return (
     <div className="viewport">
       <div className="app" ref={rootRef}>
+        <FxBackground level={fx} />
         <nav className="nav">
           {SCREENS.map((s) => (
             <button key={s.id} className={`nav-item ${screen === s.id ? 'active' : ''}`} onClick={() => navigate(s.id)}>
@@ -169,7 +172,7 @@ export default function App() {
         <div className="main">
           {!phoneFullscreen && <StatusBar title={screen === 'home' ? '' : current.label} />}
           <main className={`content ${phoneFullscreen ? 'bleed' : ''} screen-${screen}`}>
-            <Current onNavigate={navigate} tab={tab} onTab={setTab} />
+            <Current key={screen} onNavigate={navigate} tab={tab} onTab={setTab} />
           </main>
           {showParking && (
             <div className="overlay">
@@ -180,6 +183,7 @@ export default function App() {
           <VolumeOverlay />
           <Toasts />
         </div>
+        <PerfHud label="Head unit" />
         <Splash />
       </div>
     </div>

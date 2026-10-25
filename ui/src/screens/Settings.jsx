@@ -5,6 +5,7 @@ import { CameraView, useCameras } from '../camera.jsx';
 import { usePref } from '../prefs.js';
 import { THEMES, useTheme } from '../theme.js';
 import { Stepper } from '../widgets.jsx';
+import { FX_LEVELS, useFx } from '../fx.jsx';
 import SoftwareUpdate from './SoftwareUpdate.jsx';
 
 const SECTIONS = [
@@ -74,6 +75,8 @@ function Display() {
   const [theme, setTheme] = useTheme();
   const [mode, setMode] = usePref('screen.mode', 'fit');
   const [clock24, setClock24] = usePref('clock24', true);
+  const [fx, setFx] = useFx();
+  const [hud, setHud] = usePref('fx.hud', false);
   return (
     <div className="settings-body">
       <div className="theme-grid">
@@ -97,6 +100,9 @@ function Display() {
           ['fill', 'Fill window'],
         ]}
       />
+      <Choice label="Graphics" value={fx} onChange={setFx} options={FX_LEVELS} />
+      <Toggle label="Performance display" value={hud} onChange={setHud} note="FPS, CPU, RAM and graphics chip, on both screens" />
+      {fx === 'ultra' && <p className="muted small">Ultra is a stress test: every effect at maximum, to see what the computer can handle.</p>}
       <Toggle label="24-hour clock" value={clock24} onChange={setClock24} />
     </div>
   );

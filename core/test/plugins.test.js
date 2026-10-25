@@ -186,3 +186,23 @@ test('audio: reads and sets system volume through wpctl', async () => {
     plugin.stop();
   }
 });
+
+test('sysinfo: reads CPU, memory and this system\'s own processes', async () => {
+  const { default: sysinfo, parseCpuLine, parseMeminfo, parseProcTicks } = await import('../src/plugins/sysinfo.js');
+  assert.deepEqual(parseCpuLine('cpu  100 0 50 800 50 0 0 0 0 0'), { busy: 150, total: 1000 });
+  assert.deepEqual(parseMeminfo('MemTotal:       16384000 kB\nMemFree: 1 kB\nMemAvailable:    8192000 kB\n'), { totalMB: 16000, usedMB: 8000 });
+  assert.equal(parseProcTicks('123 (my (weird) name) S 1 2 3 4 5 6 7 8 9 10 250 50 0 0'), 300);
+
+  const hub = new Hub();
+  const plugin = await sysinfo(hub, { intervalMs: 100 });
+  try {
+    await wait(250);
+    const s = hub.get('system.stats');
+    assert.ok(s.memTotalMB > 0 && s.memUsedMB > 0);
+    assert.ok(s.cpu >= 0 && s.cpu <= 100);
+    assert.ok(s.app.processes >= 1, 'finds at least the core itself');
+    assert.ok(s.app.memMB > 0);
+  } finally {
+    plugin.stop();
+  }
+});

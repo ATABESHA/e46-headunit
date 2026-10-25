@@ -20,6 +20,15 @@ function read(key, fallback) {
   return value;
 }
 
+// A change made in the other window (head unit <-> cluster) applies here too.
+if (typeof window !== 'undefined') {
+  window.addEventListener('storage', (e) => {
+    if (!e.key?.startsWith(PREFIX)) return;
+    cache.delete(e.key.slice(PREFIX.length));
+    listeners.forEach((l) => l());
+  });
+}
+
 export function getPref(key, fallback) {
   return read(key, fallback);
 }

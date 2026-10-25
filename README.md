@@ -60,6 +60,16 @@ has proven itself. The speedometer and the red warning lights are required by la
 (ITV inspection) and must show real car data, not the simulator. For smooth needles the
 cluster needs fast data from the car's CAN bus (a USB-CAN adapter) rather than the slow K-Bus.
 
+## Graphics quality and performance display
+
+Settings → Display:
+- **Graphics: Low** - flat design, lightest. **High** - animated background, see-through
+  panels, shadows, screen transitions. **Ultra (stress test)** - everything at maximum:
+  full-resolution animated background, live blur behind every panel, glowing needles,
+  light effects. Applies to both screens.
+- **Performance display** - FPS (60 = perfectly smooth), slowest frame, CPU and CPU
+  temperature, RAM, the system's own CPU and RAM, and the graphics chip, on both screens.
+
 ## Update
 
 **From the app:** Settings → Software update → **Check for updates** → **Update now**.
@@ -113,6 +123,7 @@ You can also open and close doors there.
      phone.js       phone (simulated for now)
      audio.js       system volume + sound settings
      trip.js        trip computer
+     sysinfo.js     CPU, RAM, temperature for the performance display
      kbus.js        lights, locks, windows, reverse, wheel buttons   (later)
      diag.js        fault codes through the K+DCAN cable             (later)
      esp32.js       parking sensors, ambient LEDs                    (later)
