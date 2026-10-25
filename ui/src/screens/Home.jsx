@@ -4,6 +4,7 @@ import { formatTime, next, previous, toggle, usePlayer } from '../player.js';
 import { useHomeLayout } from '../theme.js';
 import { Artwork } from '../widgets.jsx';
 import CarArt from '../CarArt.jsx';
+import Design1Home from './HomeDesign1.jsx';
 
 function Tile({ icon, label, detail, onClick, accent, badge }) {
   return (
@@ -238,5 +239,6 @@ function DashboardHome({ onNavigate }) {
 
 export default function Home(props) {
   const [layout] = useHomeLayout();
+  if (layout === 'design1') return <Design1Home {...props} />;
   return layout === 'dashboard' ? <DashboardHome {...props} /> : <TileHome {...props} />;
 }

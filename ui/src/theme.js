@@ -7,7 +7,8 @@ import { getPref, usePref } from './prefs.js';
  * Both can also be chosen separately in Settings.
  *
  *   cluster  which instrument cluster design: see CLUSTER_FACES
- *   home     "tiles" (8 big buttons) or "dashboard" (car picture + music)
+ *   home     "tiles" (8 big buttons), "dashboard" (car picture + music)
+ *            or "design1" (car from above, map card, trip and music)
  */
 export const THEMES = [
   { id: 'media', name: 'Media System', description: 'Ibiza layout, black with copper', swatch: ['#0b0b0c', '#e0823d'], cluster: 'classic', home: 'tiles' },
@@ -16,6 +17,7 @@ export const THEMES = [
   { id: 'midnight', name: 'Midnight', description: 'Deep navy, soft blue glow', swatch: ['#0c1220', '#2f7bff'], cluster: 'halo', home: 'dashboard' },
   { id: 'mono', name: 'Monochrome', description: 'Pure black and white, thin lines', swatch: ['#000000', '#f2f2f2'], cluster: 'minimal', home: 'dashboard' },
   { id: 'daylight', name: 'Daylight', description: 'Light, for bright days', swatch: ['#eceef1', '#111111'], cluster: 'minimal', home: 'dashboard' },
+  { id: 'design1', name: 'Design1', description: 'Slate grey and blue, car from above', swatch: ['#22252f', '#2d7bff'], cluster: 'halo', home: 'design1' },
   { id: 'neon', name: 'Neon', description: 'Black, orange and electric blue', swatch: ['#050608', '#ff6a1a'], cluster: 'neon', home: 'tiles' },
 ];
 
@@ -34,6 +36,7 @@ export const HOME_LAYOUTS = [
   ['auto', 'Match style'],
   ['tiles', 'Tiles'],
   ['dashboard', 'Car dashboard'],
+  ['design1', 'Design1'],
 ];
 
 // Styles that were renamed keep working.

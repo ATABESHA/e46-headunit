@@ -2287,3 +2287,485 @@ code.block {
   margin-left: auto;
   font-variant-numeric: tabular-nums;
 }
+
+/* ---------- Home: Design1 (car from above + map card) ---------- */
+
+.d1 {
+  display: grid;
+  grid-template-columns: 318px 1fr;
+  gap: 16px;
+}
+
+.d1-card {
+  position: relative;
+  border-radius: 24px;
+  background: linear-gradient(180deg, #2a2e3a, #252935);
+  min-height: 0;
+  color: var(--text);
+}
+
+.d1-car {
+  display: flex;
+  flex-direction: column;
+  padding: 0 20px 16px;
+  overflow: hidden;
+}
+
+/* The car comes in from the top edge; a blue light shines under its nose */
+.d1-car-art {
+  position: relative;
+  height: 162px;
+  flex: none;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.d1-car-art::before {
+  content: '';
+  position: absolute;
+  left: 10%;
+  right: 10%;
+  bottom: -40px;
+  height: 120px;
+  z-index: -1;
+  background: radial-gradient(closest-side, color-mix(in srgb, var(--accent) 45%, transparent), transparent);
+}
+
+.d1-car-art .car-art {
+  width: 132px;
+  height: 290px;
+  flex: none;
+  margin-bottom: 4px;
+}
+
+.d1-speed {
+  margin-top: 6px;
+}
+
+.d1-speed small {
+  display: block;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.d1-speed span {
+  color: var(--muted);
+  font-size: 20px;
+}
+
+.d1-speed strong {
+  color: var(--text);
+  font-size: 46px;
+  font-weight: 400;
+  line-height: 1.05;
+  font-variant-numeric: tabular-nums;
+}
+
+.d1-tiles {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.d1-tile {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 12px;
+  border-radius: 14px;
+  background: #2f3341;
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  text-align: left;
+}
+
+.d1-tile-icon {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  margin-bottom: 10px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: #fff;
+}
+
+.d1-tile-icon.alert {
+  background: var(--warn);
+  color: #1b1200;
+}
+
+.d1-tile-info {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  color: var(--muted);
+}
+
+.d1-tile strong {
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.d1-tile small {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.d1-meter {
+  margin-top: auto;
+  padding-top: 12px;
+}
+
+.d1-meter-head {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  font-size: 15px;
+}
+
+.d1-meter-head span {
+  color: var(--muted);
+}
+
+.d1-meter-head strong {
+  font-weight: 500;
+}
+
+.d1-bars {
+  display: flex;
+  align-items: stretch;
+  gap: 2px;
+  height: 22px;
+}
+
+.d1-bars i {
+  flex: 1;
+  border-radius: 1px;
+  background: #4a4f5e;
+}
+
+.d1-bars i.on {
+  background: color-mix(in srgb, var(--accent) 80%, #1a2b55);
+}
+
+.d1-bars i.mark {
+  background: #5d9bff;
+  margin: -3px 0;
+  border-radius: 2px;
+}
+
+.d1-bars.low i.on {
+  background: var(--bad);
+}
+
+/* Map card */
+
+.d1-map {
+  overflow: hidden;
+  background: #262a35;
+}
+
+.d1-streets {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  margin-left: -320px;
+  transform: translateY(-400px);
+  will-change: transform;
+}
+
+.d1-streets svg {
+  display: block;
+}
+
+.d1-street {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.07);
+  stroke-width: 2;
+}
+
+.d1-street.major {
+  stroke: rgba(255, 255, 255, 0.1);
+  stroke-width: 6;
+}
+
+.d1-block {
+  fill: rgba(255, 255, 255, 0.025);
+  stroke: rgba(255, 255, 255, 0.06);
+  stroke-width: 1.5;
+}
+
+.d1-route {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.d1-route path {
+  fill: none;
+  stroke: var(--accent);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.d1-route .glow {
+  stroke-width: 24;
+  opacity: 0.16;
+}
+
+.d1-route .line {
+  stroke-width: 8;
+}
+
+.d1-arrow {
+  position: absolute;
+  left: 50%;
+  top: 46%;
+  width: 40px;
+  height: 44px;
+  margin-left: -20px;
+}
+
+.d1-arrow svg {
+  width: 100%;
+  height: 100%;
+  fill: var(--accent);
+  stroke: color-mix(in srgb, var(--accent) 60%, #0a1a40);
+  stroke-width: 2;
+  stroke-linejoin: round;
+}
+
+.d1-banner {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  padding: 12px 20px 14px;
+  border-radius: 14px;
+  background: var(--accent);
+  color: #fff;
+  box-shadow: 0 12px 26px -12px color-mix(in srgb, var(--accent) 80%, transparent);
+  text-align: left;
+}
+
+.d1-banner span {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.d1-banner strong {
+  font-size: 24px;
+  font-weight: 500;
+}
+
+.d1-banner small {
+  font-size: 14px;
+  opacity: 0.9;
+}
+
+.d1-round {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: #343947;
+  color: #9aa2b5;
+}
+
+.d1-bottom {
+  position: absolute;
+  left: 16px;
+  right: 16px;
+  bottom: 16px;
+  display: grid;
+  grid-template-columns: 1fr 196px;
+  gap: 12px;
+}
+
+.d1-bottom > .d1-card {
+  background: #2c303d;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 16px;
+  box-shadow: 0 14px 30px -18px rgba(0, 0, 0, 0.8);
+}
+
+.d1-trip {
+  padding: 14px 16px;
+}
+
+.d1-trip-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.d1-trip-icon {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  background: #393e4c;
+}
+
+.d1-trip-head span:last-child {
+  display: flex;
+  flex-direction: column;
+}
+
+.d1-trip-head strong {
+  font-size: 17px;
+  font-weight: 500;
+}
+
+.d1-trip-head small {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.d1-trip-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-top: 14px;
+  font-size: 18px;
+}
+
+.d1-trip-row strong {
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+
+.d1-trip-row b {
+  color: var(--accent);
+  font-weight: 500;
+}
+
+.d1-trip-row small {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.d1-link {
+  margin-top: 8px;
+  color: var(--accent);
+  font-size: 14px;
+}
+
+.d1-music {
+  display: flex;
+  flex-direction: column;
+  padding: 12px 14px 10px;
+  text-align: center;
+}
+
+.d1-music-title {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.d1-music-title strong,
+.d1-music-title span {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.d1-music-title strong {
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.d1-music-title span {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.d1-music-controls {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  margin: 8px 0 6px;
+}
+
+.d1-play {
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: #3b404f;
+}
+
+.d1-slider {
+  position: relative;
+  height: 3px;
+  margin: 8px 6px 6px;
+  border-radius: 2px;
+  background: #4a4f5e;
+}
+
+.d1-slider i {
+  position: absolute;
+  inset: 0 auto 0 0;
+  border-radius: 2px;
+  background: var(--accent);
+}
+
+.d1-slider b {
+  position: absolute;
+  top: 50%;
+  width: 14px;
+  height: 14px;
+  margin: -7px 0 0 -7px;
+  border-radius: 50%;
+  background: #fff;
+  border: 2px solid #2c303d;
+}
+
+.d1-times {
+  display: flex;
+  justify-content: space-between;
+  color: var(--muted);
+}
+
+.d1-times small {
+  font-size: 11px;
+}
+
+.d1-music.empty {
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  color: var(--text);
+}
+
+.d1-music.empty strong {
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.d1-music.empty span {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.d1-music.empty svg {
+  margin-top: 8px;
+  color: var(--muted);
+}

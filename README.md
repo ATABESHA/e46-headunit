@@ -101,13 +101,17 @@ design and home screen to go with it:
 | **Midnight** | Deep navy, soft blue glow | Halo | Car dashboard |
 | **Monochrome** | Pure black and white, thin lines | Minimal | Car dashboard |
 | **Daylight** | Light, for bright days | Minimal | Car dashboard |
+| **Design1** | Slate grey and blue, car seen from above | Halo | Design1 |
 | **Neon** | Black, orange and electric blue | Neon rings | Tiles |
 
 - **Cluster:** any of the six designs can also be chosen by hand (Classic dials, Sport
   capsule, Halo, Minimal, Neon rings, Turbine). Turbine is a ring of blades around the
   speed that spins faster as you drive and turns red at high revs.
-- **Home screen:** *Tiles* (8 big buttons) or *Car dashboard* (your car, speed, coolant,
-  fuel, doors, music and trip on one screen).
+- **Home screen:** *Tiles* (8 big buttons), *Car dashboard* (your car, speed, coolant,
+  fuel, doors, music and trip on one screen) or *Design1* (the car from above with speed,
+  coolant, doors and a fuel meter; a map-style card with trip and music). The head unit has
+  no navigation of its own: the Design1 map is a drawing that scrolls with your speed, and
+  its Navigation button opens Full Link (CarPlay / Android Auto maps).
 - **Car colour:** the car on the dashboard comes in ten E46 paint colours (on-screen
   approximations). To use your own picture instead, put it in `ui/public` (a transparent
   PNG works best) and set `CUSTOM_PICTURE` in [`ui/src/CarArt.jsx`](ui/src/CarArt.jsx).

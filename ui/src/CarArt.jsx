@@ -135,3 +135,66 @@ export default function CarArt({ className = '', paint }) {
     </svg>
   );
 }
+
+/**
+ * The same car seen from above, nose pointing down (towards the driver's
+ * view of the screen), for the Design1 home screen. Drawn at 200 x 440.
+ */
+export function CarTopArt({ className = '', paint }) {
+  const id = useId().replace(/:/g, '');
+  const [[, , savedColor]] = usePaint();
+  return (
+    <svg className={`car-art ${className}`} viewBox="0 0 200 440" style={{ '--paint': paint ?? savedColor }} aria-hidden="true">
+      <defs>
+        <linearGradient id={`${id}-side`} x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0" style={{ stopColor: tone(-45) }} />
+          <stop offset="0.18" style={{ stopColor: 'var(--paint)' }} />
+          <stop offset="0.5" style={{ stopColor: tone(18) }} />
+          <stop offset="0.82" style={{ stopColor: 'var(--paint)' }} />
+          <stop offset="1" style={{ stopColor: tone(-45) }} />
+        </linearGradient>
+        <linearGradient id={`${id}-glass`} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stopColor="#0b0d11" />
+          <stop offset="1" stopColor="#262b34" />
+        </linearGradient>
+        <linearGradient id={`${id}-shine`} x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0" stopColor="#fff" stopOpacity="0" />
+          <stop offset="0.5" stopColor="#fff" stopOpacity="0.28" />
+          <stop offset="1" stopColor="#fff" stopOpacity="0" />
+        </linearGradient>
+      </defs>
+      {/* Front is at the bottom (y = 440), rear at the top. */}
+      {/* Mirrors, at the front corners of the side windows */}
+      <path d="M30 300c-12-2-22 2-24 10-1 6 4 9 10 8l18-4Z" style={{ fill: tone(-15) }} />
+      <path d="M170 300c12-2 22 2 24 10 1 6-4 9-10 8l-18-4Z" style={{ fill: tone(-15) }} />
+      {/* Body: wider over the wheels, rounded nose */}
+      <path
+        d="M100 4C60 4 34 8 24 24l-6 34c-4 20-4 40-1 58l2 150c-4 24-4 50-1 72l3 50c2 28 26 48 79 48s77-20 79-48l3-50c3-22 3-48-1-72l2-150c3-18 3-38-1-58l-6-34C166 8 140 4 100 4Z"
+        fill={`url(#${id}-side)`}
+      />
+      {/* Taillights (rear, top) */}
+      <path d="M24 22c6-9 16-13 32-14l-2 13c-12 1-22 5-28 9Z" fill="#a3121b" />
+      <path d="M176 22c-6-9-16-13-32-14l2 13c12 1 22 5 28 9Z" fill="#a3121b" />
+      {/* Trunk lid, rear window */}
+      <path d="M32 84c44-7 92-7 136 0" style={{ stroke: tone(-30) }} strokeWidth="1.5" fill="none" />
+      <path d="M38 92c42-7 82-7 124 0l-10 48c-34-4-70-4-104 0Z" fill={`url(#${id}-glass)`} />
+      {/* Roof */}
+      <path d="M48 142c34-4 70-4 104 0l2 102c-36-4-72-4-108 0Z" style={{ fill: tone(10) }} />
+      <path d="M94 144h12v98H94Z" fill={`url(#${id}-shine)`} opacity="0.55" />
+      {/* Side windows */}
+      <path d="M38 104 46 142l2 102-8 46-5-6 1-170Z" fill="#111419" />
+      <path d="M162 104 154 142l-2 102 8 46 5-6-1-170Z" fill="#111419" />
+      {/* Windscreen */}
+      <path d="M46 246c36-5 72-5 108 0l12 56c-44-7-88-7-132 0Z" fill={`url(#${id}-glass)`} />
+      <path d="M58 254c10-1 22-2 34-2l-6 44c-12 0-26 1-36 2Z" fill="#fff" opacity="0.07" />
+      {/* Hood: creases and a highlight down the middle */}
+      <path d="M58 306c-4 34-6 70-2 104M142 306c4 34 6 70 2 104" style={{ stroke: tone(-28) }} strokeWidth="1.5" fill="none" />
+      <path d="M86 304h28l6 116H80Z" fill={`url(#${id}-shine)`} opacity="0.75" />
+      {/* Headlights and kidneys (front, bottom) */}
+      <path d="M22 388c2 20 12 34 32 40l4-12c-14-4-24-14-28-28Z" fill="#dfe6ee" />
+      <path d="M178 388c-2 20-12 34-32 40l-4-12c14-4 24-14 28-28Z" fill="#dfe6ee" />
+      <rect x="80" y="428" width="18" height="8" rx="3" fill="#0d0f12" stroke="#d9dee4" strokeWidth="1.5" />
+      <rect x="102" y="428" width="18" height="8" rx="3" fill="#0d0f12" stroke="#d9dee4" strokeWidth="1.5" />
+    </svg>
+  );
+}

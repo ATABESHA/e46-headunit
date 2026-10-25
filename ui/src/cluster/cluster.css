@@ -1486,3 +1486,15 @@ g.red .needle {
   color: #8a5a00;
   background: rgba(227, 162, 26, 0.22);
 }
+
+/* Design1: the halo cluster on the same slate grey as the head unit */
+[data-theme='design1'] .cluster.face-is-halo {
+  background:
+    radial-gradient(900px 520px at 50% 48%, rgba(45, 123, 255, 0.1), transparent 70%),
+    #1c1f27;
+}
+
+[data-theme='design1'] .halo-disc {
+  fill: #22252f;
+  stroke: rgba(255, 255, 255, 0.06);
+}

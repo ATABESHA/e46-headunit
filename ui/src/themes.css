@@ -385,3 +385,76 @@
   background: var(--accent-2);
   color: #001220;
 }
+
+/* ---------- Design1: slate grey and blue, car from above ---------- */
+
+[data-theme='design1'] {
+  --bg: #22252f;
+  --surface: #282c38;
+  --surface-2: #2f3341;
+  --surface-3: #3b404f;
+  --border: rgba(255, 255, 255, 0.05);
+  --text: #f4f6fa;
+  --muted: #8c92a3;
+  --accent: #2d7bff;
+  --on-accent: #ffffff;
+  --radius: 16px;
+}
+
+[data-theme='design1'] .app {
+  background: #22252f;
+}
+
+/* Icon-only side bar, a shade darker */
+[data-theme='design1'] .nav {
+  background: #1e2129;
+  border-right: none;
+  padding: 40px 6px;
+}
+
+[data-theme='design1'] .nav-item {
+  color: #9aa1b2;
+}
+
+[data-theme='design1'] .nav-item span {
+  display: none;
+}
+
+[data-theme='design1'] .nav-item.active {
+  background: none;
+  color: var(--accent);
+}
+
+[data-theme='design1'] .statusbar {
+  background: transparent;
+  border-bottom-color: transparent;
+}
+
+[data-theme='design1'] :is(.card, .panel, .tile, .gauge, .settings-menu, .settings-content) {
+  background: linear-gradient(180deg, #2a2e3a, #262a35);
+  border-color: rgba(255, 255, 255, 0.04);
+  border-radius: 22px;
+}
+
+[data-theme='design1'] .tile-icon {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: #fff;
+}
+
+[data-theme='design1'] .icon-btn {
+  background: #343947;
+  border-color: transparent;
+}
+
+[data-theme='design1'] .icon-btn.primary {
+  background: var(--accent);
+}
+
+[data-theme='design1'] .content {
+  padding: 4px 16px 14px;
+}
