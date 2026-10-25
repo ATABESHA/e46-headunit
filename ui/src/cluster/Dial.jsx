@@ -99,6 +99,8 @@ export function Dial({ value, min = 0, max, major, minor, labelDivisor = 1, labe
         )}
         {sub}
         <g ref={needleRef}>
+          {/* Wide, faint copy of the needle = glow without a blur filter (Premium style) */}
+          <path d={`M${cx - 14} ${cy + 30} L${cx - 9} ${cy - R + 8} L${cx + 9} ${cy - R + 8} L${cx + 14} ${cy + 30} Z`} className="needle-glow" />
           <path d={`M${cx - 5} ${cy + 26} L${cx - 2.5} ${cy - R + 16} L${cx + 2.5} ${cy - R + 16} L${cx + 5} ${cy + 26} Z`} className="needle" />
         </g>
         <circle cx={cx} cy={cy} r="64" className="dial-hub" />

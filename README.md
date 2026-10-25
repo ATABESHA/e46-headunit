@@ -64,7 +64,9 @@ cluster needs fast data from the car's CAN bus (a USB-CAN adapter) rather than t
 
 Settings → Display:
 - **Graphics: Low** - flat design, lightest. **High** - animated background, see-through
-  panels, shadows, screen transitions. **Ultra (stress test)** - everything at maximum:
+  panels, shadows, screen transitions. **Premium** - the Ultra look made the way real
+  clusters do it (low-resolution background, no live blur, glows as extra shapes, only
+  moving/fading layers), smooth on modest hardware. **Ultra (stress test)** - everything at maximum:
   full-resolution animated background, live blur behind every panel, glowing needles,
   light effects. Applies to both screens.
 - **Performance display** - FPS (60 = perfectly smooth), slowest frame, CPU and CPU

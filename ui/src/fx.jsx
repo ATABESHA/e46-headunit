@@ -6,6 +6,9 @@ import { usePref } from './prefs.js';
  * Graphics quality (Settings → Display → Graphics):
  *   low    flat design, lightest (for the car on small hardware)
  *   high   animated background, shadows, screen transitions
+ *   premium  the Ultra look made the way real car clusters do it: cheap tricks
+ *          (low-resolution background, no live blur, glows as extra shapes,
+ *          only moving/fading layers) - smooth on modest hardware
  *   ultra  STRESS TEST: everything at maximum - full-resolution animated
  *          background, live blur behind every panel, glowing needles,
  *          animated light effects. Use with the performance display.
@@ -13,6 +16,7 @@ import { usePref } from './prefs.js';
 export const FX_LEVELS = [
   ['low', 'Low'],
   ['high', 'High'],
+  ['premium', 'Premium'],
   ['ultra', 'Ultra (stress test)'],
 ];
 
@@ -81,7 +85,9 @@ function accentRgb() {
 
 // Per level: render resolution (× screen pixels), noise layers, frames per second.
 const SETTINGS = {
-  high: { scale: 0.5, octaves: 4, fps: 30 },
+  high: { scale: 0.34, octaves: 4, fps: 30 },
+  // The background is soft anyway: a third of the pixels looks the same.
+  premium: { scale: 0.34, octaves: 5, fps: 30 },
   ultra: { scale: 1.5, octaves: 9, fps: 60 },
 };
 
@@ -160,7 +166,8 @@ export function FxBackground({ level }) {
   }, [level]);
 
   if (!SETTINGS[level]) return null;
-  return <canvas ref={canvasRef} className="fx-background" aria-hidden="true" />;
+  // A new canvas per level: a canvas whose graphics context was closed can't be reused.
+  return <canvas key={level} ref={canvasRef} className="fx-background" aria-hidden="true" />;
 }
 
 // ---------- Performance display ----------
