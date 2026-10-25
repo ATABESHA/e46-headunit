@@ -1,8 +1,12 @@
-// Simple line icons (24x24), drawn with the current text color.
+// Line icons (24x24), drawn with the current text color.
 const paths = {
   home: 'M3 11.5 12 4l9 7.5M5.5 9.5V20h13V9.5M10 20v-5h4v5',
   media: 'M9 18V5l11-2v13M9 18a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm11-2a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z',
+  radio: 'M4 9h16v11H4V9ZM7 9l10-5M15.5 14.5a2 2 0 1 1-4 0 2 2 0 0 1 4 0ZM7 13h1.5M7 16h1.5',
   phone: 'M7 2.5h10a1.5 1.5 0 0 1 1.5 1.5v16a1.5 1.5 0 0 1-1.5 1.5H7A1.5 1.5 0 0 1 5.5 20V4A1.5 1.5 0 0 1 7 2.5ZM10.5 18.5h3',
+  call: 'M5 4h3.5l1.5 4.5-2 1.5a11 11 0 0 0 6 6l1.5-2L20 15.5V19a1.5 1.5 0 0 1-1.6 1.5A16 16 0 0 1 3.5 5.6 1.5 1.5 0 0 1 5 4Z',
+  endcall: 'M3 14.5c5-4.6 13-4.6 18 0l-2.2 2.6-3.6-1.4V13a9 9 0 0 0-6.4 0v2.7l-3.6 1.4L3 14.5Z',
+  link: 'M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1',
   car: 'M5 16.5h14M3.5 13l2-5.5A2 2 0 0 1 7.4 6h9.2a2 2 0 0 1 1.9 1.5l2 5.5v5H3.5v-5ZM3.5 13h17M6.5 18v2M17.5 18v2',
   wrench: 'M14.7 6.3a4 4 0 0 0 5 5L21 12.6 12.6 21 3 11.4 11.4 3l1.3 1.3a4 4 0 0 0 2 2Zm0 0L9 12',
   settings: 'M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm7.4-3a7.4 7.4 0 0 0-.1-1.2l2-1.6-2-3.4-2.4 1a7.4 7.4 0 0 0-2-1.2L14.5 3h-5l-.4 2.6a7.4 7.4 0 0 0-2 1.2l-2.4-1-2 3.4 2 1.6a7.4 7.4 0 0 0 0 2.4l-2 1.6 2 3.4 2.4-1a7.4 7.4 0 0 0 2 1.2l.4 2.6h5l.4-2.6a7.4 7.4 0 0 0 2-1.2l2.4 1 2-3.4-2-1.6c.1-.4.1-.8.1-1.2Z',
@@ -16,23 +20,53 @@ const paths = {
   mute: 'M4 9.5h3.5L12 5.5v13l-4.5-4H4v-5ZM16.5 9.5l5 5M21.5 9.5l-5 5',
   close: 'M6 6l12 12M18 6 6 18',
   camera: 'M3.5 7.5h4l1.5-2h6l1.5 2h4v11h-17v-11ZM12 16a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z',
+  play: 'M7 4.5v15l12-7.5-12-7.5Z',
+  pause: 'M7 5h3.5v14H7V5Zm6.5 0H17v14h-3.5V5Z',
+  next: 'M5 5l10 7-10 7V5Zm13 0v14',
+  prev: 'M19 5 9 12l10 7V5ZM6 5v14',
+  shuffle: 'M3 7h3.5c2 0 3.2 1 4.3 2.7l2.4 4.6C14.3 16 15.5 17 17.5 17H21M18 14l3 3-3 3M3 17h3.5c1.4 0 2.4-.5 3.2-1.4M14.3 8.4c.8-.9 1.8-1.4 3.2-1.4H21M18 4l3 3-3 3',
+  repeat: 'M17 2.5 20.5 6 17 9.5M3.5 11V9a3 3 0 0 1 3-3h14M7 21.5 3.5 18 7 14.5M20.5 13v2a3 3 0 0 1-3 3h-14',
+  star: 'M12 3.5l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.9l-5.2 2.7 1-5.8-4.3-4.1 5.9-.9L12 3.5Z',
+  search: 'M10.5 17a6.5 6.5 0 1 0 0-13 6.5 6.5 0 0 0 0 13ZM15.5 15.5 20 20',
+  back: 'M15 5l-7 7 7 7',
+  usb: 'M12 3v14M9 6l3-3 3 3M7 10v2.5l5 3M17 9v2.5l-5 3M12 17a2 2 0 1 0 0 4 2 2 0 0 0 0-4ZM6 8h2v2H6zM16 7.5a1 1 0 1 0 2 0 1 1 0 0 0-2 0',
+  laptop: 'M5 5.5h14v10H5v-10ZM2.5 18.5h19',
+  bluetooth: 'M7 7l10 10-5 4.5v-19L17 7 7 17',
+  folder: 'M3.5 6.5h6l2 2h9v10h-17v-12Z',
+  list: 'M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01',
+  dialpad: 'M6 4.5h.01M12 4.5h.01M18 4.5h.01M6 10h.01M12 10h.01M18 10h.01M6 15.5h.01M12 15.5h.01M18 15.5h.01M12 21h.01',
+  contacts: 'M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8ZM4.5 20.5a7.5 7.5 0 0 1 15 0',
+  history: 'M3.5 12a8.5 8.5 0 1 0 2.5-6M3 4v4h4M12 7.5V12l3 2',
+  mic: 'M12 3a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V6a3 3 0 0 0-3-3ZM5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21',
+  micoff: 'M15 10V6a3 3 0 0 0-5.8-1M9 9v3a3 3 0 0 0 4.9 2.3M5.5 11a6.5 6.5 0 0 0 10.6 5M18.5 11c0 .9-.2 1.8-.5 2.6M12 17.5V21M3 3l18 18',
+  backspace: 'M9 5.5h11v13H9l-6-6.5 6-6.5ZM12.5 9.5l5 5M17.5 9.5l-5 5',
+  trip: 'M12 21a8.5 8.5 0 1 0 0-17 8.5 8.5 0 0 0 0 17ZM12 12.5l4-4M12 4v2M4 12.5h2M18 12.5h2',
+  info: 'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18ZM12 11v5.5M12 7.5h.01',
+  display: 'M3.5 4.5h17v12h-17v-12ZM9 20h6M12 16.5V20',
+  update: 'M20 12a8 8 0 1 1-2.3-5.7M20 4v5h-5',
+  simulator: 'M5 4.5h14v15H5v-15ZM9 8.5h6M9 12h6M9 15.5h3',
+  plus: 'M12 5v14M5 12h14',
+  minus: 'M5 12h14',
+  check: 'M5 12.5l4.5 4.5L19 7.5',
+  warning: 'M12 3.5 21.5 20h-19L12 3.5ZM12 10v4.5M12 17.5h.01',
+  signal: 'M4 20v-3M9 20v-6M14 20V10M19 20V5',
 };
 
-export function Icon({ name, size = 24, className }) {
+export function Icon({ name, size = 24, className, filled = false }) {
   return (
     <svg
       className={className}
       width={size}
       height={size}
       viewBox="0 0 24 24"
-      fill="none"
+      fill={filled ? 'currentColor' : 'none'}
       stroke="currentColor"
       strokeWidth="1.8"
       strokeLinecap="round"
       strokeLinejoin="round"
       aria-hidden="true"
     >
-      <path d={paths[name]} />
+      <path d={paths[name] ?? paths.info} />
     </svg>
   );
 }

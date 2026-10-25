@@ -174,7 +174,9 @@ export default function updater(hub, options = {}) {
       }
 
       // Only a reinstall of components can undo the Electron permission step.
-      const needsTerminal = depsChanged && !(await sandboxOk()) ? 'cd ~/e46-headunit && bash scripts/update.sh' : null;
+      let needsTerminal = depsChanged && !(await sandboxOk()) ? 'cd ~/e46-headunit && bash scripts/update.sh' : null;
+      // New system settings (permissions, packages) can only be applied with the password.
+      if (files.includes('scripts/install.sh')) needsTerminal = 'cd ~/e46-headunit && bash scripts/install.sh';
       await readVersion();
       setState({
         status: STATUS.DONE,

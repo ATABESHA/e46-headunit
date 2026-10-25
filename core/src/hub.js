@@ -13,6 +13,29 @@ export class Hub extends EventEmitter {
     super();
     this.state = new Map();
     this.commandHandlers = new Map();
+    this.routes = new Map();
+    this.sockets = new Map();
+    this.noticeId = 0;
+  }
+
+  /**
+   * Serve HTTP under a path prefix, e.g. hub.route('/media/', (req, res, url) => ...).
+   * Used for things that are not small JSON values: music files, artwork.
+   */
+  route(prefix, handler) {
+    this.routes.set(prefix, handler);
+    return () => this.routes.delete(prefix);
+  }
+
+  /** Extra WebSocket endpoint for binary streams, e.g. hub.socket('/carplay', (ws) => ...). */
+  socket(path, handler) {
+    this.sockets.set(path, handler);
+    return () => this.sockets.delete(path);
+  }
+
+  /** Show a short message on the screen. level: "info" | "success" | "warning" | "error" */
+  notify(level, text) {
+    this.set('system.notice', { id: ++this.noticeId, level, text, at: Date.now() });
   }
 
   /** Update a topic. Listeners are only told when the value actually changed. */

@@ -13,9 +13,10 @@ AUTOSTART=0
 
 step() { echo; echo "=== $* ==="; }
 
-step "1/5 Installing system packages"
+step "1/6 Installing system packages"
 sudo apt update
-sudo apt install -y nodejs npm git
+# pipewire-bin + wireplumber: sound and volume. alsa-utils: microphone for calls.
+sudo apt install -y nodejs npm git pipewire-bin wireplumber alsa-utils
 
 NODE_MAJOR="$(node -p 'process.versions.node.split(".")[0]')"
 if (( NODE_MAJOR < 20 )); then
@@ -23,11 +24,11 @@ if (( NODE_MAJOR < 20 )); then
   exit 1
 fi
 
-step "2/5 Installing app dependencies"
+step "2/6 Installing app dependencies"
 cd "$REPO"
 npm ci --no-audit --no-fund || npm install --no-audit --no-fund
 
-step "3/5 Building the screen app"
+step "3/6 Building the screen app"
 npm run build
 
 # Electron downloads its program the first time it is asked for its location.
@@ -39,7 +40,7 @@ if [[ ! -x "$ELECTRON" ]]; then
   exit 1
 fi
 
-step "4/5 Allowing the screen app to run"
+step "4/6 Allowing the screen app to run"
 # Ubuntu blocks Electron's normal sandbox. Electron's documented fix is its
 # own sandbox helper, which must be owned by root. (npm resets this, so
 # update.sh does it again.)
@@ -48,7 +49,16 @@ SANDBOX="$(dirname "$ELECTRON")/chrome-sandbox"
 sudo chown root:root "$SANDBOX"
 sudo chmod 4755 "$SANDBOX"
 
-step "5/5 Setting up start-up"
+step "5/6 Allowing the CarPlay adapter (Carlinkit) on USB"
+sudo tee /etc/udev/rules.d/52-carlinkit.rules >/dev/null <<'RULES'
+# Carlinkit CarPlay / Android Auto adapters
+SUBSYSTEM=="usb", ATTRS{idVendor}=="1314", ATTRS{idProduct}=="1520", MODE="0666", TAG+="uaccess"
+SUBSYSTEM=="usb", ATTRS{idVendor}=="1314", ATTRS{idProduct}=="1521", MODE="0666", TAG+="uaccess"
+RULES
+sudo udevadm control --reload-rules
+sudo udevadm trigger --subsystem-match=usb
+
+step "6/6 Setting up start-up"
 # Core service: runs in the background and restarts by itself if it crashes.
 mkdir -p "$HOME/.config/systemd/user"
 cat > "$HOME/.config/systemd/user/e46-core.service" <<EOF

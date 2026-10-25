@@ -29,7 +29,7 @@ function CarDiagram({ doors }) {
   );
 }
 
-function AmbientCard() {
+export function AmbientCard() {
   const ambient = useTopic('ambient.state');
   const [brightness, setBrightness] = useState(ambient?.brightness ?? 60);
   const [error, setError] = useState(null);
@@ -87,38 +87,33 @@ function AmbientCard() {
   );
 }
 
-export default function Car() {
+export function CarStatus() {
   const doors = useTopic('vehicle.doors', {});
   const locked = useTopic('vehicle.locked', false);
   const lights = useTopic('vehicle.lights', {});
   const openDoors = Object.entries(doors).filter(([, open]) => open).length;
 
   return (
-    <div className="car-screen">
-      <div className="card car-card">
-        <CarDiagram doors={doors} />
-        <div className="car-info">
-          <div className={`big-status ${openDoors ? 'warn' : ''}`}>
-            {openDoors ? `${openDoors} open` : 'All closed'}
-          </div>
-          <div className="button-row">
-            <button className={`btn ${locked ? 'primary' : ''}`} onClick={() => command('body.lock', { locked: true }).catch(() => {})}>
-              <Icon name="lock" /> Lock
-            </button>
-            <button className={`btn ${!locked ? 'primary' : ''}`} onClick={() => command('body.lock', { locked: false }).catch(() => {})}>
-              <Icon name="unlock" /> Unlock
-            </button>
-          </div>
-          <div className="chips">
-            {LIGHTS.map(([key, label]) => (
-              <span key={key} className={`chip ${lights[key] ? 'on' : ''}`}>
-                {label}
-              </span>
-            ))}
-          </div>
+    <div className="card car-card">
+      <CarDiagram doors={doors} />
+      <div className="car-info">
+        <div className={`big-status ${openDoors ? 'warn' : ''}`}>{openDoors ? `${openDoors} open` : 'All closed'}</div>
+        <div className="button-row">
+          <button className={`btn ${locked ? 'primary' : ''}`} onClick={() => command('body.lock', { locked: true }).catch(() => {})}>
+            <Icon name="lock" /> Lock
+          </button>
+          <button className={`btn ${!locked ? 'primary' : ''}`} onClick={() => command('body.lock', { locked: false }).catch(() => {})}>
+            <Icon name="unlock" /> Unlock
+          </button>
+        </div>
+        <div className="chips">
+          {LIGHTS.map(([key, label]) => (
+            <span key={key} className={`chip ${lights[key] ? 'on' : ''}`}>
+              {label}
+            </span>
+          ))}
         </div>
       </div>
-      <AmbientCard />
     </div>
   );
 }

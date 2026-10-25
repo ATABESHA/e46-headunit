@@ -3,6 +3,8 @@ import { useSyncExternalStore } from 'react';
 // Connection from the screen app to the core service. Reconnects by itself,
 // so the screen keeps working if the core restarts.
 const HUB_URL = import.meta.env.VITE_HUB_URL ?? 'ws://127.0.0.1:8765';
+/** Base address for files from the core (music, artwork, CarPlay video). */
+export const HUB_HTTP = HUB_URL.replace(/^ws/, 'http');
 const COMMAND_TIMEOUT_MS = 8000;
 
 let ws = null;

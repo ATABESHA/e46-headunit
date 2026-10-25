@@ -1,6 +1,8 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import { useTopic } from '../hub.js';
 import { Icon } from '../icons.jsx';
+import { CameraView } from '../camera.jsx';
+import { usePref } from '../prefs.js';
 
 const SENSORS = [
   { key: 'rearLeft', from: -60, to: -30 },
@@ -58,7 +60,7 @@ function useParkingBeep(closest, enabled) {
 
 export default function Parking({ onClose }) {
   const distances = useTopic('parking.distances', {});
-  const [sound, setSound] = useState(true);
+  const [sound, setSound] = usePref('parking.beep', true);
   const values = SENSORS.map((s) => distances[s.key]).filter((v) => typeof v === 'number');
   const closest = values.length ? Math.min(...values) : null;
   useParkingBeep(closest, sound);
@@ -68,17 +70,13 @@ export default function Parking({ onClose }) {
 
   return (
     <div className="parking">
-      <div className="card camera">
-        <Icon name="camera" size={48} />
-        <p>Reverse camera</p>
-        <small>Appears here once a USB camera is connected</small>
-      </div>
+      <CameraView className="card camera" />
 
       <div className="card sensors">
         <div className="card-head">
           <h2>Rear sensors</h2>
           <div className="button-row">
-            <button className="icon-btn" onClick={() => setSound((s) => !s)} aria-label={sound ? 'Mute' : 'Unmute'}>
+            <button className="icon-btn" onClick={() => setSound(!sound)} aria-label={sound ? 'Mute' : 'Unmute'}>
               <Icon name={sound ? 'sound' : 'mute'} />
             </button>
             {onClose && (

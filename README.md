@@ -3,8 +3,22 @@
 A custom infotainment system for a BMW E46 (pre-2001, factory radio), running on
 a Dell XPS 15 9550 with Ubuntu.
 
-**Phase 1 (this version):** core service, touch screen app and a car simulator.
-Everything runs on the laptop without the car.
+The screen follows the layout and functions of the **SEAT Ibiza 2024 8.25" Media System**
+(1082 × 480), plus extras for the E46: parking sensors and camera, fault codes, ambient
+lighting, trip computer, styles and one-tap updates.
+
+| Screen | What it does |
+|---|---|
+| **Home** | 8 tiles with live info (station, song, phone, CarPlay, speed …) |
+| **Radio** | Internet radio: popular stations, search, 36 favourites |
+| **Media** | Music from the laptop's Music folder and USB sticks; songs, folders, artists, albums |
+| **Phone** | Contacts, recent calls, keypad, call screen (simulated - real calls via Full Link) |
+| **Full Link** | Apple CarPlay and Android Auto through a Carlinkit USB adapter, wired or wireless |
+| **Vehicle** | Driving data + trip computer, door/light status, parking (sensors + camera), fault codes, ambient lighting |
+| **Settings** | Sound (bass/mid/treble/balance), display (styles, screen size), camera, connections, software update, simulator |
+
+Always on top: volume display, incoming calls, short messages (USB stick connected …),
+and the parking view when reverse gear is engaged.
 
 ## Install on the laptop
 
@@ -43,7 +57,9 @@ Make your changes on GitHub (or upload them from the laptop with `git commit` + 
 
 ## Styles and logo
 
-Settings → Appearance: **E46 Classic**, **Modern iDrive** or **M Sport**.
+Settings → Display: **Media System** (Ibiza layout), **E46 Classic**, **Modern iDrive** or **M Sport**.
+The Media System colours are a starting point, not measured from a real Ibiza; send
+screenshots of the real screen to match them.
 
 - Your logo: replace [`ui/public/logo.svg`](ui/public/logo.svg) (SVG works best; for PNG,
   change `logo.svg` to `logo.png` in [`ui/src/App.jsx`](ui/src/App.jsx)).
@@ -68,8 +84,14 @@ You can also open and close doors there.
    Core service (core/)  ── holds all car data ("topics") and runs commands
          │
    Plugins (core/src/plugins/)
-     simulator.js   fake data (phase 1)
+     simulator.js   fake car data (until the car is connected)
      updater.js     software updates from GitHub
+     carplay.js     CarPlay / Android Auto (Carlinkit adapter)
+     media.js       music library: Music folder + USB sticks
+     radio.js       internet radio (radio-browser.info) + favourites
+     phone.js       phone (simulated for now)
+     audio.js       system volume + sound settings
+     trip.js        trip computer
      kbus.js        lights, locks, windows, reverse, wheel buttons   (later)
      diag.js        fault codes through the K+DCAN cable             (later)
      esp32.js       parking sensors, ambient LEDs                    (later)
@@ -90,6 +112,9 @@ You can also open and close doors there.
 | Separate program in any language | Connect to the WebSocket. See [`examples/my-sensor.py`](examples/my-sensor.py). |
 | New screen | Add a file in `ui/src/screens/` and one line in `SCREENS` in [`ui/src/App.jsx`](ui/src/App.jsx). |
 | Car-specific settings | Copy `core/config.json` to `core/config.local.json` and edit it (not saved to git). |
+| Other music folders | In `config.local.json`: `"media": { "enabled": true, "folders": ["/home/carpc/Music", "/home/carpc/Songs"] }` |
+
+Saved settings (favourites, sound, trip) live in `~/.local/share/e46-headunit/`, so updates never touch them.
 
 WebSocket messages (JSON):
 
@@ -120,12 +145,14 @@ npm test              # core tests
 ## Roadmap
 
 1. ✅ Core, screen app, simulator
-2. Media player, GPS, offline maps
-3. CarPlay / Android Auto (Carlinkit USB adapter + node-carplay)
-4. Fault codes for all modules (K+DCAN cable, BMW DS2 protocol)
-5. K-Bus: lights, locks, windows, reverse signal, steering wheel buttons
-6. ESP32: parking sensors, ambient LED lighting
-7. Installation in the car: screen, 12 V power, sleep/wake with ignition
+2. ✅ Ibiza Media System layout: radio, media, phone, vehicle, settings
+3. ✅ CarPlay / Android Auto (Carlinkit USB adapter + node-carplay), reverse camera
+4. Bluetooth: music and hands-free calls from the phone without CarPlay
+5. Fault codes for all modules (K+DCAN cable, BMW DS2 protocol)
+6. K-Bus: lights, locks, windows, reverse signal, steering wheel buttons
+7. ESP32: parking sensors, ambient LED lighting
+8. FM/DAB radio with an RTL-SDR USB receiver
+9. Installation in the car: screen, 12 V power, sleep/wake with ignition
 
 ## Hardware notes (E46, before 2001)
 

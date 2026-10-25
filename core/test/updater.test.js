@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { execFileSync } from 'node:child_process';
-import { mkdtempSync, writeFileSync, rmSync } from 'node:fs';
+import { mkdtempSync, mkdirSync, writeFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { Hub } from '../src/hub.js';
@@ -25,6 +25,7 @@ function setup() {
   execFileSync('git', ['clone', '-q', origin, laptop]);
 
   const publish = (file, content, message) => {
+    mkdirSync(path.dirname(path.join(dev, file)), { recursive: true });
     writeFileSync(path.join(dev, file), content);
     git(dev, 'add', '.');
     git(dev, 'commit', '-qm', message);
@@ -84,6 +85,21 @@ test('updater: explains a missing connection', async () => {
     const result = await hub.command('system.update.check');
     assert.equal(result.status, 'error');
     assert.ok(result.message.length > 0);
+  } finally {
+    plugin.stop();
+    env.cleanup();
+  }
+});
+
+test('updater: asks for Terminal when the install script changed', async () => {
+  const env = setup();
+  const { hub, plugin } = start(env.laptop);
+  try {
+    env.publish('scripts/install.sh', 'echo new permissions\n', 'New USB permissions');
+    await hub.command('system.update.check');
+    const result = await hub.command('system.update.apply');
+    assert.equal(result.status, 'done');
+    assert.match(result.needsTerminal, /bash scripts\/install\.sh/);
   } finally {
     plugin.stop();
     env.cleanup();

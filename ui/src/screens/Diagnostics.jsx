@@ -41,7 +41,7 @@ export default function Diagnostics() {
   return (
     <div className="diag">
       <div className="card-head">
-        <h1>Fault codes</h1>
+        <span className="muted">{codes.length ? `${codes.length} code(s) stored` : "All modules OK"}</span>
         <div className="button-row">
           <button className="btn primary" onClick={scan} disabled={scanning}>
             {scanning ? 'Scanning…' : 'Scan car'}

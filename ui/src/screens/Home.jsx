@@ -1,80 +1,75 @@
-import { command, useTopic } from '../hub.js';
+import { useTopic } from '../hub.js';
 import { Icon } from '../icons.jsx';
+import { usePlayer } from '../player.js';
 
-const RPM_MAX = 7000;
-const RPM_RED = 6500;
-
-function Gauge({ icon, label, value, unit, percent, warn }) {
+function Tile({ icon, label, detail, onClick, accent, badge }) {
   return (
-    <div className={`card tile ${warn ? 'tile-warn' : ''}`}>
-      <div className="tile-label">
-        <Icon name={icon} size={18} /> {label}
-      </div>
-      <div className="tile-value">
-        {value ?? '–'}
-        <small>{unit}</small>
-      </div>
-      {percent !== undefined && (
-        <div className="bar">
-          <div className="bar-fill" style={{ width: `${Math.max(0, Math.min(100, percent))}%` }} />
-        </div>
-      )}
-    </div>
+    <button className={`tile ${accent ? 'accent' : ''}`} onClick={onClick}>
+      <span className="tile-icon">
+        <Icon name={icon} size={34} />
+        {badge && <i className={`tile-badge ${badge}`} />}
+      </span>
+      <span className="tile-label">{label}</span>
+      <span className="tile-detail">{detail}</span>
+    </button>
   );
 }
 
 export default function Home({ onNavigate }) {
+  const player = usePlayer();
+  const phone = useTopic('phone.state');
+  const carplay = useTopic('carplay.state');
   const speed = useTopic('vehicle.speed');
-  const rpm = useTopic('vehicle.rpm', 0);
   const coolant = useTopic('vehicle.coolant');
-  const fuel = useTopic('vehicle.fuel');
-  const locked = useTopic('vehicle.locked', false);
+  const codes = useTopic('diag.codes', []);
   const ambient = useTopic('ambient.state');
+  const update = useTopic('system.update');
+  const sources = useTopic('media.sources', []);
+
+  const radioDetail = player.kind === 'radio' ? player.station?.name : 'Internet radio';
+  const mediaDetail =
+    player.kind === 'media' ? player.track?.title : `${sources.reduce((n, s) => n + s.tracks, 0)} songs`;
+  const carplayDetail = {
+    connected: carplay?.phone ?? 'Connected',
+    'waiting-phone': 'Connect your phone',
+    'no-adapter': 'No adapter',
+    starting: 'Starting…',
+    error: 'Adapter problem',
+  }[carplay?.status ?? 'starting'];
 
   return (
-    <div className="home">
-      <div className="card speed-card">
-        <div className="speed-value">{speed ?? '–'}</div>
-        <div className="speed-unit">km/h</div>
-        <div className="rpm">
-          <div className="rpm-track">
-            <div
-              className={`rpm-fill ${rpm >= RPM_RED ? 'red' : ''}`}
-              style={{ width: `${Math.min(100, (rpm / RPM_MAX) * 100)}%` }}
-            />
-            <div className="rpm-redline" style={{ left: `${(RPM_RED / RPM_MAX) * 100}%` }} />
-          </div>
-          <div className="rpm-label">{rpm.toLocaleString()} rpm</div>
-        </div>
-      </div>
-
-      <div className="home-side">
-        <Gauge icon="thermo" label="Coolant" value={coolant} unit="°C" percent={((coolant ?? 0) / 120) * 100} warn={coolant > 110} />
-        <Gauge icon="fuel" label="Fuel" value={fuel !== undefined ? Math.round(fuel) : undefined} unit="%" percent={fuel} warn={fuel < 12} />
-      </div>
-
-      <div className="quick-row">
-        <button className="card quick" onClick={() => onNavigate('carplay')}>
-          <Icon name="phone" size={30} />
-          <span>CarPlay</span>
-        </button>
-        <button className="card quick" onClick={() => onNavigate('media')}>
-          <Icon name="media" size={30} />
-          <span>Media</span>
-        </button>
-        <button
-          className={`card quick ${ambient?.on ? 'on' : ''}`}
-          style={ambient?.on ? { '--glow': ambient.color } : undefined}
-          onClick={() => command('ambient.set', { on: !ambient?.on }).catch(() => {})}
-        >
-          <Icon name="light" size={30} />
-          <span>Ambient {ambient?.on ? 'on' : 'off'}</span>
-        </button>
-        <button className="card quick" onClick={() => command('body.lock', { locked: !locked }).catch(() => {})}>
-          <Icon name={locked ? 'lock' : 'unlock'} size={30} />
-          <span>{locked ? 'Locked' : 'Unlocked'}</span>
-        </button>
-      </div>
+    <div className="home-grid">
+      <Tile icon="radio" label="Radio" detail={radioDetail} accent={player.kind === 'radio' && player.playing} onClick={() => onNavigate('radio')} />
+      <Tile icon="media" label="Media" detail={mediaDetail} accent={player.kind === 'media' && player.playing} onClick={() => onNavigate('media')} />
+      <Tile
+        icon="phone"
+        label="Phone"
+        detail={phone?.connection === 'connected' ? phone.device : 'No phone connected'}
+        badge={phone?.connection === 'connected' ? 'ok' : null}
+        onClick={() => onNavigate('phone')}
+      />
+      <Tile icon="link" label="Full Link" detail={carplayDetail} badge={carplay?.status === 'connected' ? 'ok' : null} onClick={() => onNavigate('fulllink')} />
+      <Tile
+        icon="car"
+        label="Vehicle"
+        detail={speed !== undefined ? `${speed} km/h · ${coolant ?? '–'}°C` : 'Driving data'}
+        badge={codes.length ? 'warn' : null}
+        onClick={() => onNavigate('vehicle', 'driving')}
+      />
+      <Tile icon="parking" label="Parking" detail="Sensors & camera" onClick={() => onNavigate('vehicle', 'parking')} />
+      <Tile
+        icon="light"
+        label="Ambient light"
+        detail={ambient ? (ambient.on ? `On · ${ambient.brightness}%` : 'Off') : '–'}
+        onClick={() => onNavigate('vehicle', 'comfort')}
+      />
+      <Tile
+        icon="settings"
+        label="Settings"
+        detail={update?.status === 'available' ? 'Update available' : 'Sound, display, system'}
+        badge={update?.status === 'available' ? 'accent' : null}
+        onClick={() => onNavigate('settings')}
+      />
     </div>
   );
 }
