@@ -49,6 +49,7 @@ export function useSmooth(target, draw, speed = 9) {
 export function Dial({ value, min = 0, max, major, minor, labelDivisor = 1, labelSize = 34, redFrom, unit, sub, children, className = '' }) {
   const needleRef = useRef(null);
   const glowRef = useRef(null);
+  const glowWideRef = useRef(null);
   const cx = 300;
   const cy = 300;
   const R = 270;
@@ -57,7 +58,9 @@ export function Dial({ value, min = 0, max, major, minor, labelDivisor = 1, labe
   useSmooth(value, (v) => {
     const a = angle(v);
     needleRef.current?.setAttribute('transform', `rotate(${a.toFixed(2)} ${cx} ${cy})`);
-    glowRef.current?.setAttribute('d', arcPath(cx, cy, R - 34, START, Math.max(START + 0.5, a)));
+    const d = arcPath(cx, cy, R - 34, START, Math.max(START + 0.5, a));
+    glowRef.current?.setAttribute('d', d);
+    glowWideRef.current?.setAttribute('d', d);
     needleRef.current?.classList.toggle('red', redFrom !== undefined && v >= redFrom);
   });
 
@@ -85,6 +88,7 @@ export function Dial({ value, min = 0, max, major, minor, labelDivisor = 1, labe
       <svg viewBox="0 0 600 600">
         <circle cx={cx} cy={cy} r={R + 18} className="dial-face" />
         <path d={arcPath(cx, cy, R - 34, START, START + SWEEP)} className="dial-track" />
+        <path ref={glowWideRef} className="dial-glow-wide" />
         <path ref={glowRef} className="dial-glow" />
         {redFrom !== undefined && <path d={arcPath(cx, cy, R + 6, angle(redFrom), START + SWEEP)} className="dial-red" />}
         {ticks}

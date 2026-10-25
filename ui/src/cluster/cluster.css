@@ -54,13 +54,22 @@
   stroke-linecap: round;
 }
 
+/* The glow is a wide, faint line under the bright one. (A blur filter looks
+   similar but has to be recalculated 60 times a second - too much CPU.) */
 .dial-glow {
   fill: none;
   stroke: var(--needle);
   stroke-width: 10;
   stroke-linecap: round;
-  opacity: 0.85;
-  filter: drop-shadow(0 0 8px var(--needle));
+  opacity: 0.9;
+}
+
+.dial-glow-wide {
+  fill: none;
+  stroke: var(--needle);
+  stroke-width: 30;
+  stroke-linecap: round;
+  opacity: 0.16;
 }
 
 .dial-red {
@@ -105,7 +114,6 @@
 
 .needle {
   fill: var(--needle);
-  filter: drop-shadow(0 0 6px var(--needle));
 }
 
 .needle.red,
