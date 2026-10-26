@@ -47,6 +47,9 @@ export function AmbientCard() {
 
   return (
     <div className="card ambient" style={{ '--glow': ambient.on ? ambient.color : 'transparent' }}>
+      <div className="ambient-photo" style={{ opacity: ambient.on ? 0.35 + (ambient.brightness / 100) * 0.65 : 0.25 }}>
+        <img src="./car/front-fog.jpg" alt="" draggable="false" />
+      </div>
       <div className="card-head">
         <h2>
           <Icon name="light" size={20} /> Ambient lighting
@@ -97,6 +100,7 @@ export function CarStatus() {
     <div className="card car-card">
       <CarDiagram doors={doors} />
       <div className="car-info">
+        <img className="status-photo" src="./car/side.jpg" alt="" draggable="false" />
         <div className={`big-status ${openDoors ? 'warn' : ''}`}>{openDoors ? `${openDoors} open` : 'All closed'}</div>
         <div className="button-row">
           <button className={`btn ${locked ? 'primary' : ''}`} onClick={() => command('body.lock', { locked: true }).catch(() => {})}>

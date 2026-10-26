@@ -5,34 +5,34 @@
  * new name, and add it to THEMES in src/theme.js.
  */
 
-/* ---------- Design1: slate grey and blue, car from above ---------- */
+/* ---------- Design1: graphite grey and blue, your car photo ---------- */
 
 [data-theme='design1'] {
-  --bg: #16181e;
-  --surface: #1c1f26;
-  --surface-2: #24272f;
-  --surface-3: #32353e;
+  --bg: #1c1c1e;
+  --surface: #232325;
+  --surface-2: #2c2c2f;
+  --surface-3: #38383c;
   --border: rgba(255, 255, 255, 0.05);
   --text: #ffffff;
-  --muted: #8e95a6;
+  --muted: #929298;
   --accent: #1f6fff;
   --on-accent: #ffffff;
   --radius: 16px;
 }
 
 [data-theme='design1'] .app {
-  background: #16181e;
+  background: #1c1c1e;
 }
 
 /* Icon-only side bar, a shade darker */
 [data-theme='design1'] .nav {
-  background: #111318;
+  background: #161617;
   border-right: none;
   padding: 40px 6px;
 }
 
 [data-theme='design1'] .nav-item {
-  color: #9ba2b3;
+  color: #a0a0a6;
 }
 
 [data-theme='design1'] .nav-label {
@@ -50,7 +50,7 @@
 }
 
 [data-theme='design1'] :is(.card, .panel, .tile, .gauge, .settings-menu, .settings-content) {
-  background: linear-gradient(180deg, #1f2229, #1a1d23);
+  background: linear-gradient(180deg, #262628, #1f1f21);
   border-color: rgba(255, 255, 255, 0.04);
   border-radius: 22px;
 }
@@ -66,7 +66,7 @@
 }
 
 [data-theme='design1'] .icon-btn {
-  background: #2a2d35;
+  background: #303033;
   border-color: transparent;
 }
 

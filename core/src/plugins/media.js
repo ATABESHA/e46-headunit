@@ -250,7 +250,7 @@ export default async function media(hub, options = {}) {
   ];
 
   publish();
-  const localReady = addSource('local', 'This laptop', 'local', localFolders.map((f) => path.resolve(f)));
+  const localReady = addSource('local', 'Music folder', 'local', localFolders.map((f) => path.resolve(f)));
   await checkUsb();
   const timer = setInterval(() => checkUsb().catch(() => {}), pollMs);
 

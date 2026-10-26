@@ -21,6 +21,7 @@ export function Splash() {
   if (!visible) return null;
   return (
     <div className={`splash ${leaving ? 'leaving' : ''}`}>
+      <img className="splash-car" src="./car/front-lights.jpg" alt="" />
       <img src="./logo.svg" alt="" onError={(e) => (e.currentTarget.style.display = 'none')} />
       <div className="splash-bar">
         <i />

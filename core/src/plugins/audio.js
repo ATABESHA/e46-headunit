@@ -6,17 +6,18 @@
  *
  * Topics:
  *   audio.volume  { level 0-100, muted, available }
- *   audio.sound   { bass, mid, treble, balance }   -10..+10 each
+ *   audio.sound   { bass, mid, treble, balance, fader }   -10..+10 each
  *
  * Commands:
  *   audio.setVolume { level }   audio.volumeStep { delta }   audio.mute { muted? }
- *   audio.setSound  { bass?, mid?, treble?, balance? }
+ *   audio.setSound  { bass?, mid?, treble?, balance?, fader? }
  */
 import { execFile } from 'node:child_process';
 import { openStore } from '../store.js';
 
 const SINK = '@DEFAULT_AUDIO_SINK@';
-const SOUND_KEYS = ['bass', 'mid', 'treble', 'balance'];
+// fader (front/rear) is saved now and used once a 4-channel sound card is fitted.
+const SOUND_KEYS = ['bass', 'mid', 'treble', 'balance', 'fader'];
 const clamp = (v, lo, hi) => Math.min(hi, Math.max(lo, v));
 
 function wpctl(args) {
@@ -27,10 +28,10 @@ function wpctl(args) {
 
 export default async function audio(hub, options = {}) {
   const run = options.wpctl ?? wpctl;
-  const store = await openStore('sound', { bass: 0, mid: 0, treble: 0, balance: 0 });
+  const store = await openStore('sound', { bass: 0, mid: 0, treble: 0, balance: 0, fader: 0 });
   let volume = { level: 50, muted: false, available: false };
 
-  hub.set('audio.sound', Object.fromEntries(SOUND_KEYS.map((k) => [k, store.get(k)])));
+  hub.set('audio.sound', Object.fromEntries(SOUND_KEYS.map((k) => [k, store.get(k) ?? 0])));
 
   async function read() {
     try {
@@ -75,7 +76,7 @@ export default async function audio(hub, options = {}) {
       for (const key of SOUND_KEYS) {
         if (value[key] !== undefined) await store.set(key, clamp(Math.round(Number(value[key]) || 0), -10, 10));
       }
-      const sound = Object.fromEntries(SOUND_KEYS.map((k) => [k, store.get(k)]));
+      const sound = Object.fromEntries(SOUND_KEYS.map((k) => [k, store.get(k) ?? 0]));
       hub.set('audio.sound', sound);
       return sound;
     }),

@@ -2,9 +2,11 @@ import { useEffect, useMemo, useState } from 'react';
 import { HUB_HTTP, useTopic } from '../hub.js';
 import { Icon } from '../icons.jsx';
 import { cycleRepeat, formatTime, next, playTracks, previous, seek, setShuffle, toggle, usePlayer } from '../player.js';
-import { Artwork, Tabs } from '../widgets.jsx';
+import { Artwork, Keyboard, Tabs } from '../widgets.jsx';
+import { songHue } from './home/common.jsx';
 
-const SOURCE_ICON = { local: 'laptop', usb: 'usb' };
+const SOURCE_ICON = { local: 'folder', usb: 'usb' };
+const art = (track) => (track ? `${HUB_HTTP}/media/art/${track.id}` : null);
 
 function useLibrary(sourceId, version) {
   const [tracks, setTracks] = useState([]);
@@ -25,12 +27,13 @@ function useLibrary(sourceId, version) {
 const sortTracks = (a, b) =>
   (a.folder || '').localeCompare(b.folder || '') || (a.trackNo ?? 999) - (b.trackNo ?? 999) || a.title.localeCompare(b.title);
 
-function TrackList({ tracks, current, onPlay }) {
-  if (!tracks.length) return <div className="empty-state">No songs here</div>;
+function TrackList({ tracks, current, onPlay, empty = 'No songs here' }) {
+  if (!tracks.length) return <div className="empty-state">{empty}</div>;
   return (
     <div className="list">
       {tracks.map((t, i) => (
-        <button key={t.id} className={`list-row ${current?.id === t.id ? 'active' : ''}`} onClick={() => onPlay(tracks, i)}>
+        <button key={`${t.id}-${i}`} className={`list-row track-row ${current?.id === t.id ? 'active' : ''}`} onClick={() => onPlay(tracks, i)}>
+          <Artwork src={art(t)} icon="media" className="thumb" />
           <span className="list-main">
             <strong>{t.title}</strong>
             <small>{[t.artist, t.album].filter(Boolean).join(' · ') || t.folder || 'Unknown artist'}</small>
@@ -52,7 +55,7 @@ function GroupList({ groups, onOpen, icon }) {
           <Icon name={icon} size={22} />
           <span className="list-main">
             <strong>{name}</strong>
-            <small>{items.length} songs</small>
+            <small>{items.length} song{items.length === 1 ? '' : 's'}</small>
           </span>
           <Icon name="next" size={16} />
         </button>
@@ -61,13 +64,89 @@ function GroupList({ groups, onOpen, icon }) {
   );
 }
 
-export default function Media() {
+/** Albums as a grid of covers. */
+function AlbumGrid({ groups, onOpen }) {
+  if (!groups.length) return <div className="empty-state">Nothing here</div>;
+  return (
+    <div className="album-grid">
+      {groups.map(([name, items]) => (
+        <button key={name} className="album" onClick={() => onOpen(name)}>
+          <Artwork src={art(items[0])} icon="media" className="cover" />
+          <strong>{name}</strong>
+          <small>{items[0].artist ?? `${items.length} song${items.length === 1 ? '' : 's'}`}</small>
+        </button>
+      ))}
+    </div>
+  );
+}
+
+/** Where the music comes from: a dropdown instead of a row of buttons. */
+function SourcePicker({ sources, sourceId, onPick, onNavigate }) {
+  const [open, setOpen] = useState(false);
+  const source = sources.find((s) => s.id === sourceId);
+  const pick = (id) => {
+    setOpen(false);
+    onPick(id);
+  };
+  return (
+    <div className="source-picker">
+      <button className={`source-button ${open ? 'open' : ''}`} onClick={() => setOpen(!open)}>
+        <Icon name={SOURCE_ICON[source?.type] ?? 'folder'} size={18} />
+        <span>
+          <small>Source</small>
+          <strong>{source?.name ?? 'No music found'}</strong>
+        </span>
+        <Icon name="chevron" size={16} className="chevron" />
+      </button>
+      {open && (
+        <>
+          <div className="menu-backdrop" onClick={() => setOpen(false)} />
+          <div className="source-menu">
+            {sources.map((s) => (
+              <button key={s.id} className={s.id === sourceId ? 'active' : ''} onClick={() => pick(s.id)}>
+                <Icon name={SOURCE_ICON[s.type] ?? 'folder'} size={20} />
+                <span>
+                  <strong>{s.name}</strong>
+                  <small>{s.scanning ? 'Reading…' : `${s.tracks} songs`}</small>
+                </span>
+                {s.id === sourceId && <Icon name="check" size={18} />}
+              </button>
+            ))}
+            <button
+              onClick={() => {
+                setOpen(false);
+                onNavigate?.('fulllink');
+              }}
+            >
+              <Icon name="link" size={20} />
+              <span>
+                <strong>Phone (Full Link)</strong>
+                <small>Music apps through CarPlay / Android Auto</small>
+              </span>
+            </button>
+            <button disabled>
+              <Icon name="bluetooth" size={20} />
+              <span>
+                <strong>Bluetooth audio</strong>
+                <small>Coming later</small>
+              </span>
+            </button>
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
+export default function Media({ onNavigate }) {
   const player = usePlayer();
   const sources = useTopic('media.sources', []);
   const carplayMedia = useTopic('carplay.media');
   const [sourceId, setSourceId] = useState('local');
   const [view, setView] = useState('songs');
   const [group, setGroup] = useState(null);
+  const [filter, setFilter] = useState('');
+  const [typing, setTyping] = useState(false);
 
   // When a USB stick is plugged in, switch to it; when removed, go back.
   useEffect(() => {
@@ -78,10 +157,15 @@ export default function Media() {
   const version = `${source?.tracks}:${source?.scanning}`;
   const tracks = useLibrary(sourceId, version);
   const sorted = useMemo(() => [...tracks].sort(sortTracks), [tracks]);
+  const found = useMemo(() => {
+    const f = filter.trim().toLowerCase();
+    if (!f) return sorted;
+    return sorted.filter((t) => [t.title, t.artist, t.album, t.folder].some((x) => x?.toLowerCase().includes(f)));
+  }, [sorted, filter]);
 
   const groupBy = (key, fallback) => {
     const map = new Map();
-    for (const t of sorted) {
+    for (const t of found) {
       const k = t[key] || fallback;
       if (!map.has(k)) map.set(k, []);
       map.get(k).push(t);
@@ -94,11 +178,20 @@ export default function Media() {
   const t = player.kind === 'media' ? player.track : null;
   const playing = player.kind === 'media' && player.playing;
   const progress = player.duration ? (player.position / player.duration) * 100 : 0;
+  const upNext = player.kind === 'media' ? player.queue.slice(player.index + 1) : [];
+
+  const shuffleAll = () => {
+    if (!found.length) return;
+    setShuffle(true);
+    playTracks(found, Math.floor(Math.random() * found.length));
+  };
 
   return (
-    <div className="split">
-      <section className="panel now-playing">
-        <Artwork src={t ? `${HUB_HTTP}/media/art/${t.id}` : null} icon="media" className="large" key={t?.id ?? 'none'} />
+    <div className="split media-screen">
+      <section className="panel now-playing media-now" style={{ '--song-hue': songHue(t?.title ?? '') }}>
+        <div className="media-cover">
+          <Artwork src={art(t)} icon="media" className="large" key={t?.id ?? 'none'} />
+        </div>
         <div className="np-text">
           <strong className="np-title">{t?.title ?? 'Nothing playing'}</strong>
           <span className="np-sub">{t ? [t.artist, t.album].filter(Boolean).join(' · ') || 'Unknown artist' : player.error ?? 'Choose a song on the right'}</span>
@@ -115,7 +208,7 @@ export default function Media() {
         </div>
         <div className="progress-times">
           <small>{formatTime(player.position)}</small>
-          <small>{formatTime(player.duration)}</small>
+          <small>-{formatTime(Math.max(0, player.duration - player.position))}</small>
         </div>
         <div className="controls">
           <button className={`icon-btn ${player.shuffle ? 'on' : ''}`} onClick={() => setShuffle(!player.shuffle)} aria-label="Shuffle">
@@ -124,7 +217,7 @@ export default function Media() {
           <button className="icon-btn" onClick={previous} disabled={!t} aria-label="Previous">
             <Icon name="prev" />
           </button>
-          <button className="icon-btn big primary" onClick={() => (t ? toggle() : sorted.length && playTracks(sorted, 0))} disabled={!t && !sorted.length} aria-label={playing ? 'Pause' : 'Play'}>
+          <button className="icon-btn big primary" onClick={() => (t ? toggle() : found.length && playTracks(found, 0))} disabled={!t && !found.length} aria-label={playing ? 'Pause' : 'Play'}>
             <Icon name={playing ? 'pause' : 'play'} filled />
           </button>
           <button className="icon-btn" onClick={() => next()} disabled={!t} aria-label="Next">
@@ -144,51 +237,80 @@ export default function Media() {
       </section>
 
       <section className="panel browse">
-        <div className="sources">
-          {sources.map((s) => (
-            <button
-              key={s.id}
-              className={`source ${s.id === sourceId ? 'active' : ''}`}
-              onClick={() => {
-                setSourceId(s.id);
-                setGroup(null);
-              }}
-            >
-              <Icon name={SOURCE_ICON[s.type] ?? 'folder'} size={18} />
-              {s.name}
-              <small>{s.scanning ? 'reading…' : s.tracks}</small>
-            </button>
-          ))}
-          <button className="source disabled" title="Coming later: Bluetooth audio from the phone">
-            <Icon name="bluetooth" size={18} />
-            Bluetooth
-            <small>later</small>
+        <div className="media-toolbar">
+          <SourcePicker
+            sources={sources}
+            sourceId={sourceId}
+            onNavigate={onNavigate}
+            onPick={(id) => {
+              setSourceId(id);
+              setGroup(null);
+            }}
+          />
+          <button className={`search-field compact ${filter ? 'filled' : ''}`} onClick={() => setTyping(!typing)}>
+            <Icon name="search" size={16} />
+            <span>{filter || <em>Search songs</em>}</span>
+            {filter && (
+              <small
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setFilter('');
+                }}
+              >
+                <Icon name="close" size={14} />
+              </small>
+            )}
+          </button>
+          <button className="btn small" onClick={shuffleAll} disabled={!found.length}>
+            <Icon name="shuffle" size={16} /> Shuffle all
           </button>
         </div>
-        <Tabs
-          value={view}
-          onChange={(v) => {
-            setView(v);
-            setGroup(null);
-          }}
-          tabs={[
-            ['songs', 'Songs', 'list'],
-            ['folders', 'Folders', 'folder'],
-            ['artists', 'Artists', 'contacts'],
-            ['albums', 'Albums', 'media'],
-          ]}
-        />
-        {view === 'songs' && <TrackList tracks={sorted} current={t} onPlay={playTracks} />}
-        {view !== 'songs' && !group && <GroupList groups={groups} onOpen={setGroup} icon={view === 'folders' ? 'folder' : view === 'artists' ? 'contacts' : 'media'} />}
-        {view !== 'songs' && group && (
+
+        {typing ? (
+          <Keyboard value={filter} onChange={setFilter} onDone={() => setTyping(false)} doneLabel="Done" />
+        ) : (
           <>
-            <button className="back-row" onClick={() => setGroup(null)}>
-              <Icon name="back" size={18} /> {group}
-            </button>
-            <TrackList tracks={groupTracks} current={t} onPlay={playTracks} />
+            <Tabs
+              value={view}
+              onChange={(v) => {
+                setView(v);
+                setGroup(null);
+              }}
+              tabs={[
+                ['songs', `Songs (${found.length})`, 'list'],
+                ['albums', 'Albums', 'media'],
+                ['artists', 'Artists', 'contacts'],
+                ['folders', 'Folders', 'folder'],
+                ['queue', 'Up next', 'history'],
+              ]}
+            />
+            {view === 'songs' && <TrackList tracks={found} current={t} onPlay={playTracks} empty={filter ? `No songs match "${filter}"` : 'No songs here'} />}
+            {view === 'queue' && (
+              <TrackList
+                tracks={upNext}
+                current={null}
+                onPlay={(_, i) => playTracks(player.queue, player.index + 1 + i)}
+                empty={t ? 'This was the last song in the list' : 'Play something to see what comes next'}
+              />
+            )}
+            {view === 'albums' && !group && <AlbumGrid groups={groups} onOpen={setGroup} />}
+            {(view === 'artists' || view === 'folders') && !group && <GroupList groups={groups} onOpen={setGroup} icon={view === 'folders' ? 'folder' : 'contacts'} />}
+            {view !== 'songs' && view !== 'queue' && group && (
+              <>
+                <div className="group-head">
+                  <button className="back-row" onClick={() => setGroup(null)}>
+                    <Icon name="back" size={18} /> {group}
+                  </button>
+                  <button className="btn small primary" onClick={() => playTracks(groupTracks, 0)} disabled={!groupTracks.length}>
+                    <Icon name="play" size={14} filled /> Play all
+                  </button>
+                </div>
+                <TrackList tracks={groupTracks} current={t} onPlay={playTracks} />
+              </>
+            )}
+            {!sources.length && <div className="empty-state">No music found. Put songs in the Music folder or plug in a USB stick.</div>}
           </>
         )}
-        {!sources.length && <div className="empty-state">No music found. Put songs in the laptop's Music folder or plug in a USB stick.</div>}
       </section>
     </div>
   );

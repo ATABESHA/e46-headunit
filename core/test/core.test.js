@@ -170,3 +170,32 @@ test('server: serves the built screen app for a web browser', async () => {
     await server.close();
   }
 });
+
+test('simulator: tyre pressures, puncture warning, reset and inflate', async () => {
+  const hub = new Hub();
+  const sim = simulator(hub, { tickMs: 50, leakPerS: 1 });
+  try {
+    await new Promise((r) => setTimeout(r, 120));
+    const start = hub.get('vehicle.tires');
+    assert.ok(start.fl.pressure > 2 && start.rl.pressure > 2.3);
+    assert.equal(start.fl.low, false);
+    await new Promise((r) => setTimeout(r, 2500)); // past the start-up bulb check
+    assert.equal(hub.get('vehicle.lamps').tirePressure, false);
+
+    await hub.command('sim.tireLeak', { wheel: 'fl', on: true });
+    await new Promise((r) => setTimeout(r, 900));
+    assert.equal(hub.get('vehicle.tires').fl.low, true, 'punctured tyre is low');
+    assert.equal(hub.get('vehicle.lamps').tirePressure, true, 'warning light on');
+
+    await hub.command('sim.tireInflate');
+    await new Promise((r) => setTimeout(r, 120));
+    assert.equal(hub.get('vehicle.tires').fl.low, false);
+    assert.equal(hub.get('vehicle.lamps').tirePressure, false);
+
+    const ref = await hub.command('tires.reset');
+    assert.ok(ref.fl > 2);
+    await assert.rejects(hub.command('sim.tireLeak', { wheel: 'xx' }), /Wheel must be/);
+  } finally {
+    sim.stop();
+  }
+});

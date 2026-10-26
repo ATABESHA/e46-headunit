@@ -24,6 +24,7 @@
  *   diag.codes            [{ module, code, text, status }]
  *   diag.scanning         true while a scan runs
  *   sim.scenario          "drive" | "park" | "idle"
+ *   vehicle.tires         { fl, fr, rl, rr: { pressure bar, temp °C, low } , reference: {fl..rr} }
  *
  * Commands it handles:
  *   sim.scenario  "drive" | "park" | "idle"
@@ -31,6 +32,9 @@
  *   sim.lamp      { name: "oil", on: true }   force a light on (testing)
  *   sim.lampsAll  { on: true }                 every light on / back to normal
  *   sim.ignition  "off" | "acc" | "run"        turn the key
+ *   tires.reset   save the current pressures as correct (after inflating, like the E46's RDC reset)
+ *   sim.tireLeak  { wheel: "fl", on: true }      slow puncture on one wheel (testing)
+ *   sim.tireInflate                            fill all tyres back up (testing)
  *   body.lock     { locked: true }
  *   ambient.set   { on?, color?, brightness? }
  *   diag.scan
@@ -47,6 +51,10 @@ export const WARNING_LAMPS = [
 export const LAMPS = [...INDICATOR_LAMPS, ...WARNING_LAMPS];
 const BULB_CHECK_S = 2.5; // all warning lights are on briefly at start, like a real cluster
 const DOORS = ['fl', 'fr', 'rl', 'rr', 'trunk'];
+const WHEELS = ['fl', 'fr', 'rl', 'rr'];
+// E46 330i on 17": about 2.2 bar front, 2.5 bar rear (cold).
+const TIRE_SPEC = { fl: 2.2, fr: 2.2, rl: 2.5, rr: 2.5 };
+const TIRE_LOW = 0.8; // warn when a tyre is 20 % below its saved pressure
 
 // Clearly marked as simulated; real codes come from the car once the
 // diagnostics cable is connected.
@@ -61,6 +69,7 @@ const round = (v, digits = 0) => { const f = 10 ** digits; return Math.round(v *
 
 export default function simulator(hub, options = {}) {
   const tickMs = options.tickMs ?? 100;
+  const leakPerS = options.leakPerS ?? 0.04; // bar per second from a punctured tyre
   let scenario = SCENARIOS.includes(options.scenario) ? options.scenario : 'drive';
   let t = 0;
   let coolant = 20;
@@ -72,6 +81,10 @@ export default function simulator(hub, options = {}) {
   let scanTimer = null;
   let odometer = options.odometer ?? 187_432;
   const forcedLamps = {};
+  const tires = { ...TIRE_SPEC };
+  let tireRef = { ...TIRE_SPEC };
+  const leaking = {};
+  let tireTemp = 18;
 
   let ignition = 'run';
   hub.set('vehicle.ignition', ignition);
@@ -109,6 +122,18 @@ export default function simulator(hub, options = {}) {
 
     coolant = Math.min(90, coolant + 0.08);
 
+    // Tyres warm up while driving (a little more pressure), and a punctured one loses air.
+    tireTemp += ((speed > 5 ? 40 : 18) - tireTemp) * 0.0015;
+    for (const w of WHEELS) if (leaking[w]) tires[w] = Math.max(0.6, tires[w] - (leakPerS * tickMs) / 1000);
+    const tireView = Object.fromEntries(
+      WHEELS.map((w) => {
+        const pressure = round(tires[w] * (1 + (tireTemp - 18) * 0.0035), 2);
+        return [w, { pressure, temp: Math.round(tireTemp), low: pressure < tireRef[w] * TIRE_LOW }];
+      }),
+    );
+    hub.set('vehicle.tires', { ...tireView, reference: { ...tireRef } });
+    const tireLow = WHEELS.some((w) => tireView[w].low);
+
     hub.set('vehicle.speed', round(Math.max(0, speed)));
     hub.set('vehicle.rpm', Math.round(rpm / 10) * 10);
     hub.set('vehicle.coolant', round(coolant));
@@ -139,6 +164,7 @@ export default function simulator(hub, options = {}) {
       coolantTemp: coolant > 112,
       lowFuel: fuel < 12,
       doorOpen: Object.values(doors).some(Boolean),
+      tirePressure: tireLow,
     };
     hub.set(
       'vehicle.lamps',
@@ -199,6 +225,25 @@ export default function simulator(hub, options = {}) {
       for (const name of LAMPS) forcedLamps[name] = Boolean(on);
       hub.set('sim.lampsForced', { ...forcedLamps });
       return Boolean(on);
+    }),
+
+    hub.onCommand('tires.reset', () => {
+      // Like the real car: the pressures right now become the "correct" ones.
+      tireRef = Object.fromEntries(WHEELS.map((w) => [w, round(tires[w], 2)]));
+      hub.notify('success', 'Tyre pressures saved');
+      return tireRef;
+    }),
+
+    hub.onCommand('sim.tireLeak', ({ wheel, on = true } = {}) => {
+      if (!WHEELS.includes(wheel)) throw new Error(`Wheel must be one of: ${WHEELS.join(', ')}`);
+      leaking[wheel] = Boolean(on);
+    }),
+
+    hub.onCommand('sim.tireInflate', () => {
+      for (const w of WHEELS) {
+        leaking[w] = false;
+        tires[w] = TIRE_SPEC[w];
+      }
     }),
 
     hub.onCommand('body.lock', ({ locked } = {}) => {

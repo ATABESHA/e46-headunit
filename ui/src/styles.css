@@ -2132,7 +2132,7 @@ code.block {
   border: 1px solid rgba(255, 255, 255, 0.055);
   position: relative;
   border-radius: 24px;
-  background: linear-gradient(180deg, #1f2229, #1a1c22);
+  background: linear-gradient(180deg, #262628, #202022);
   min-height: 0;
   color: var(--text);
 }
@@ -2148,8 +2148,8 @@ code.block {
    it goes from the photo's studio grey into the slate of the card. */
 .d1-car {
   background:
-    radial-gradient(120% 190px at 50% 90px, #343437 0%, #26272b 55%, transparent 100%),
-    linear-gradient(180deg, #232428 0%, #1d1f25 42%, #1a1c22 100%);
+    radial-gradient(120% 190px at 50% 90px, #39393b 0%, #2a2a2c 55%, transparent 100%),
+    linear-gradient(180deg, #262627 0%, #232325 42%, #202022 100%);
 }
 
 .d1-face {
@@ -2203,7 +2203,7 @@ code.block {
   margin-top: auto;
   padding: 11px 14px;
   border-radius: 14px;
-  background: #22252d;
+  background: #29292c;
   border: 1px solid rgba(255, 255, 255, 0.06);
   font-size: 14px;
   text-align: left;
@@ -2254,7 +2254,7 @@ code.block {
   align-items: center;
   padding: 9px 10px;
   border-radius: 14px;
-  background: #24272f;
+  background: #2c2c2f;
   border: 1px solid rgba(255, 255, 255, 0.04);
   text-align: left;
 }
@@ -2271,8 +2271,8 @@ code.block {
 }
 
 .d1-tile-icon.off {
-  background: #30333c;
-  color: #a3a9b8;
+  background: #36363a;
+  color: #a8a8ae;
 }
 
 .d1-tile-icon.alert {
@@ -2308,7 +2308,7 @@ code.block {
 /* Map card */
 
 .d1-map {
-  --map-bg: #1a1d23;
+  --map-bg: #1f1f21;
   background: var(--map-bg);
 }
 
@@ -2353,8 +2353,8 @@ code.block {
   display: grid;
   place-items: center;
   border-radius: 50%;
-  background: #2a2d35;
-  color: #a1a8b8;
+  background: #303033;
+  color: #a6a6ac;
 }
 
 .d1-bottom {
@@ -2363,12 +2363,12 @@ code.block {
   right: 16px;
   bottom: 16px;
   display: grid;
-  grid-template-columns: 1fr 196px;
+  grid-template-columns: 1fr 1fr;
   gap: 12px;
 }
 
 .d1-bottom > .d1-card {
-  background: #21242b;
+  background: #28282b;
   border: 1px solid rgba(255, 255, 255, 0.05);
   border-radius: 16px;
   box-shadow: 0 14px 30px -18px rgba(0, 0, 0, 0.8);
@@ -2390,7 +2390,7 @@ code.block {
   width: 42px;
   height: 42px;
   border-radius: 12px;
-  background: #2f323b;
+  background: #353538;
 }
 
 .d1-trip-head span:last-child {
@@ -2480,7 +2480,7 @@ code.block {
   display: grid;
   place-items: center;
   border-radius: 50%;
-  background: #32353e;
+  background: #38383c;
 }
 
 .d1-slider {
@@ -2488,7 +2488,7 @@ code.block {
   height: 3px;
   margin: 8px 6px 6px;
   border-radius: 2px;
-  background: #3d414b;
+  background: #444448;
 }
 
 .d1-slider i {
@@ -2506,7 +2506,7 @@ code.block {
   margin: -7px 0 0 -7px;
   border-radius: 50%;
   background: #fff;
-  border: 2px solid #21242b;
+  border: 2px solid #28282b;
 }
 
 .d1-times {
@@ -2539,4 +2539,625 @@ code.block {
 .d1-music.empty svg {
   margin-top: 8px;
   color: var(--muted);
+}
+
+/* ---------- Start-up screen with the car ---------- */
+
+.splash {
+  justify-content: flex-end;
+  padding-bottom: 34px;
+}
+
+.splash > :not(.splash-car) {
+  position: relative;
+}
+
+.splash img.splash-car {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 45%;
+  animation: splash-car 1.4s ease-out both;
+}
+
+@keyframes splash-car {
+  from {
+    opacity: 0;
+    transform: scale(1.04);
+  }
+}
+
+/* ---------- Car photos on the vehicle pages ---------- */
+
+.status-photo {
+  width: 100%;
+  max-width: 420px;
+  -webkit-mask-image: radial-gradient(56% 60% at 50% 50%, #000 70%, transparent 100%);
+  mask-image: radial-gradient(56% 60% at 50% 50%, #000 70%, transparent 100%);
+}
+
+.ambient {
+  position: relative;
+  overflow: hidden;
+}
+
+.ambient > :not(.ambient-photo) {
+  position: relative;
+}
+
+.ambient-photo {
+  position: absolute;
+  inset: 0 0 0 auto;
+  width: 46%;
+  pointer-events: none;
+  transition: opacity 0.3s;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 45%);
+  mask-image: linear-gradient(90deg, transparent, #000 45%);
+}
+
+.ambient-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 60%;
+}
+
+/* ---------- Radio: station finder ---------- */
+
+.station-search {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.search-row {
+  display: flex;
+  gap: 8px;
+  flex: none;
+}
+
+.search-field.focus {
+  box-shadow: inset 0 0 0 2px var(--accent);
+}
+
+.chips.scroll {
+  flex: none;
+  flex-wrap: nowrap;
+  align-items: center;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.chips.scroll > svg {
+  flex: none;
+  color: var(--muted);
+}
+
+.chips.scroll .chip {
+  flex: none;
+  text-transform: capitalize;
+}
+
+.station-search .chip.on,
+.sound-body .chip.on {
+  background: var(--accent);
+  color: var(--on-accent);
+}
+
+/* ---------- Media ---------- */
+
+.media-now {
+  position: relative;
+  overflow: hidden;
+}
+
+.media-now::before {
+  content: '';
+  position: absolute;
+  inset: -20% -20% 40%;
+  background: radial-gradient(closest-side, hsl(var(--song-hue) 55% 45% / 0.28), transparent);
+  pointer-events: none;
+}
+
+.media-now > * {
+  position: relative;
+}
+
+.media-cover .artwork.large {
+  box-shadow: 0 18px 34px -16px rgba(0, 0, 0, 0.9);
+}
+
+.media-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+  flex: none;
+}
+
+.source-picker {
+  position: relative;
+  flex: none;
+}
+
+.source-button {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 42px;
+  padding: 0 12px;
+  border-radius: 12px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  text-align: left;
+}
+
+.source-button span {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.15;
+}
+
+.source-button small {
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.source-button strong {
+  font-size: 14px;
+  max-width: 150px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.source-button > svg:first-child {
+  color: var(--accent);
+}
+
+.source-button .chevron {
+  color: var(--muted);
+  transition: transform 0.15s;
+}
+
+.source-button.open .chevron {
+  transform: rotate(180deg);
+}
+
+.menu-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+}
+
+.source-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  z-index: 21;
+  width: 290px;
+  display: flex;
+  flex-direction: column;
+  padding: 6px;
+  border-radius: 16px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.8);
+}
+
+.source-menu button {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 50px;
+  padding: 0 10px;
+  border-radius: 10px;
+  text-align: left;
+}
+
+.source-menu button span {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.source-menu button small {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.source-menu button.active {
+  background: var(--surface-3);
+}
+
+.source-menu button.active > svg {
+  color: var(--accent);
+}
+
+.search-field.compact {
+  flex: 1;
+  min-width: 0;
+  min-height: 42px;
+}
+
+.search-field.compact span {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.search-field.compact small {
+  display: grid;
+  place-items: center;
+  color: var(--muted);
+}
+
+.media-toolbar .btn.small {
+  min-height: 42px;
+  white-space: nowrap;
+}
+
+.track-row .artwork.thumb {
+  width: 38px;
+  height: 38px;
+  border-radius: 8px;
+}
+
+.artwork.thumb svg {
+  width: 18px;
+  height: 18px;
+}
+
+.album-grid {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(118px, 1fr));
+  align-content: start;
+  gap: 12px;
+  padding: 2px;
+}
+
+.album {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+  text-align: left;
+}
+
+.album .artwork.cover {
+  width: 100%;
+  aspect-ratio: 1;
+  height: auto;
+  border-radius: 12px;
+}
+
+.album strong,
+.album small {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.album strong {
+  font-size: 13px;
+}
+
+.album small {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.group-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  flex: none;
+}
+
+/* ---------- Settings → Sound: the car from above + mixer ---------- */
+
+.sound-body {
+  display: grid;
+  grid-template-columns: 210px 1fr;
+  gap: 18px;
+  align-items: stretch;
+}
+
+.sound-stage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  min-height: 0;
+}
+
+.sound-car {
+  position: relative;
+  height: 330px;
+  aspect-ratio: 360 / 812;
+  touch-action: none;
+  cursor: crosshair;
+}
+
+.sound-car img {
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  -webkit-mask-image: radial-gradient(62% 56% at 50% 50%, #000 75%, transparent 100%);
+  mask-image: radial-gradient(62% 56% at 50% 50%, #000 75%, transparent 100%);
+}
+
+.sound-zone {
+  position: absolute;
+  border-radius: 14px;
+  border: 1px dashed rgba(255, 255, 255, 0.18);
+}
+
+.speaker {
+  position: absolute;
+  width: 0;
+  height: 0;
+}
+
+.speaker::before,
+.speaker i {
+  content: '';
+  position: absolute;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+}
+
+/* The sound waves: bigger and brighter on the speakers that play louder */
+.speaker::before {
+  width: calc(22px + 34px * var(--gain));
+  height: calc(22px + 34px * var(--gain));
+  background: radial-gradient(closest-side, color-mix(in srgb, var(--accent) 70%, transparent), transparent);
+  opacity: calc(0.2 + 0.8 * var(--gain));
+  transition: all 0.15s;
+}
+
+.speaker i {
+  width: 14px;
+  height: 14px;
+  background: #0d0d0e;
+  border: 3px solid color-mix(in srgb, var(--accent) calc(30% + 70% * var(--gain)), #555);
+}
+
+.sound-focus {
+  position: absolute;
+  width: 26px;
+  height: 26px;
+  margin: -13px 0 0 -13px;
+  border-radius: 50%;
+  background: #fff;
+  border: 5px solid var(--accent);
+  box-shadow:
+    0 0 0 6px color-mix(in srgb, var(--accent) 30%, transparent),
+    0 4px 12px rgba(0, 0, 0, 0.6);
+  pointer-events: none;
+}
+
+.sound-readout {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.sound-readout span {
+  display: flex;
+  flex-direction: column;
+  min-width: 56px;
+}
+
+.sound-readout small {
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--muted);
+}
+
+.mixer {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+}
+
+.mixer-sliders {
+  display: flex;
+  justify-content: space-around;
+  gap: 8px;
+  padding: 14px 10px 10px;
+  border-radius: 18px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+}
+
+.mixer-gap {
+  width: 1px;
+  background: var(--border);
+}
+
+.mixer-slider {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+}
+
+.mixer-slider b {
+  min-width: 36px;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+.mixer-slider span {
+  color: var(--muted);
+}
+
+.mixer-slider input {
+  writing-mode: vertical-lr;
+  direction: rtl;
+  width: 34px;
+  height: 190px;
+  accent-color: var(--accent);
+}
+
+/* ---------- Vehicle → Wheels ---------- */
+
+.wheels {
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  gap: 12px;
+  min-height: 0;
+}
+
+.wheels-status {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.wheels-status h2 {
+  font-size: 20px;
+  margin: 0;
+}
+
+.wheels-icon {
+  width: 46px;
+  height: 46px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--good) 20%, transparent);
+  color: var(--good);
+}
+
+.wheels-status.low {
+  border-color: var(--bad);
+}
+
+.wheels-status.low .wheels-icon {
+  background: color-mix(in srgb, var(--bad) 22%, transparent);
+  color: var(--bad);
+}
+
+.wheels-spec span {
+  display: flex;
+  flex-direction: column;
+  font-size: 14px;
+}
+
+.wheels-spec small {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.wheels-status .btn {
+  margin-top: auto;
+}
+
+.wheels-car {
+  display: flex;
+  justify-content: center;
+  align-items: stretch;
+  gap: 14px;
+  min-height: 0;
+  border-radius: var(--radius);
+  background: radial-gradient(34% 100% at 50% 50%, #3b3b3e, #2a2a2c 60%, #1f1f21 100%);
+}
+
+.wheels-col {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 26px 0;
+}
+
+.wheels-photo {
+  position: relative;
+  height: 100%;
+  aspect-ratio: 300 / 656;
+}
+
+.wheels-photo img {
+  width: 100%;
+  height: 100%;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 22%, #000 78%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 22%, #000 78%, transparent);
+}
+
+.wheel-spot {
+  position: absolute;
+  width: 60px;
+  height: 60px;
+  margin: -30px 0 0 -30px;
+  border-radius: 50%;
+  opacity: 0;
+  background: radial-gradient(closest-side, rgba(255, 59, 48, 0.85), transparent);
+  transition: opacity 0.3s;
+}
+
+.wheel-spot.low {
+  opacity: 1;
+  animation: blink 1.2s infinite;
+}
+
+.wheel-spot.fl { left: 10%; top: 18%; }
+.wheel-spot.fr { left: 90%; top: 18%; }
+.wheel-spot.rl { left: 10%; top: 78%; }
+.wheel-spot.rr { left: 90%; top: 78%; }
+
+.tire-badge {
+  width: 150px;
+  display: flex;
+  flex-direction: column;
+  padding: 10px 14px;
+  border-radius: 14px;
+  background: rgba(20, 20, 22, 0.85);
+  border: 1px solid var(--border);
+}
+
+.tire-badge small {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.tire-badge strong {
+  font-size: 30px;
+  font-weight: 500;
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+}
+
+.tire-badge em {
+  font-size: 15px;
+}
+
+.tire-badge span {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.tire-badge.low {
+  border-color: var(--bad);
+  background: color-mix(in srgb, var(--bad) 16%, #141416);
+}
+
+.tire-badge.low strong,
+.tire-badge.low span {
+  color: var(--bad);
 }

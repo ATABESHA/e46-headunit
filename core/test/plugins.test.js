@@ -181,7 +181,7 @@ test('audio: reads and sets system volume through wpctl', async () => {
     assert.equal(hub.get('audio.volume').muted, false, 'turning volume up unmutes');
 
     await hub.command('audio.setSound', { bass: 4, treble: -20 });
-    assert.deepEqual(hub.get('audio.sound'), { bass: 4, mid: 0, treble: -10, balance: 0 });
+    assert.deepEqual(hub.get('audio.sound'), { bass: 4, mid: 0, treble: -10, balance: 0, fader: 0 });
   } finally {
     plugin.stop();
   }

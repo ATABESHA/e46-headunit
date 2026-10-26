@@ -1,5 +1,6 @@
 import { command, useTopic } from '../hub.js';
 import { Icon } from '../icons.jsx';
+import { useState } from 'react';
 import { Tabs } from '../widgets.jsx';
 import { AmbientCard, CarStatus } from './Car.jsx';
 import Diagnostics from './Diagnostics.jsx';
@@ -86,8 +87,91 @@ function DrivingData() {
   );
 }
 
+const WHEEL_NAMES = { fl: 'Front left', fr: 'Front right', rl: 'Rear left', rr: 'Rear right' };
+
+function TireBadge({ id, tire, reference }) {
+  return (
+    <div className={`tire-badge ${tire?.low ? 'low' : ''}`}>
+      <small>{WHEEL_NAMES[id]}</small>
+      <strong>
+        {tire ? tire.pressure.toFixed(1) : '–'}
+        <em> bar</em>
+      </strong>
+      <span>
+        {tire?.low ? <Icon name="warning" size={14} /> : null}
+        {tire ? `${tire.temp} °C` : ''}
+        {reference ? ` · set ${reference.toFixed(1)}` : ''}
+      </span>
+    </div>
+  );
+}
+
+/**
+ * Tyre pressures (like the E46's flat-tyre monitor, RDC): a warning when a
+ * tyre is 20 % below its saved pressure. After pumping up the tyres, Reset
+ * saves the new pressures as correct.
+ */
+function Wheels() {
+  const tires = useTopic('vehicle.tires');
+  const [confirm, setConfirm] = useState(false);
+  const low = tires ? Object.keys(WHEEL_NAMES).filter((w) => tires[w]?.low) : [];
+  const ref = tires?.reference ?? {};
+  const reset = () => {
+    if (!confirm) {
+      setConfirm(true);
+      return;
+    }
+    setConfirm(false);
+    command('tires.reset').catch(() => {});
+  };
+  return (
+    <div className="wheels">
+      <section className={`card wheels-status ${low.length ? 'low' : 'ok'}`}>
+        <span className="wheels-icon">
+          <Icon name={low.length ? 'warning' : 'check'} size={26} />
+        </span>
+        <h2>{!tires ? 'No tyre data' : low.length ? 'Tyre pressure low' : 'All tyres OK'}</h2>
+        <p className="muted small">
+          {low.length
+            ? `Check ${low.map((w) => WHEEL_NAMES[w].toLowerCase()).join(' and ')}. Drive carefully and pump up the tyre, or look for a puncture.`
+            : 'You get a warning here and on the cluster when a tyre loses 20 % of its pressure.'}
+        </p>
+        <div className="wheels-spec">
+          <span>
+            <small>Recommended (cold)</small>
+            Front 2.2 · Rear 2.5 bar
+          </span>
+        </div>
+        <button className={`btn ${confirm ? 'primary' : ''}`} onClick={reset} disabled={!tires}>
+          <Icon name="update" size={18} /> {confirm ? 'Tap again to save pressures' : 'Reset tyre pressures'}
+        </button>
+        <small className="muted">{confirm ? 'Only after all four tyres are pumped up correctly.' : 'Do this after changing or pumping up the tyres.'}</small>
+      </section>
+
+      <section className="wheels-car">
+        <div className="wheels-col">
+          <TireBadge id="fl" tire={tires?.fl} reference={ref.fl} />
+          <TireBadge id="rl" tire={tires?.rl} reference={ref.rl} />
+        </div>
+        <div className="wheels-photo">
+          <img src="./car/top-solid.jpg" alt="" draggable="false" />
+          {Object.keys(WHEEL_NAMES).map((w) => (
+            <i key={w} className={`wheel-spot ${w} ${tires?.[w]?.low ? 'low' : ''}`} />
+          ))}
+        </div>
+        <div className="wheels-col">
+          <TireBadge id="fr" tire={tires?.fr} reference={ref.fr} />
+          <TireBadge id="rr" tire={tires?.rr} reference={ref.rr} />
+        </div>
+      </section>
+    </div>
+  );
+}
+
 export default function Vehicle({ tab, onTab }) {
   const current = tab ?? 'driving';
+  const tires = useTopic('vehicle.tires');
+  const tiresLow = tires && ['fl', 'fr', 'rl', 'rr'].some((w) => tires[w]?.low);
   const codes = useTopic('diag.codes', []);
   return (
     <div className="vehicle">
@@ -97,6 +181,7 @@ export default function Vehicle({ tab, onTab }) {
         tabs={[
           ['driving', 'Driving data', 'trip'],
           ['status', 'Status', 'car'],
+          ['wheels', `Wheels${tiresLow ? ' ⚠' : ''}`, 'tire'],
           ['parking', 'Parking', 'parking'],
           ['codes', `Fault codes${codes.length ? ` (${codes.length})` : ''}`, 'wrench'],
           ['comfort', 'Comfort', 'light'],
@@ -105,6 +190,7 @@ export default function Vehicle({ tab, onTab }) {
       <div className="vehicle-body">
         {current === 'driving' && <DrivingData />}
         {current === 'status' && <CarStatus />}
+        {current === 'wheels' && <Wheels />}
         {current === 'parking' && <Parking />}
         {current === 'codes' && <Diagnostics />}
         {current === 'comfort' && <AmbientCard />}

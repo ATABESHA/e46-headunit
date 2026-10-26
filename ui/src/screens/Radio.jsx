@@ -44,14 +44,103 @@ function Loading({ state, empty }) {
   return null;
 }
 
+const COUNTRIES = [
+  ['', 'All'],
+  ['ES', 'Spain'],
+  ['GE', 'Georgia'],
+  ['GB', 'UK'],
+  ['US', 'USA'],
+  ['DE', 'Germany'],
+  ['FR', 'France'],
+  ['IT', 'Italy'],
+  ['RU', 'Russia'],
+  ['TR', 'Turkey'],
+];
+const GENRES = ['pop', 'rock', 'dance', 'electronic', 'hip hop', 'jazz', 'classical', 'chill', '80s', '90s', 'news', 'talk'];
+
+/**
+ * Station finder: type a name and/or pick a country and a style of music.
+ * Results come in while you type.
+ */
+function StationSearch({ current, onPlay }) {
+  const [query, setQuery] = useState('');
+  const [country, setCountry] = useState('ES');
+  const [genre, setGenre] = useState('');
+  const [typing, setTyping] = useState(false);
+  const [filters, setFilters] = useState({ query: '', country: 'ES', genre: '' });
+
+  // Wait until typing pauses before asking the station directory.
+  useEffect(() => {
+    const timer = setTimeout(() => setFilters({ query: query.trim(), country, genre }), 450);
+    return () => clearTimeout(timer);
+  }, [query, country, genre]);
+
+  const any = filters.query || filters.genre || filters.country;
+  const results = useStations(
+    any ? () => command('radio.search', { query: filters.query, country: filters.country, tag: filters.genre, limit: 60 }) : null,
+    [filters.query, filters.country, filters.genre],
+  );
+
+  return (
+    <div className="station-search">
+      <div className="search-row">
+        <button className={`search-field ${typing ? 'focus' : ''}`} onClick={() => setTyping(true)}>
+          <Icon name="search" size={18} />
+          <span>{query || <em>Station name</em>}</span>
+        </button>
+        {(query || genre || country) && (
+          <button
+            className="btn small"
+            onClick={() => {
+              setQuery('');
+              setGenre('');
+              setCountry('');
+            }}
+          >
+            Clear
+          </button>
+        )}
+      </div>
+      {typing ? (
+        <Keyboard value={query} onChange={setQuery} onDone={() => setTyping(false)} doneLabel="Done" />
+      ) : (
+        <>
+          <div className="chips scroll">
+            <Icon name="navigate" size={16} />
+            {COUNTRIES.map(([code, name]) => (
+              <button key={code || 'all'} className={`chip ${country === code ? 'on' : ''}`} onClick={() => setCountry(code)}>
+                {name}
+              </button>
+            ))}
+          </div>
+          <div className="chips scroll">
+            <Icon name="media" size={16} />
+            {GENRES.map((g) => (
+              <button key={g} className={`chip ${genre === g ? 'on' : ''}`} onClick={() => setGenre(genre === g ? '' : g)}>
+                {g}
+              </button>
+            ))}
+          </div>
+          {any ? (
+            <>
+              <Loading state={results} empty="No stations found. Try fewer filters." />
+              {!results.loading && <StationList stations={results.stations} current={current} onPlay={onPlay} />}
+            </>
+          ) : (
+            <div className="empty-state">Type a name, or pick a country or a style of music.</div>
+          )}
+        </>
+      )}
+    </div>
+  );
+}
+
 export default function Radio() {
   const player = usePlayer();
   const presets = useTopic('radio.presets', []);
   const last = useTopic('radio.last');
   const [tab, setTab] = useState(presets.length ? 'favourites' : 'popular');
   const [editing, setEditing] = useState(false);
-  const [query, setQuery] = useState('');
-  const [submitted, setSubmitted] = useState(null);
   const [message, setMessage] = useState(null);
 
   const station = player.kind === 'radio' ? player.station : last;
@@ -59,7 +148,6 @@ export default function Radio() {
   const isPlaying = player.kind === 'radio' && player.playing;
 
   const popular = useStations(tab === 'popular' ? () => command('radio.top', {}) : null, [tab]);
-  const results = useStations(submitted ? () => command('radio.search', { query: submitted }) : null, [submitted]);
 
   const play = (s) => {
     setMessage(null);
@@ -166,26 +254,7 @@ export default function Radio() {
           </>
         )}
 
-        {tab === 'search' &&
-          (submitted === null ? (
-            <div className="search">
-              <div className="search-field">
-                <Icon name="search" size={18} />
-                <span>{query || <em>Station name, e.g. "Cadena"</em>}</span>
-              </div>
-              <Keyboard value={query} onChange={setQuery} onDone={() => query.trim() && setSubmitted(query.trim())} />
-            </div>
-          ) : (
-            <>
-              <button className="search-field again" onClick={() => setSubmitted(null)}>
-                <Icon name="search" size={18} />
-                <span>{submitted}</span>
-                <small>Change</small>
-              </button>
-              <Loading state={results} empty="No stations found" />
-              {!results.loading && <StationList stations={results.stations} current={station} onPlay={play} />}
-            </>
-          ))}
+        {tab === 'search' && <StationSearch current={station} onPlay={play} />}
       </section>
     </div>
   );

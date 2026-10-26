@@ -7,7 +7,6 @@ import { CLUSTER_FACES, DRIVE_MODES, HOME_LAYOUTS, LOCKED_THEME, THEMES, themeIn
 import { Lamp, LAMP_NAMES } from '../cluster/Lamps.jsx';
 import { PAINTS, usePaint } from '../CarArt.jsx';
 import { CLUSTER_ENABLED, useSwapButton } from '../view.js';
-import { Stepper } from '../widgets.jsx';
 import { FX_LEVELS, useFx } from '../fx.jsx';
 import SoftwareUpdate from './SoftwareUpdate.jsx';
 
@@ -50,26 +49,124 @@ function Choice({ label, value, options, onChange, wide = false }) {
   );
 }
 
+const EQ_PRESETS = [
+  ['Flat', { bass: 0, mid: 0, treble: 0 }],
+  ['Bass', { bass: 6, mid: 0, treble: 1 }],
+  ['Vocal', { bass: -2, mid: 4, treble: 2 }],
+  ['Bright', { bass: 0, mid: 1, treble: 5 }],
+  ['Night', { bass: 3, mid: -1, treble: -3 }],
+];
+
+// Speaker spots on the top-view photo (% of the picture), nose at the top.
+const SPEAKERS = [
+  ['fl', 'Front left', 11, 37],
+  ['fr', 'Front right', 89, 37],
+  ['rl', 'Rear left', 11, 66],
+  ['rr', 'Rear right', 89, 66],
+];
+const FOCUS = { x0: 18, x1: 82, front: 40, rear: 66 }; // where the sound point can go
+
+/** Slider standing up, -10..+10 (or 0..100 for volume). */
+function MixerSlider({ label, value, min = -10, max = 10, onChange, unit = '' }) {
+  return (
+    <label className="mixer-slider">
+      <b>
+        {value > 0 && min < 0 ? '+' : ''}
+        {value}
+        {unit}
+      </b>
+      <input type="range" min={min} max={max} step="1" value={value} onChange={(e) => onChange(Number(e.target.value))} />
+      <span>{label}</span>
+    </label>
+  );
+}
+
+/**
+ * Where the sound is aimed: drag the point over the car. Left/right is the
+ * balance, front/rear the fader (the fader needs a 4-channel sound card).
+ */
+function SoundStage({ balance, fader, onChange }) {
+  const pos = {
+    x: FOCUS.x0 + ((balance + 10) / 20) * (FOCUS.x1 - FOCUS.x0),
+    y: FOCUS.rear - ((fader + 10) / 20) * (FOCUS.rear - FOCUS.front),
+  };
+  const gain = (id) => {
+    const side = id[1] === 'l' ? Math.min(1, 1 - balance / 10) : Math.min(1, 1 + balance / 10);
+    const end = id[0] === 'f' ? Math.min(1, 1 + fader / 10) : Math.min(1, 1 - fader / 10);
+    return side * end;
+  };
+  const moveTo = (e) => {
+    const r = e.currentTarget.getBoundingClientRect();
+    const px = ((e.clientX - r.left) / r.width) * 100;
+    const py = ((e.clientY - r.top) / r.height) * 100;
+    const b = Math.round(((Math.min(FOCUS.x1, Math.max(FOCUS.x0, px)) - FOCUS.x0) / (FOCUS.x1 - FOCUS.x0)) * 20 - 10);
+    const f = Math.round(((FOCUS.rear - Math.min(FOCUS.rear, Math.max(FOCUS.front, py))) / (FOCUS.rear - FOCUS.front)) * 20 - 10);
+    if (b !== balance || f !== fader) onChange({ balance: b, fader: f });
+  };
+  return (
+    <div className="sound-stage">
+      <div
+        className="sound-car"
+        onPointerDown={(e) => {
+          e.currentTarget.setPointerCapture(e.pointerId);
+          moveTo(e);
+        }}
+        onPointerMove={(e) => e.buttons && moveTo(e)}
+      >
+        <img src="./car/top-interior.jpg" alt="" draggable="false" />
+        <div className="sound-zone" style={{ left: `${FOCUS.x0}%`, right: `${100 - FOCUS.x1}%`, top: `${FOCUS.front}%`, bottom: `${100 - FOCUS.rear}%` }} />
+        {SPEAKERS.map(([id, name, x, y]) => (
+          <span key={id} className="speaker" style={{ left: `${x}%`, top: `${y}%`, '--gain': gain(id) }} title={name}>
+            <i />
+          </span>
+        ))}
+        <span className="sound-focus" style={{ left: `${pos.x}%`, top: `${pos.y}%` }} />
+      </div>
+      <div className="sound-readout">
+        <span>
+          <small>Balance</small>
+          {balance === 0 ? 'Centre' : `${balance < 0 ? 'L' : 'R'} ${Math.abs(balance)}`}
+        </span>
+        <span>
+          <small>Fader</small>
+          {fader === 0 ? 'Centre' : `${fader > 0 ? 'Front' : 'Rear'} ${Math.abs(fader)}`}
+        </span>
+        <button className="btn small" onClick={() => onChange({ balance: 0, fader: 0 })} disabled={!balance && !fader}>
+          Centre
+        </button>
+      </div>
+    </div>
+  );
+}
+
 function Sound() {
   const volume = useTopic('audio.volume');
-  const sound = useTopic('audio.sound', { bass: 0, mid: 0, treble: 0, balance: 0 });
+  const sound = { bass: 0, mid: 0, treble: 0, balance: 0, fader: 0, ...useTopic('audio.sound', {}) };
   const set = (patch) => command('audio.setSound', patch).catch(() => {});
+  const preset = EQ_PRESETS.find(([, p]) => p.bass === sound.bass && p.mid === sound.mid && p.treble === sound.treble)?.[0];
   return (
-    <div className="settings-body">
-      <Stepper
-        label="Volume"
-        min={0}
-        max={100}
-        value={volume?.level ?? 0}
-        onChange={(level) => command('audio.setVolume', { level }).catch(() => {})}
-        note={volume && !volume.available ? 'System volume not available on this computer' : null}
-      />
-      <Stepper label="Bass" value={sound.bass} onChange={(bass) => set({ bass })} />
-      <Stepper label="Mid" value={sound.mid} onChange={(mid) => set({ mid })} />
-      <Stepper label="Treble" value={sound.treble} onChange={(treble) => set({ treble })} />
-      <Stepper label="Balance" value={sound.balance} onChange={(balance) => set({ balance })} left="L" right="R" />
-      <Stepper label="Fader" value={0} onChange={() => {}} left="Rear" right="Front" disabled note="Needs a 4-channel USB sound card (front and rear speakers)" />
-      <p className="muted small">Bass, mid, treble and balance apply to Radio and Media. Volume applies to everything.</p>
+    <div className="settings-body sound-body">
+      <SoundStage balance={sound.balance} fader={sound.fader} onChange={set} />
+      <div className="mixer">
+        <div className="mixer-sliders">
+          <MixerSlider label="Volume" min={0} max={100} value={volume?.level ?? 0} onChange={(level) => command('audio.setVolume', { level }).catch(() => {})} />
+          <i className="mixer-gap" />
+          <MixerSlider label="Bass" value={sound.bass} onChange={(bass) => set({ bass })} />
+          <MixerSlider label="Mid" value={sound.mid} onChange={(mid) => set({ mid })} />
+          <MixerSlider label="Treble" value={sound.treble} onChange={(treble) => set({ treble })} />
+        </div>
+        <div className="chips">
+          {EQ_PRESETS.map(([name, values]) => (
+            <button key={name} className={`chip ${preset === name ? 'on' : ''}`} onClick={() => set(values)}>
+              {name}
+            </button>
+          ))}
+        </div>
+        <p className="muted small">
+          Drag the point on the car to move the sound. Front / rear needs a 4-channel USB sound card; it is saved for then.
+          {volume && !volume.available ? ' System volume is not available on this computer.' : ''}
+        </p>
+      </div>
     </div>
   );
 }
@@ -256,6 +353,22 @@ function Simulator() {
         <button className="btn" onClick={() => command('sim.incomingCall', {}).catch(() => {})}>
           <Icon name="call" size={18} /> Simulate incoming call
         </button>
+      </div>
+      <div className="setting-row">
+        <span>
+          Tyres
+          <small className="muted">Slow puncture on one wheel, or pump all up again</small>
+        </span>
+        <div className="button-row">
+          {['fl', 'fr', 'rl', 'rr'].map((w) => (
+            <button key={w} className="btn small" onClick={() => command('sim.tireLeak', { wheel: w, on: true }).catch(() => {})}>
+              {w.toUpperCase()}
+            </button>
+          ))}
+          <button className="btn small primary" onClick={() => command('sim.tireInflate').catch(() => {})}>
+            Inflate all
+          </button>
+        </div>
       </div>
       <LightTest />
     </div>

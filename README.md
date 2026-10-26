@@ -192,6 +192,8 @@ You can also open and close doors there, and test the **cluster lights**: tap an
 22 lights (turn signals, beams, fog, cruise, check engine, oil, battery, brakes, parking
 brake, ABS, DSC, airbag, seat belt, tyre pressure, coolant, low fuel, door open, service) or
 **All on** / **All off**. The **Light test** button on the cluster does the same.
+For the tyre monitor (Vehicle → Wheels) you can give one tyre a slow puncture and pump
+them all up again.
 Lights the car turns on by itself (a door open, low fuel) stay lit.
 
 ## How it works
