@@ -15,8 +15,8 @@
  *   vehicle.doors         { fl, fr, rl, rr, trunk }  true = open
  *   vehicle.locked        true | false
  *   vehicle.lights        { parking, low, high, fogFront, fogRear }
- *   vehicle.lamps         cluster lights: { turnLeft, turnRight, highBeam, fogFront, fogRear,
- *                         checkEngine, oil, battery, brake, abs, airbag, seatbelt }
+ *   vehicle.lamps         cluster lights, true = lit (names in LAMPS below)
+ *   sim.lampsForced       { name: true } lights switched on by hand (testing)
  *   vehicle.gear          "R" | "N" | "1".."5"
  *   vehicle.odometer      km
  *   parking.distances     { rearLeft, rearMidLeft, rearMidRight, rearRight }  cm, null = nothing seen
@@ -28,7 +28,8 @@
  * Commands it handles:
  *   sim.scenario  "drive" | "park" | "idle"
  *   sim.door      { door: "fl", open: true }
- *   sim.lamp      { name: "oil", on: true }   force a warning light (testing)
+ *   sim.lamp      { name: "oil", on: true }   force a light on (testing)
+ *   sim.lampsAll  { on: true }                 every light on / back to normal
  *   sim.ignition  "off" | "acc" | "run"        turn the key
  *   body.lock     { locked: true }
  *   ambient.set   { on?, color?, brightness? }
@@ -37,7 +38,13 @@
  */
 
 const SCENARIOS = ['drive', 'park', 'idle'];
-const WARNING_LAMPS = ['checkEngine', 'oil', 'battery', 'brake', 'abs', 'airbag', 'seatbelt'];
+// Every light on the cluster. Indicators first, then warnings.
+export const INDICATOR_LAMPS = ['turnLeft', 'turnRight', 'parkingLights', 'lowBeam', 'highBeam', 'fogFront', 'fogRear', 'cruise'];
+export const WARNING_LAMPS = [
+  'checkEngine', 'oil', 'battery', 'brake', 'parkBrake', 'abs', 'dsc', 'airbag',
+  'seatbelt', 'tirePressure', 'coolantTemp', 'lowFuel', 'doorOpen', 'service',
+];
+export const LAMPS = [...INDICATOR_LAMPS, ...WARNING_LAMPS];
 const BULB_CHECK_S = 2.5; // all warning lights are on briefly at start, like a real cluster
 const DOORS = ['fl', 'fr', 'rl', 'rr', 'trunk'];
 
@@ -76,6 +83,7 @@ export default function simulator(hub, options = {}) {
   hub.set('diag.codes', codes);
   hub.set('diag.scanning', false);
   hub.set('sim.scenario', scenario);
+  hub.set('sim.lampsForced', {});
 
   function tick() {
     t += tickMs / 1000;
@@ -116,14 +124,33 @@ export default function simulator(hub, options = {}) {
     const blinkOn = signalling && Math.floor(t / 0.35) % 2 === 0;
     const lights = hub.get('vehicle.lights') ?? {};
     const bulbCheck = t < BULB_CHECK_S;
-    hub.set('vehicle.lamps', {
+    const blink = Math.floor(t / 0.35) % 2 === 0;
+    const on = ignition !== 'off';
+    const auto = {
       turnLeft: blinkOn && Math.floor(t / 40) % 2 === 0,
       turnRight: blinkOn && Math.floor(t / 40) % 2 === 1,
+      parkingLights: Boolean(lights.parking),
+      lowBeam: Boolean(lights.low),
       highBeam: Boolean(lights.high),
       fogFront: Boolean(lights.fogFront),
       fogRear: Boolean(lights.fogRear),
-      ...Object.fromEntries(WARNING_LAMPS.map((name) => [name, bulbCheck || Boolean(forcedLamps[name])])),
-    });
+      cruise: ignition === 'run' && scenario === 'drive' && t % 60 > 30 && t % 60 < 50,
+      parkBrake: ignition === 'run' && scenario === 'idle',
+      coolantTemp: coolant > 112,
+      lowFuel: fuel < 12,
+      doorOpen: Object.values(doors).some(Boolean),
+    };
+    hub.set(
+      'vehicle.lamps',
+      Object.fromEntries(
+        LAMPS.map((name) => {
+          const turn = name === 'turnLeft' || name === 'turnRight';
+          const forced = Boolean(forcedLamps[name]) && (!turn || blink);
+          const lit = Boolean(auto[name]) || forced || (bulbCheck && WARNING_LAMPS.includes(name));
+          return [name, (on || name === 'parkingLights' || turn) && lit];
+        }),
+      ),
+    );
 
     const reverse = ignition === 'run' && scenario === 'park';
     hub.set('vehicle.reverse', reverse);
@@ -163,8 +190,15 @@ export default function simulator(hub, options = {}) {
     }),
 
     hub.onCommand('sim.lamp', ({ name, on } = {}) => {
-      if (!WARNING_LAMPS.includes(name)) throw new Error(`Lamp must be one of: ${WARNING_LAMPS.join(', ')}`);
+      if (!LAMPS.includes(name)) throw new Error(`Lamp must be one of: ${LAMPS.join(', ')}`);
       forcedLamps[name] = Boolean(on);
+      hub.set('sim.lampsForced', { ...forcedLamps });
+    }),
+
+    hub.onCommand('sim.lampsAll', ({ on } = {}) => {
+      for (const name of LAMPS) forcedLamps[name] = Boolean(on);
+      hub.set('sim.lampsForced', { ...forcedLamps });
+      return Boolean(on);
     }),
 
     hub.onCommand('body.lock', ({ locked } = {}) => {

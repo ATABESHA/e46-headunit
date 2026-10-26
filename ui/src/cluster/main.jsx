@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client';
 import Cluster from './Cluster.jsx';
 import '../styles.css';
 import '../themes.css';
+import '../homes.css';
 import '../fx.css';
 import './cluster.css';
 import { applySavedTheme } from '../theme.js';

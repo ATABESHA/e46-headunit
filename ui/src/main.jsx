@@ -4,6 +4,7 @@ import App from './App.jsx';
 import Cluster from './cluster/Cluster.jsx';
 import './styles.css';
 import './themes.css';
+import './homes.css';
 import './fx.css';
 import './cluster/cluster.css';
 import { applySavedTheme } from './theme.js';

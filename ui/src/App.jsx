@@ -3,7 +3,7 @@ import { useConnected, useTopic } from './hub.js';
 import { Icon } from './icons.jsx';
 import { applySound } from './player.js';
 import { usePref } from './prefs.js';
-import { useTheme } from './theme.js';
+import { THEMES, nextId, themeInfo, useDesignButtons, useDriveMode, useHomeLayout, useTheme } from './theme.js';
 import { FxBackground, PerfHud, useFx } from './fx.jsx';
 import { restartApp } from './system.js';
 import { useSwapButton, useView } from './view.js';
@@ -41,7 +41,7 @@ function useClock() {
   return now;
 }
 
-function StatusBar({ title }) {
+function StatusBar({ title, center, home }) {
   const now = useClock();
   const connected = useConnected();
   const [clock24] = usePref('clock24', true);
@@ -52,6 +52,9 @@ function StatusBar({ title }) {
   const volume = useTopic('audio.volume');
   const [, swap] = useView();
   const [swapButton] = useSwapButton();
+  const [theme, setTheme] = useTheme();
+  const [, , setHome] = useHomeLayout();
+  const [designButtons] = useDesignButtons();
 
   return (
     <header className="statusbar">
@@ -60,8 +63,20 @@ function StatusBar({ title }) {
         <img className="logo" src="./logo.svg" alt="" onError={(e) => (e.currentTarget.style.display = 'none')} />
         <span className="statusbar-time">{now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: !clock24 })}</span>
       </div>
-      <div className="statusbar-title">{title}</div>
+      <div className="statusbar-title">{center ?? title}</div>
       <div className="statusbar-items">
+        {home && designButtons && (
+          <button
+            className="design-btn"
+            title="Try the next style (temporary button: Settings → Display hides it)"
+            onClick={() => {
+              setHome('auto');
+              setTheme(nextId(THEMES, theme));
+            }}
+          >
+            <Icon name="display" size={16} /> {themeInfo(theme).name} <b>›</b>
+          </button>
+        )}
         {codes.length > 0 && (
           <span className="status-chip warn" title="Fault codes">
             <Icon name="warning" size={16} /> {codes.length}
@@ -125,8 +140,23 @@ function useScreenFit(rootRef) {
   }, [mode, rootRef]);
 }
 
+function NavItems({ items, screen, navigate, update, carplay }) {
+  return items.map((s) => (
+    <button key={s.id} className={`nav-item ${screen === s.id ? 'active' : ''}`} onClick={() => navigate(s.id)}>
+      <span className="nav-icon">
+        <Icon name={s.icon} size={26} />
+      </span>
+      <span className="nav-label">{s.label}</span>
+      {s.id === 'settings' && update?.status === 'available' && <i className="nav-badge" title="Update available" />}
+      {s.id === 'fulllink' && carplay?.status === 'connected' && <i className="nav-badge ok" title="Phone connected" />}
+    </button>
+  ));
+}
+
 export default function App() {
-  useTheme();
+  const [theme] = useTheme();
+  useDriveMode();
+  const shell = themeInfo(theme).shell;
   const [fx] = useFx();
   const rootRef = useRef(null);
   useScreenFit(rootRef);
@@ -172,23 +202,37 @@ export default function App() {
   const current = SCREENS.find((s) => s.id === screen);
   const Current = current.component;
   const phoneFullscreen = screen === 'fulllink' && carplay?.status === 'connected';
+  const navProps = { screen, navigate, update, carplay };
 
   return (
     <div className="viewport">
-      <div className="app" ref={rootRef}>
+      <div className={`app shell-${shell}`} ref={rootRef}>
         <FxBackground level={fx} />
-        <nav className="nav">
-          {SCREENS.map((s) => (
-            <button key={s.id} className={`nav-item ${screen === s.id ? 'active' : ''}`} onClick={() => navigate(s.id)}>
-              <Icon name={s.icon} size={26} />
-              <span>{s.label}</span>
-              {s.id === 'settings' && update?.status === 'available' && <i className="nav-badge" title="Update available" />}
-              {s.id === 'fulllink' && carplay?.status === 'connected' && <i className="nav-badge ok" title="Phone connected" />}
-            </button>
-          ))}
-        </nav>
+        {shell === 'split' ? (
+          <nav className="nav nav-left">
+            <NavItems items={SCREENS.slice(0, 4)} {...navProps} />
+          </nav>
+        ) : (
+          shell !== 'tabs' && (
+            <nav className="nav">
+              <NavItems items={SCREENS} {...navProps} />
+            </nav>
+          )
+        )}
         <div className="main">
-          {!phoneFullscreen && <StatusBar title={screen === 'home' ? '' : current.label} />}
+          {!phoneFullscreen && (
+            <StatusBar
+              title={screen === 'home' ? '' : current.label}
+              home={screen === 'home'}
+              center={
+                shell === 'tabs' ? (
+                  <nav className="nav nav-tabs">
+                    <NavItems items={SCREENS} {...navProps} />
+                  </nav>
+                ) : null
+              }
+            />
+          )}
           <main className={`content ${phoneFullscreen ? 'bleed' : ''} screen-${screen}`}>
             <Current key={screen} onNavigate={navigate} tab={tab} onTab={setTab} />
           </main>
@@ -201,6 +245,11 @@ export default function App() {
           <VolumeOverlay />
           <Toasts />
         </div>
+        {shell === 'split' && (
+          <nav className="nav nav-right">
+            <NavItems items={SCREENS.slice(4)} {...navProps} />
+          </nav>
+        )}
         <PerfHud label="Head unit" />
         <Splash />
       </div>

@@ -90,29 +90,27 @@ Make your changes on GitHub (or upload them from the laptop with `git commit` + 
 
 ## Styles, cluster designs and your car
 
-Settings → Display → **Style** sets the colours of both screens and picks a cluster
-design and home screen to go with it:
+Settings → Display → **Style** changes much more than colours: each style has its own
+menu position, home screen, buttons and cluster design. While trying them out, the
+**Style** button in the status bar (home screen) jumps to the next one, and the cluster has
+a **Design** button and a **Light test** button on its right edge (Settings → Display →
+*Design buttons* hides them).
 
-| Style | Look | Cluster | Home |
-|---|---|---|---|
-| **Media System** | Ibiza layout, black with copper | Classic dials | Tiles |
-| **E46 Classic** | Orange on black, like the original dash | Classic dials | Tiles |
-| **M Sport** | Carbon black, red, M stripes | Sport capsule | Car dashboard |
-| **Midnight** | Deep navy, soft blue glow | Halo | Car dashboard |
-| **Monochrome** | Pure black and white, thin lines | Minimal | Car dashboard |
-| **Daylight** | Light, for bright days | Minimal | Car dashboard |
-| **Design1** | Slate grey and blue, car seen from above | Halo | Design1 |
-| **Neon** | Black, orange and electric blue | Neon rings | Tiles |
+| Style | Look | Menu | Home | Cluster |
+|---|---|---|---|---|
+| **Media System** | The first design: Ibiza layout, black with copper | Left column | 8 tiles | Classic dials |
+| **Design1** | Slate grey and blue, car seen from above | Icons on the left | Car + map card | Halo |
+| **Panorama** | Black glass, blue glow | Round buttons on the right | Map, round dial with volume −/+, music; page 2 has big shortcuts | Aura: one dial whose light petals turn from grey to blue with speed, rolling digits, your car in its lane |
+| **Studio** | Light: white cards, black buttons | Floating pill | Full-screen map with floating cards | Capsule (light) |
+| **Slate** | Graphite and violet, like a phone | Dock at the bottom | Greeting, widgets, big "now playing" coloured after the song, song list | Mono: black and white dials, green speed arc, map in the middle |
+| **Velocity** | Carbon black, sharp angled shapes | Tabs in the top bar | Eco / Comfort / Sport drive modes (they recolour everything), race readout, shift lights | Vortex: turbine blades that spin faster and turn from blue to red |
+| **Neon Cockpit** | Black, orange and electric blue | Round buttons left and right | LED rings for speed, revs, fuel and clock, playlist, map strip | Neon rings |
 
-- **Cluster:** any of the six designs can also be chosen by hand (Classic dials, Sport
-  capsule, Halo, Minimal, Neon rings, Turbine). Turbine is a ring of blades around the
-  speed that spins faster as you drive and turns red at high revs.
-- **Home screen:** *Tiles* (8 big buttons), *Car dashboard* (your car, speed, coolant,
-  fuel, doors, music and trip on one screen) or *Design1* (the car from above with speed,
-  coolant, doors and a fuel meter; a map-style card with trip and music). The head unit has
-  no navigation of its own: the Design1 map is a drawing that scrolls with your speed, and
-  its Navigation button opens Full Link (CarPlay / Android Auto maps).
-- **Car colour:** the car on the dashboard comes in ten E46 paint colours (on-screen
+- **Cluster** and **Home screen** can also be chosen separately in Settings → Display.
+  The Capsule cluster follows the drive mode: Eco blue, Comfort teal, Sport red.
+- The head unit has no navigation of its own: the maps are drawings that scroll with your
+  speed, and their Navigation buttons open Full Link (CarPlay / Android Auto maps).
+- **Car colour:** the car pictures come in ten E46 paint colours (on-screen
   approximations). To use your own picture instead, put it in `ui/public` (a transparent
   PNG works best) and set `CUSTOM_PICTURE` in [`ui/src/CarArt.jsx`](ui/src/CarArt.jsx).
 - All designs are made to be light on the graphics chip: nothing uses live blur, and
@@ -142,7 +140,11 @@ head unit back. Music keeps playing. Turn the button off in Settings → Display
 - **Reversing:** the parking view opens by itself and the sensors count down.
 - **Standing still:** engine idling.
 
-You can also open and close doors there.
+You can also open and close doors there, and test the **cluster lights**: tap any of the
+22 lights (turn signals, beams, fog, cruise, check engine, oil, battery, brakes, parking
+brake, ABS, DSC, airbag, seat belt, tyre pressure, coolant, low fuel, door open, service) or
+**All on** / **All off**. The **Light test** button on the cluster does the same.
+Lights the car turns on by itself (a door open, low fuel) stay lit.
 
 ## How it works
 

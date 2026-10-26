@@ -1,10 +1,13 @@
-import { HUB_HTTP, useTopic } from '../hub.js';
+import { useTopic } from '../hub.js';
 import { Icon } from '../icons.jsx';
-import { formatTime, next, previous, toggle, usePlayer } from '../player.js';
+import { usePlayer } from '../player.js';
 import { useHomeLayout } from '../theme.js';
-import { Artwork } from '../widgets.jsx';
-import CarArt from '../CarArt.jsx';
-import Design1Home from './HomeDesign1.jsx';
+import Design1Home from './home/Design1.jsx';
+import PanoramaHome from './home/Panorama.jsx';
+import StudioHome from './home/Studio.jsx';
+import SlateHome from './home/Slate.jsx';
+import VelocityHome from './home/Velocity.jsx';
+import CockpitHome from './home/Cockpit.jsx';
 
 function Tile({ icon, label, detail, onClick, accent, badge }) {
   return (
@@ -78,167 +81,19 @@ function TileHome({ onNavigate }) {
   );
 }
 
-/** Small status box on the car card. */
-function Stat({ icon, label, value, warn, onClick }) {
-  return (
-    <button className={`dash-stat ${warn ? 'warn' : ''}`} onClick={onClick}>
-      <span className="dash-stat-icon">
-        <Icon name={icon} size={20} />
-      </span>
-      <strong>{value}</strong>
-      <small>{label}</small>
-    </button>
-  );
-}
-
-function NowPlaying({ onNavigate }) {
-  const player = usePlayer();
-  const carplay = useTopic('carplay.media');
-  const radio = player.kind === 'radio';
-  const title = radio ? player.station?.name : player.track?.title;
-  const sub = radio ? player.station?.tags || 'Internet radio' : player.track?.artist;
-  const art = radio ? player.station?.favicon : player.track ? `${HUB_HTTP}/media/art/${player.track.id}` : null;
-  const progress = !radio && player.duration ? (player.position / player.duration) * 100 : 0;
-
-  if (!player.kind) {
-    return (
-      <div className="dash-card dash-media empty">
-        <button className="dash-media-open" onClick={() => onNavigate(carplay?.title ? 'fulllink' : 'media')}>
-          <Artwork icon="media" className="dash-art" />
-          <span className="dash-media-text">
-            <small>{carplay?.title ? 'On your phone' : 'Nothing playing'}</small>
-            <strong>{carplay?.title ?? 'Music and radio'}</strong>
-            <span>{carplay?.title ? carplay.artist : 'Tap to choose'}</span>
-          </span>
-        </button>
-      </div>
-    );
-  }
-
-  return (
-    <div className="dash-card dash-media">
-      <button className="dash-media-open" onClick={() => onNavigate(radio ? 'radio' : 'media')}>
-        <Artwork src={art} icon={radio ? 'radio' : 'media'} className="dash-art" key={art ?? 'none'} />
-        <span className="dash-media-text">
-          <small>{radio ? 'Radio' : 'Media'}</small>
-          <strong>{title ?? '–'}</strong>
-          <span>{player.error ?? sub ?? ''}</span>
-        </span>
-      </button>
-      {!radio && (
-        <div className="dash-progress">
-          <div className="progress">
-            <i style={{ width: `${progress}%` }} />
-          </div>
-          <div className="progress-times">
-            <small>{formatTime(player.position)}</small>
-            <small>-{formatTime(Math.max(0, player.duration - player.position))}</small>
-          </div>
-        </div>
-      )}
-      <div className="controls">
-        <button className="icon-btn" onClick={previous} disabled={radio} aria-label="Previous">
-          <Icon name="prev" />
-        </button>
-        <button className="icon-btn big primary" onClick={toggle} aria-label={player.playing ? 'Pause' : 'Play'}>
-          <Icon name={player.playing ? 'pause' : 'play'} filled />
-        </button>
-        <button className="icon-btn" onClick={() => next()} disabled={radio} aria-label="Next">
-          <Icon name="next" />
-        </button>
-      </div>
-    </div>
-  );
-}
-
-/** Home with the car: picture and live data left, music and shortcuts right. */
-function DashboardHome({ onNavigate }) {
-  const speed = useTopic('vehicle.speed');
-  const coolant = useTopic('vehicle.coolant');
-  const trip = useTopic('trip.sinceStart');
-  const odometer = useTopic('vehicle.odometer');
-  const fuel = useTopic('vehicle.fuel');
-  const locked = useTopic('vehicle.locked');
-  const doors = useTopic('vehicle.doors', {});
-  const codes = useTopic('diag.codes', []);
-  const phone = useTopic('phone.state');
-  const carplay = useTopic('carplay.state');
-  const update = useTopic('system.update');
-  const open = Object.values(doors).some(Boolean);
-
-  const shortcuts = [
-    ['radio', 'Radio', 'radio'],
-    ['phone', 'Phone', 'phone', phone?.connection === 'connected' ? 'ok' : null],
-    ['link', 'Full Link', 'fulllink', carplay?.status === 'connected' ? 'ok' : null],
-    ['parking', 'Parking', ['vehicle', 'parking']],
-    ['light', 'Ambient', ['vehicle', 'comfort']],
-    ['settings', 'Settings', 'settings', update?.status === 'available' ? 'accent' : null],
-  ];
-
-  return (
-    <div className="dash">
-      <section className="dash-card dash-car" onClick={() => onNavigate('vehicle', 'driving')}>
-        <div className="dash-car-head">
-          <span>
-            <small>Speed</small>
-            <strong>{speed !== undefined ? Math.round(speed) : '–'}</strong>
-            <em>km/h</em>
-          </span>
-          {codes.length > 0 && (
-            <span className="dash-alert">
-              <Icon name="warning" size={16} /> {codes.length}
-            </span>
-          )}
-        </div>
-        <CarArt className="dash-car-art" />
-        <div className="dash-stats" onClick={(e) => e.stopPropagation()}>
-          <Stat icon="thermo" label="Coolant" value={coolant !== undefined ? `${coolant}°` : '–'} warn={coolant > 112} onClick={() => onNavigate('vehicle', 'driving')} />
-          <Stat icon="fuel" label="Fuel" value={fuel !== undefined ? `${Math.round(fuel)}%` : '–'} warn={fuel < 12} onClick={() => onNavigate('vehicle', 'driving')} />
-          <Stat
-            icon={open ? 'warning' : locked ? 'lock' : 'unlock'}
-            label="Doors"
-            value={open ? 'Open' : locked ? 'Locked' : 'Unlocked'}
-            warn={open}
-            onClick={() => onNavigate('vehicle', 'comfort')}
-          />
-        </div>
-      </section>
-      <div className="dash-right">
-        <NowPlaying onNavigate={onNavigate} />
-        <button className="dash-card dash-trip" onClick={() => onNavigate('vehicle', 'driving')}>
-          <span>
-            <strong>{trip?.distanceKm ?? 0}</strong> km
-          </span>
-          <i />
-          <span>
-            <strong>{Math.floor((trip?.durationS ?? 0) / 60)}</strong> min
-          </span>
-          <i />
-          <span>
-            <small>Average</small> <strong>{trip?.avgSpeed ?? 0}</strong> km/h
-          </span>
-          <span className="dash-trip-odo">
-            <small>Total</small> {odometer !== undefined ? `${odometer.toLocaleString()} km` : '–'}
-          </span>
-        </button>
-        <div className="dash-shortcuts">
-          {shortcuts.map(([icon, label, target, badge]) => (
-            <button key={label} className="dash-shortcut" onClick={() => (Array.isArray(target) ? onNavigate(...target) : onNavigate(target))}>
-              <span className="tile-icon">
-                <Icon name={icon} size={26} />
-                {badge && <i className={`tile-badge ${badge}`} />}
-              </span>
-              <span>{label}</span>
-            </button>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-}
+// One home screen per style (src/theme.js). "tiles" is the Media System's.
+const HOMES = {
+  tiles: TileHome,
+  design1: Design1Home,
+  panorama: PanoramaHome,
+  studio: StudioHome,
+  slate: SlateHome,
+  velocity: VelocityHome,
+  cockpit: CockpitHome,
+};
 
 export default function Home(props) {
   const [layout] = useHomeLayout();
-  if (layout === 'design1') return <Design1Home {...props} />;
-  return layout === 'dashboard' ? <DashboardHome {...props} /> : <TileHome {...props} />;
+  const Layout = HOMES[layout] ?? TileHome;
+  return <Layout {...props} />;
 }

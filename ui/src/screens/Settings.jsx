@@ -3,7 +3,8 @@ import { command, useConnected, useTopic } from '../hub.js';
 import { Icon } from '../icons.jsx';
 import { CameraView, useCameras } from '../camera.jsx';
 import { usePref } from '../prefs.js';
-import { CLUSTER_FACES, HOME_LAYOUTS, THEMES, useClusterFace, useHomeLayout, useTheme } from '../theme.js';
+import { CLUSTER_FACES, DRIVE_MODES, HOME_LAYOUTS, THEMES, useClusterFace, useDesignButtons, useDriveMode, useHomeLayout, useTheme } from '../theme.js';
+import { Lamp, LAMP_NAMES } from '../cluster/Lamps.jsx';
 import { PAINTS, usePaint } from '../CarArt.jsx';
 import { useSwapButton } from '../view.js';
 import { Stepper } from '../widgets.jsx';
@@ -83,6 +84,8 @@ function Display() {
   const [, home, setHome] = useHomeLayout();
   const [[paint], setPaint] = usePaint();
   const [swapButton, setSwapButton] = useSwapButton();
+  const [designButtons, setDesignButtons] = useDesignButtons();
+  const [drive, setDrive] = useDriveMode();
   return (
     <div className="settings-body">
       <div className="theme-grid">
@@ -97,7 +100,9 @@ function Display() {
         ))}
       </div>
       <Choice label="Cluster" value={face} onChange={setFace} options={CLUSTER_FACES} wide />
-      <Choice label="Home screen" value={home} onChange={setHome} options={HOME_LAYOUTS} />
+      <Choice label="Home screen" value={home} onChange={setHome} options={HOME_LAYOUTS} wide />
+      <Choice label="Drive mode colours" value={drive} onChange={setDrive} options={DRIVE_MODES} />
+      <Toggle label="Design buttons" value={designButtons} onChange={setDesignButtons} note="Temporary: “Style” on the home screen and “Design” + “Light test” on the cluster" />
       <div className="setting-row column">
         <span>Car colour</span>
         <div className="paint-row">
@@ -237,6 +242,40 @@ function Simulator() {
         <button className="btn" onClick={() => command('sim.incomingCall', {}).catch(() => {})}>
           <Icon name="call" size={18} /> Simulate incoming call
         </button>
+      </div>
+      <LightTest />
+    </div>
+  );
+}
+
+/** Switch any cluster light on by hand, or all of them at once. */
+function LightTest() {
+  const forced = useTopic('sim.lampsForced', {});
+  const lamps = useTopic('vehicle.lamps', {});
+  const anyOn = Object.values(forced).some(Boolean);
+  return (
+    <div className="light-test">
+      <div className="setting-row">
+        <span>
+          Cluster lights
+          <small className="muted">Tap a light to switch it on. Lights the car turns on itself (doors, low fuel…) stay lit.</small>
+        </span>
+        <div className="button-row">
+          <button className="btn primary" onClick={() => command('sim.lampsAll', { on: true }).catch(() => {})}>
+            All on
+          </button>
+          <button className="btn" disabled={!anyOn} onClick={() => command('sim.lampsAll', { on: false }).catch(() => {})}>
+            All off
+          </button>
+        </div>
+      </div>
+      <div className="light-grid">
+        {Object.entries(LAMP_NAMES).map(([name, label]) => (
+          <button key={name} className={forced[name] ? 'active' : ''} onClick={() => command('sim.lamp', { name, on: !forced[name] }).catch(() => {})}>
+            <Lamp name={name} on={lamps[name]} />
+            <small>{label}</small>
+          </button>
+        ))}
       </div>
     </div>
   );

@@ -1,0 +1,1752 @@
+/*
+ * The five newer styles: where the menu sits (shells), and their home screens.
+ * Colours per style are in themes.css. Designed at 1082 x 480.
+ */
+
+/* ---------- Temporary "Style" button (status bar, home screen) ---------- */
+
+.design-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 28px;
+  padding: 0 12px;
+  border-radius: 99px;
+  border: 1px dashed color-mix(in srgb, var(--accent) 70%, transparent);
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.design-btn svg {
+  color: var(--accent);
+}
+
+.design-btn b {
+  font-size: 17px;
+  line-height: 1;
+}
+
+/* ---------- Shared music buttons ---------- */
+
+.hc-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+}
+
+.hc-controls button {
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+}
+
+.hc-controls button:disabled {
+  opacity: 0.3;
+}
+
+.hc-controls .hc-play {
+  width: 54px;
+  height: 54px;
+  background: var(--accent);
+  color: var(--on-accent);
+}
+
+/* =====================================================================
+ * Shells: where the menu sits
+ * ===================================================================== */
+
+.nav-label {
+  white-space: nowrap;
+}
+
+.nav-icon {
+  display: grid;
+  place-items: center;
+}
+
+/* ----- rail: round buttons on the right (Panorama) ----- */
+
+.app.shell-rail {
+  flex-direction: row-reverse;
+}
+
+.app.shell-rail .nav {
+  box-shadow: none;
+  width: 84px;
+  justify-content: center;
+  align-items: center;
+  gap: 9px;
+  padding: 8px 0;
+  background: transparent;
+  border-right: none;
+  border-left: 1px solid rgba(90, 150, 255, 0.1);
+}
+
+.app.shell-rail .nav-item {
+  flex: none;
+  width: 54px;
+  height: 54px;
+  margin: 0;
+  border-radius: 50%;
+  border: 1px solid rgba(90, 150, 255, 0.28);
+  background: radial-gradient(circle at 50% 30%, rgba(58, 139, 255, 0.16), rgba(0, 0, 0, 0.4));
+  color: #b9cdf0;
+}
+
+.app.shell-rail .nav-item.active {
+  background: radial-gradient(circle at 50% 35%, #5aa0ff, #1650c8);
+  border-color: #7fb4ff;
+  color: #fff;
+  box-shadow: 0 0 18px -2px rgba(58, 139, 255, 0.75);
+}
+
+.app.shell-rail .nav-label {
+  display: none;
+}
+
+.app.shell-rail .nav-badge {
+  top: 2px;
+  right: 2px;
+}
+
+/* ----- dock: app icons in a bar at the bottom (Slate) ----- */
+
+.app.shell-dock {
+  flex-direction: column-reverse;
+}
+
+.app.shell-dock .nav {
+  align-self: center;
+  width: auto;
+  flex-direction: row;
+  gap: 14px;
+  margin: 0 0 8px;
+  padding: 8px 16px;
+  border-radius: 26px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.app.shell-dock .main {
+  min-height: 0;
+}
+
+.app.shell-dock .nav-item {
+  flex: none;
+  width: 50px;
+  height: 50px;
+  margin: 0;
+  border-radius: 15px;
+  color: #fff;
+  background: linear-gradient(160deg, color-mix(in srgb, var(--dock) 80%, #fff), var(--dock));
+  box-shadow: 0 6px 14px -8px var(--dock);
+}
+
+.app.shell-dock .nav-item:nth-child(1) { --dock: #7c5cff; }
+.app.shell-dock .nav-item:nth-child(2) { --dock: #ff8a3d; }
+.app.shell-dock .nav-item:nth-child(3) { --dock: #ff3d7f; }
+.app.shell-dock .nav-item:nth-child(4) { --dock: #26c264; }
+.app.shell-dock .nav-item:nth-child(5) { --dock: #2f8bff; }
+.app.shell-dock .nav-item:nth-child(6) { --dock: #14b2a2; }
+.app.shell-dock .nav-item:nth-child(7) { --dock: #6b7280; }
+
+.app.shell-dock .nav-item.active {
+  background: linear-gradient(160deg, color-mix(in srgb, var(--dock) 80%, #fff), var(--dock));
+  color: #fff;
+  outline: 2px solid rgba(255, 255, 255, 0.85);
+  outline-offset: 2px;
+}
+
+.app.shell-dock .nav-label {
+  display: none;
+}
+
+.app.shell-dock .nav-badge {
+  top: -3px;
+  right: -3px;
+}
+
+/* ----- tabs: the menu lives in the top bar (Velocity) ----- */
+
+.app.shell-tabs {
+  --status-height: 46px;
+}
+
+.app.shell-tabs .statusbar {
+  grid-template-columns: auto 1fr auto;
+  gap: 14px;
+}
+
+.app.shell-tabs .statusbar-title {
+  justify-self: center;
+  height: 100%;
+}
+
+.app .nav.nav-tabs {
+  box-shadow: none;
+  width: auto;
+  height: 100%;
+  flex-direction: row;
+  justify-content: center;
+  gap: 2px;
+  padding: 0;
+  background: none;
+  border: none;
+}
+
+.app .nav.nav-tabs .nav-item {
+  flex: none;
+  flex-direction: row;
+  gap: 8px;
+  margin: 0;
+  padding: 0 12px;
+  border-radius: 0;
+  font-size: 13px;
+  font-weight: 800;
+  font-style: italic;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.app .nav.nav-tabs .nav-icon svg {
+  width: 20px;
+  height: 20px;
+}
+
+/* Only the open tab shows its name, so all seven fit */
+.app .nav.nav-tabs .nav-item:not(.active) .nav-label {
+  display: none;
+}
+
+.app .nav.nav-tabs .nav-item.active {
+  background: linear-gradient(0deg, color-mix(in srgb, var(--accent) 22%, transparent), transparent 80%);
+  color: #fff;
+  box-shadow: inset 0 -3px 0 var(--accent);
+}
+
+.app .nav.nav-tabs .nav-badge {
+  top: 8px;
+  right: 4px;
+}
+
+/* ----- float: floating pill over a full-screen home (Studio) ----- */
+
+.app.shell-float .nav {
+  position: absolute;
+  z-index: 6;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 60px;
+  gap: 4px;
+  padding: 8px;
+  border-radius: 30px;
+  background: #fff;
+  border: none;
+  box-shadow: 0 12px 30px -12px rgba(15, 20, 30, 0.45);
+}
+
+.app.shell-float .nav-item {
+  flex: none;
+  width: 44px;
+  height: 44px;
+  margin: 0;
+  border-radius: 50%;
+  color: #5c616b;
+}
+
+.app.shell-float .nav-item.active {
+  background: #111;
+  color: #fff;
+}
+
+.app.shell-float .nav-label {
+  display: none;
+}
+
+.app.shell-float .nav-badge {
+  top: 2px;
+  right: 2px;
+  box-shadow: 0 0 0 2px #fff;
+}
+
+.app.shell-float .statusbar {
+  position: absolute;
+  z-index: 5;
+  top: 0;
+  left: 0;
+  right: 0;
+  padding-left: 88px;
+  border-bottom: none;
+  background: transparent;
+}
+
+.app.shell-float .content {
+  padding: 46px 14px 12px 88px;
+}
+
+.app.shell-float .content.screen-home {
+  padding: 0;
+}
+
+.app.shell-float .content.bleed {
+  padding: 0 0 0 76px;
+}
+
+/* Studio and Slate show their own big clock on the home screen */
+.app:is(.shell-float, .shell-dock) .statusbar:has(+ .content.screen-home) .statusbar-time {
+  visibility: hidden;
+}
+
+/* ----- split: round buttons left and right, like a cockpit (Neon Cockpit) ----- */
+
+.app.shell-split .nav {
+  box-shadow: none;
+  width: 84px;
+  justify-content: center;
+  align-items: center;
+  gap: 18px;
+  padding: 0;
+  background: transparent;
+  border: none;
+}
+
+.app.shell-split .nav-item {
+  flex: none;
+  width: 60px;
+  height: 60px;
+  margin: 0;
+  border-radius: 50%;
+  border: 2px solid var(--ring, var(--accent));
+  color: var(--ring, var(--accent));
+  background: radial-gradient(circle, color-mix(in srgb, var(--ring, var(--accent)) 14%, transparent), transparent 70%);
+  box-shadow: 0 0 14px -4px var(--ring, var(--accent)), inset 0 0 12px -5px var(--ring, var(--accent));
+}
+
+.app.shell-split .nav-right .nav-item {
+  --ring: var(--accent-2);
+}
+
+.app.shell-split .nav-item.active {
+  background: var(--ring, var(--accent));
+  color: #050505;
+}
+
+.app.shell-split .nav-label {
+  display: none;
+}
+
+.app.shell-split .nav-badge {
+  top: -2px;
+  right: -2px;
+}
+
+/* =====================================================================
+ * Panorama home: three panels and page dots
+ * ===================================================================== */
+
+.pano {
+  display: grid;
+  grid-template-rows: 1fr 22px;
+  gap: 8px;
+}
+
+.pano-row {
+  min-height: 0;
+  display: grid;
+  grid-template-columns: 1fr 290px 1fr;
+  gap: 12px;
+}
+
+.pano-panel {
+  position: relative;
+  min-height: 0;
+  overflow: hidden;
+  border-radius: 26px;
+  background: linear-gradient(180deg, #0a1222, #05080f);
+  border: 1px solid rgba(90, 150, 255, 0.18);
+  box-shadow:
+    0 0 40px -18px rgba(58, 139, 255, 0.6),
+    inset 0 1px 0 rgba(150, 200, 255, 0.1);
+}
+
+.pano-map {
+  --map-bg: #050a14;
+  --map-street: rgba(90, 150, 255, 0.12);
+  --map-major: rgba(90, 150, 255, 0.24);
+  --map-block: rgba(58, 139, 255, 0.05);
+  --map-block-line: rgba(90, 150, 255, 0.12);
+}
+
+.pano-map-head {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  right: 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border-radius: 16px;
+  background: rgba(4, 9, 18, 0.82);
+  border: 1px solid rgba(90, 150, 255, 0.25);
+  color: #7fb4ff;
+  text-align: left;
+}
+
+.pano-map-head span {
+  display: flex;
+  flex-direction: column;
+  color: var(--text);
+}
+
+.pano-map-head strong {
+  font-size: 15px;
+}
+
+.pano-map-head small {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.pano-map-foot {
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  bottom: 12px;
+  display: flex;
+  justify-content: space-around;
+  padding: 10px;
+  border-radius: 16px;
+  background: rgba(4, 9, 18, 0.85);
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.pano-map-foot b {
+  color: var(--text);
+  font-size: 20px;
+  font-weight: 500;
+}
+
+.pano-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+}
+
+.pano-dial-box {
+  position: relative;
+  width: 236px;
+  height: 236px;
+}
+
+.pano-dial {
+  width: 100%;
+  height: 100%;
+}
+
+.pano-dial-face {
+  fill: #060b16;
+  stroke: rgba(90, 150, 255, 0.12);
+}
+
+.pano-dial-track,
+.pano-dial-glow,
+.pano-dial-fill {
+  fill: none;
+  stroke-linecap: round;
+}
+
+.pano-dial-track {
+  stroke: rgba(90, 150, 255, 0.14);
+  stroke-width: 8;
+}
+
+.pano-dial-glow {
+  stroke: var(--accent);
+  stroke-width: 24;
+  opacity: 0.16;
+}
+
+.pano-dial-fill {
+  stroke: #6aa8ff;
+  stroke-width: 8;
+}
+
+.pano-dial-text {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.pano-dial-text strong {
+  font-size: 66px;
+  font-weight: 200;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  text-shadow: 0 0 24px rgba(58, 139, 255, 0.5);
+}
+
+.pano-dial-text small {
+  color: var(--muted);
+}
+
+.pano-dial-text span {
+  margin-top: 8px;
+  padding: 2px 10px;
+  border-radius: 99px;
+  border: 1px solid rgba(90, 150, 255, 0.3);
+  font-size: 12px;
+  color: #a9c6f5;
+}
+
+.pano-volume {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.pano-volume button {
+  width: 50px;
+  height: 50px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  border: 1px solid rgba(90, 150, 255, 0.35);
+  background: rgba(58, 139, 255, 0.08);
+  color: #cfe0ff;
+}
+
+.pano-volume span {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 60px;
+}
+
+.pano-volume small {
+  font-size: 11px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.pano-volume b {
+  font-size: 22px;
+  font-weight: 500;
+}
+
+.pano-media {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 16px;
+}
+
+.pano-art .artwork {
+  width: 170px;
+  height: 170px;
+  border-radius: 20px;
+  box-shadow: 0 18px 40px -16px rgba(58, 139, 255, 0.75);
+}
+
+.pano-media-text {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 100%;
+}
+
+.pano-media-text strong,
+.pano-media-text span {
+  max-width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pano-media-text strong {
+  font-size: 18px;
+}
+
+.pano-media-text span {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.pano-progress {
+  width: 80%;
+  height: 4px;
+  border-radius: 2px;
+  background: rgba(90, 150, 255, 0.16);
+}
+
+.pano-progress i {
+  display: block;
+  height: 100%;
+  border-radius: 2px;
+  background: #6aa8ff;
+  box-shadow: 0 0 10px #3a8bff;
+}
+
+.pano-controls .hc-play {
+  background: radial-gradient(circle at 50% 35%, #5aa0ff, #1650c8);
+  color: #fff;
+  box-shadow: 0 0 18px -4px #3a8bff;
+}
+
+.pano-dots {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+}
+
+.pano-dots button {
+  width: 30px;
+  height: 18px;
+  display: grid;
+  place-items: center;
+  border-radius: 9px;
+  background: rgba(255, 255, 255, 0.12);
+  color: var(--muted);
+}
+
+.pano-dots button.on {
+  width: 44px;
+  background: var(--accent);
+  color: #fff;
+}
+
+.pano-shortcuts {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+  gap: 14px;
+}
+
+.pano-shortcuts button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  border-radius: 26px;
+  background: linear-gradient(180deg, #0a1222, #05080f);
+  border: 1px solid rgba(90, 150, 255, 0.16);
+  font-size: 15px;
+}
+
+.pano-shortcuts span {
+  width: 76px;
+  height: 76px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  border: 1px solid rgba(90, 150, 255, 0.35);
+  background: radial-gradient(circle at 50% 30%, rgba(58, 139, 255, 0.3), rgba(0, 0, 0, 0.3));
+  color: #cfe0ff;
+  box-shadow: 0 0 22px -8px #3a8bff;
+}
+
+/* =====================================================================
+ * Studio home: white cards floating over a light map
+ * ===================================================================== */
+
+.studio {
+  --map-bg: #e3e6ea;
+  --map-street: #f8f9fa;
+  --map-major: #ffffff;
+  --map-block: #d6dae0;
+  --map-block-line: #cfd4db;
+  --map-route: #111;
+  height: 100%;
+}
+
+.studio .map-street.major {
+  stroke-width: 10;
+}
+
+.studio-card {
+  position: absolute;
+  z-index: 1;
+  background: #fff;
+  border-radius: 22px;
+  box-shadow: 0 14px 34px -16px rgba(20, 25, 35, 0.4);
+  color: #111;
+}
+
+.studio-clock {
+  left: 88px;
+  top: 44px;
+  display: flex;
+  flex-direction: column;
+  padding: 12px 20px 14px;
+}
+
+.studio-clock strong {
+  font-size: 44px;
+  font-weight: 300;
+  line-height: 1;
+  letter-spacing: -1px;
+  font-variant-numeric: tabular-nums;
+}
+
+.studio-clock span {
+  margin-top: 4px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.studio-clock small {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  color: #6b7078;
+}
+
+.studio-nav {
+  left: 88px;
+  top: 158px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 9px 18px 9px 9px;
+  text-align: left;
+}
+
+.studio-nav > span:last-child {
+  display: flex;
+  flex-direction: column;
+}
+
+.studio-nav strong {
+  font-size: 16px;
+}
+
+.studio-nav small {
+  font-size: 12px;
+  color: #6b7078;
+}
+
+.studio-black {
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: #111;
+  color: #fff;
+}
+
+.studio-car {
+  left: 88px;
+  bottom: 14px;
+  width: 330px;
+  padding: 12px 14px;
+}
+
+.studio-car-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.studio-car-head span {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  font-size: 13px;
+  color: #6b7078;
+}
+
+.studio-car-head small {
+  display: none;
+}
+
+.studio-car-head strong {
+  font-size: 30px;
+  font-weight: 600;
+  color: #111;
+  font-variant-numeric: tabular-nums;
+}
+
+.studio-lock {
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: #f0f1f3;
+}
+
+.studio-lock.on {
+  background: #111;
+  color: #fff;
+}
+
+.studio-car-art {
+  display: block;
+  width: 100%;
+  height: 92px;
+}
+
+.studio-car-art .car-art {
+  width: 100%;
+  height: 100%;
+}
+
+.studio-car-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+  margin-top: 6px;
+}
+
+.studio-car-stats span {
+  display: flex;
+  flex-direction: column;
+  padding: 6px 8px;
+  border-radius: 12px;
+  background: #f3f4f6;
+}
+
+.studio-car-stats small {
+  font-size: 11px;
+  color: #6b7078;
+}
+
+.studio-car-stats b {
+  font-size: 14px;
+}
+
+.studio-car-stats .warn {
+  background: #ffe8e6;
+  color: #c62a1f;
+}
+
+.studio-music {
+  right: 14px;
+  top: 44px;
+  width: 286px;
+  display: grid;
+  grid-template-columns: 88px 1fr;
+  gap: 10px 12px;
+  padding: 12px;
+}
+
+.studio-art .artwork {
+  width: 88px;
+  height: 88px;
+  border-radius: 16px;
+  background: #eceef1;
+}
+
+.studio-music-text {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-width: 0;
+  text-align: left;
+}
+
+.studio-music-text strong,
+.studio-music-text span {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.studio-music-text strong {
+  font-size: 16px;
+}
+
+.studio-music-text span {
+  font-size: 13px;
+  color: #6b7078;
+}
+
+.studio-progress {
+  grid-column: 1 / -1;
+  height: 4px;
+  border-radius: 2px;
+  background: #e6e8eb;
+}
+
+.studio-progress i {
+  display: block;
+  height: 100%;
+  border-radius: 2px;
+  background: #111;
+}
+
+.studio-controls {
+  grid-column: 1 / -1;
+}
+
+.studio-controls .hc-play {
+  background: #111;
+  color: #fff;
+}
+
+.studio-chips {
+  position: absolute;
+  z-index: 1;
+  right: 14px;
+  bottom: 14px;
+  width: 286px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.studio-chips button {
+  height: 46px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border-radius: 23px;
+  background: #fff;
+  box-shadow: 0 10px 24px -14px rgba(20, 25, 35, 0.45);
+  color: #111;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.studio .map-arrow {
+  left: 58%;
+}
+
+/* =====================================================================
+ * Slate home: greeting, widgets, now playing, song list
+ * ===================================================================== */
+
+.slate {
+  display: grid;
+  grid-template-columns: 296px 1fr 292px;
+  grid-template-rows: 50px 1fr;
+  gap: 10px 14px;
+}
+
+.slate-head {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  padding: 0 4px;
+}
+
+.slate-head h1 {
+  font-size: 26px;
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+.slate-head span {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.slate-head > strong {
+  font-size: 38px;
+  font-weight: 300;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.slate-widgets {
+  min-height: 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  gap: 10px;
+}
+
+.slate-widget {
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 12px 14px;
+  border-radius: 22px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  text-align: left;
+}
+
+.slate-widget.warn {
+  border-color: var(--warn);
+}
+
+.slate-widget-head {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.slate-widget strong {
+  margin-top: auto;
+  font-size: 30px;
+  font-weight: 600;
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+}
+
+.slate-widget small {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.slate-meter {
+  width: 100%;
+  height: 6px;
+  margin-top: 6px;
+  border-radius: 3px;
+  background: var(--surface-3);
+}
+
+.slate-meter b {
+  display: block;
+  height: 100%;
+  border-radius: 3px;
+  background: linear-gradient(90deg, #26c264, #a3e635);
+}
+
+.slate-now {
+  position: relative;
+  min-height: 0;
+  overflow: hidden;
+  display: grid;
+  grid-template-columns: 124px 1fr;
+  grid-template-rows: 1fr auto auto;
+  gap: 10px 16px;
+  padding: 16px 18px 12px;
+  border-radius: 26px;
+  background:
+    radial-gradient(120% 90% at 0% 0%, hsl(var(--song-hue) 70% 45% / 0.85), transparent 60%),
+    linear-gradient(135deg, hsl(var(--song-hue) 45% 28%), hsl(calc(var(--song-hue) + 50) 45% 12%));
+  color: #fff;
+}
+
+.slate-now-art .artwork {
+  width: 124px;
+  height: 124px;
+  border-radius: 18px;
+  box-shadow: 0 16px 30px -14px rgba(0, 0, 0, 0.7);
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+}
+
+.slate-now-text {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-width: 0;
+  text-align: left;
+}
+
+.slate-now-text small {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  opacity: 0.75;
+}
+
+.slate-now-text strong {
+  font-size: 24px;
+  line-height: 1.15;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.slate-now-text span {
+  font-size: 14px;
+  opacity: 0.8;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.slate-now-progress {
+  grid-column: 1 / -1;
+}
+
+.slate-now-progress i {
+  display: block;
+  height: 5px;
+  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.slate-now-progress b {
+  display: block;
+  height: 100%;
+  border-radius: 3px;
+  background: #fff;
+}
+
+.slate-now-progress span {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 3px;
+  font-size: 11px;
+  opacity: 0.75;
+}
+
+.slate-controls {
+  grid-column: 1 / -1;
+  gap: 26px;
+}
+
+.slate-controls button {
+  color: #fff;
+}
+
+.slate-controls .hc-play {
+  width: 58px;
+  height: 58px;
+  background: #fff;
+  color: #111;
+}
+
+.slate-list {
+  min-height: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 12px;
+  border-radius: 22px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+}
+
+.slate-list h2 {
+  justify-content: space-between;
+  margin: 0 4px 4px;
+}
+
+.slate-list h2 button {
+  font-size: 13px;
+  color: var(--accent);
+}
+
+.slate-empty {
+  font-size: 13px;
+  color: var(--muted);
+  padding: 4px;
+}
+
+.slate-song {
+  display: grid;
+  grid-template-columns: 40px 1fr auto;
+  align-items: center;
+  gap: 10px;
+  padding: 5px 4px;
+  border-radius: 12px;
+  text-align: left;
+}
+
+.slate-song .artwork {
+  width: 40px;
+  height: 40px;
+  border-radius: 9px;
+}
+
+.slate-song .artwork.empty svg {
+  width: 20px;
+  height: 20px;
+}
+
+.slate-song span {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.slate-song strong,
+.slate-song span small {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.slate-song strong {
+  font-size: 14px;
+}
+
+.slate-song small {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.slate-song.on {
+  background: var(--surface-2);
+}
+
+.slate-song.on strong {
+  color: var(--accent);
+}
+
+/* =====================================================================
+ * Velocity home: drive modes, race readout, angled shortcuts
+ * ===================================================================== */
+
+.velo {
+  --cut: 16px;
+  display: grid;
+  grid-template-columns: 224px 1fr 270px;
+  grid-template-rows: 1fr 78px;
+  gap: 10px;
+}
+
+.velo > section {
+  min-height: 0;
+  background: linear-gradient(160deg, #1a1a1d, #111113);
+  clip-path: polygon(var(--cut) 0, 100% 0, 100% calc(100% - var(--cut)), calc(100% - var(--cut)) 100%, 0 100%, 0 var(--cut));
+}
+
+.velo-modes {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 14px;
+}
+
+.velo-modes > small,
+.velo-stats small,
+.velo-readout small {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+}
+
+.velo-mode {
+  --mode: #3d8bff;
+  height: 58px;
+  padding: 0 18px;
+  text-align: left;
+  font-size: 22px;
+  font-weight: 800;
+  font-style: italic;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  background: #202024;
+  clip-path: polygon(12px 0, 100% 0, calc(100% - 12px) 100%, 0 100%);
+  border-left: 5px solid var(--mode);
+}
+
+.velo-mode.eco { --mode: #14d39a; }
+.velo-mode.sport { --mode: #ff2d3a; }
+
+.velo-mode:not(.on) {
+  border-left-color: transparent;
+  background:
+    linear-gradient(90deg, color-mix(in srgb, var(--mode) 30%, transparent) 0 18px, transparent 18px),
+    #202024;
+}
+
+.velo-mode.on {
+  background: var(--mode);
+  color: #060606;
+}
+
+.velo-modes p {
+  margin-top: auto;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.velo-speed {
+  display: flex;
+  flex-direction: column;
+  padding: 16px 22px;
+}
+
+.velo-rpm {
+  display: grid;
+  grid-template-columns: repeat(28, 1fr);
+  gap: 3px;
+  height: 26px;
+}
+
+.velo-rpm i {
+  background: #26262b;
+  transform: skewX(-20deg);
+}
+
+.velo-rpm i.on {
+  background: var(--accent);
+}
+
+.velo-rpm i.red {
+  background: #3a1517;
+}
+
+.velo-rpm i.red.on {
+  background: #ff2d3a;
+}
+
+.velo-readout {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  margin-top: 6px;
+}
+
+.velo-readout > strong {
+  font-size: 128px;
+  font-weight: 800;
+  font-style: italic;
+  line-height: 1;
+  letter-spacing: -4px;
+  font-variant-numeric: tabular-nums;
+}
+
+.velo-readout span {
+  display: flex;
+  flex-direction: column;
+}
+
+.velo-readout b {
+  font-size: 26px;
+  font-style: italic;
+  font-variant-numeric: tabular-nums;
+}
+
+.velo-gear {
+  margin-left: auto;
+  width: 88px;
+  height: 88px;
+  display: grid;
+  place-items: center;
+  font-size: 60px;
+  font-weight: 800;
+  font-style: italic;
+  color: var(--accent);
+  border: 3px solid var(--accent);
+  clip-path: polygon(14px 0, 100% 0, 100% calc(100% - 14px), calc(100% - 14px) 100%, 0 100%, 0 14px);
+}
+
+.velo-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  margin-top: auto;
+}
+
+.velo-stats span {
+  display: flex;
+  flex-direction: column;
+  padding-left: 10px;
+  border-left: 3px solid var(--accent);
+  font-size: 20px;
+  font-weight: 700;
+  font-style: italic;
+}
+
+.velo-stats .warn {
+  border-color: var(--bad);
+  color: var(--bad);
+}
+
+.velo-music {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px;
+}
+
+.velo-art {
+  min-height: 0;
+  flex: 1;
+}
+
+.velo-art .artwork {
+  width: 100%;
+  height: 100%;
+  border-radius: 0;
+  clip-path: polygon(12px 0, 100% 0, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0 100%, 0 12px);
+}
+
+.velo-music-text {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+  min-width: 0;
+}
+
+.velo-music-text strong,
+.velo-music-text span {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.velo-music-text strong {
+  font-size: 16px;
+  font-style: italic;
+}
+
+.velo-music-text span {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.velo-controls .hc-play {
+  border-radius: 0;
+  clip-path: polygon(10px 0, 100% 0, calc(100% - 10px) 100%, 0 100%);
+  width: 70px;
+}
+
+.velo-shortcuts {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 8px;
+}
+
+.velo-shortcuts button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background: linear-gradient(160deg, #1d1d21, #131315);
+  clip-path: polygon(16px 0, 100% 0, calc(100% - 16px) 100%, 0 100%);
+  font-size: 14px;
+  font-weight: 800;
+  font-style: italic;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.velo-shortcuts svg {
+  color: var(--accent);
+}
+
+/* =====================================================================
+ * Neon Cockpit home: LED rings, playlist, map strip
+ * ===================================================================== */
+
+.led-ring {
+  position: relative;
+  flex: none;
+}
+
+.led-ring > svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.led-ring path {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.07);
+}
+
+.led-ring.orange path.on {
+  stroke: #ff7a1a;
+}
+
+.led-ring.blue path.on {
+  stroke: #1ea0ff;
+}
+
+/* A soft painted glow behind the ring (no live blur) */
+.led-ring::before {
+  content: '';
+  position: absolute;
+  inset: 4%;
+  border-radius: 50%;
+  background: radial-gradient(circle, transparent 55%, var(--led-glow) 68%, transparent 74%);
+  opacity: 0.35;
+}
+
+.led-ring.orange {
+  --led-glow: rgba(255, 122, 26, 0.5);
+}
+
+.led-ring.blue {
+  --led-glow: rgba(30, 160, 255, 0.5);
+}
+
+.led-ring-text {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.cockpit {
+  display: grid;
+  grid-template-columns: 140px 1fr 290px;
+  grid-template-rows: 1fr 104px;
+  gap: 12px;
+}
+
+.cockpit-small {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+}
+
+.cockpit-small .led-ring-text {
+  gap: 2px;
+}
+
+.cockpit-small strong {
+  font-size: 19px;
+  font-weight: 500;
+}
+
+.cockpit-small small {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.cockpit-small .blue svg + .led-ring-text {
+  color: #1ea0ff;
+}
+
+.cockpit-main {
+  position: relative;
+  min-height: 0;
+}
+
+.cockpit-main .led-ring {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.cockpit-main .led-ring-text strong {
+  font-size: 76px;
+  font-weight: 200;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  text-shadow: 0 0 22px rgba(255, 122, 26, 0.6);
+}
+
+.cockpit-main .led-ring-text small {
+  color: #ff9a52;
+  font-size: 13px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.cockpit-main .led-ring-text span {
+  margin-top: 6px;
+  font-size: 13px;
+  color: #1ea0ff;
+}
+
+.cockpit-music {
+  grid-row: 1 / 3;
+  grid-column: 3;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 14px;
+  border-radius: 22px;
+  border: 1px solid rgba(30, 160, 255, 0.35);
+  background: linear-gradient(180deg, #080b10, #040507);
+  box-shadow:
+    0 0 26px -12px #1ea0ff,
+    inset 0 0 18px -12px #1ea0ff;
+}
+
+.cockpit-now {
+  display: grid;
+  grid-template-columns: 70px 1fr;
+  align-items: center;
+  gap: 12px;
+  text-align: left;
+}
+
+.cockpit-now .artwork {
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  box-shadow:
+    0 0 0 2px #ff7a1a,
+    0 0 16px -2px #ff7a1a;
+}
+
+.cockpit-now span {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.cockpit-now strong,
+.cockpit-now small {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cockpit-now strong {
+  font-size: 16px;
+}
+
+.cockpit-now small {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.cockpit-controls .hc-play {
+  background: transparent;
+  color: #ff7a1a;
+  box-shadow:
+    0 0 0 2px #ff7a1a,
+    0 0 16px -3px #ff7a1a;
+}
+
+.cockpit-list {
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  overflow: hidden;
+}
+
+.cockpit-list button {
+  display: grid;
+  grid-template-columns: 36px 1fr;
+  align-items: center;
+  gap: 10px;
+  padding: 5px;
+  border-radius: 12px;
+  border: 1px solid #1b1e24;
+  text-align: left;
+  font-size: 13px;
+}
+
+.cockpit-list button span {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cockpit-list .artwork {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+}
+
+.cockpit-list .artwork.empty svg {
+  width: 18px;
+  height: 18px;
+}
+
+.cockpit-list button.on {
+  border-color: #ff7a1a;
+  color: #ff9a52;
+}
+
+.cockpit-list p {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.cockpit-map {
+  grid-column: 1 / 3;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 122, 26, 0.3);
+  --map-bg: #050608;
+  --map-street: rgba(255, 122, 26, 0.1);
+  --map-major: rgba(255, 122, 26, 0.24);
+  --map-block: rgba(30, 160, 255, 0.04);
+  --map-block-line: rgba(30, 160, 255, 0.14);
+  --map-route: #1ea0ff;
+}
+
+.cockpit-map-label {
+  position: absolute;
+  top: 10px;
+  left: 12px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  border-radius: 99px;
+  border: 1px solid rgba(255, 122, 26, 0.5);
+  background: rgba(5, 6, 8, 0.85);
+  color: #ff9a52;
+  font-size: 12px;
+}
+
+/* ---------- Settings → Simulator: light test ---------- */
+
+.light-test {
+  margin-top: 8px;
+}
+
+.light-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.light-grid button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 6px 2px;
+  border-radius: 10px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+}
+
+.light-grid button.active {
+  border-color: var(--accent);
+}
+
+.light-grid .lamp {
+  --lamp-size: 30px;
+  background: #050505;
+  border-radius: 6px;
+  padding: 2px;
+}
+
+.light-grid small {
+  font-size: 11px;
+  color: var(--muted);
+  text-align: center;
+  line-height: 1.15;
+}

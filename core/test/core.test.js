@@ -131,6 +131,18 @@ test('simulator: cluster lights do a bulb check, then follow forced warnings', a
     assert.match(hub.get('vehicle.gear'), /^[1-5]$/);
     assert.ok(hub.get('vehicle.odometer') >= 187_432);
     await assert.rejects(hub.command('sim.lamp', { name: 'nope', on: true }), /Lamp must be/);
+
+    // Light test: every light on, then back to normal.
+    await hub.command('sim.lampsAll', { on: true });
+    await new Promise((r) => setTimeout(r, 600));
+    const lamps = hub.get('vehicle.lamps');
+    for (const name of ['tirePressure', 'dsc', 'parkBrake', 'service', 'checkEngine', 'cruise', 'highBeam']) {
+      assert.equal(lamps[name], true, `${name} on`);
+    }
+    await hub.command('sim.lampsAll', { on: false });
+    await new Promise((r) => setTimeout(r, 600));
+    assert.equal(hub.get('vehicle.lamps').tirePressure, false);
+    assert.deepEqual(Object.values(hub.get('sim.lampsForced')).filter(Boolean), []);
   } finally {
     sim.stop();
   }

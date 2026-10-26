@@ -83,10 +83,14 @@ export function IndicatorRow({ lamps, className = '' }) {
   );
 }
 
-export function WarningRow({ lamps, className = '' }) {
+/**
+ * Warning lights. There are 14, so like a modern cluster only the lit ones
+ * are shown (all: true shows the unlit ones too, dimmed).
+ */
+export function WarningRow({ lamps, className = '', all = false }) {
   return (
     <div className={`warning-row ${className}`}>
-      {WARNINGS.map((n) => (
+      {WARNINGS.filter((n) => all || lamps[n]).map((n) => (
         <Lamp key={n} name={n} on={lamps[n]} />
       ))}
     </div>
