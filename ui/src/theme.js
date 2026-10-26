@@ -14,7 +14,7 @@ import { getPref, usePref } from './prefs.js';
  */
 export const THEMES = [
   { id: 'media', name: 'Media System', description: 'The first design: Ibiza layout, black with copper', swatch: ['#0b0b0c', '#e0823d'], shell: 'side', home: 'tiles', cluster: 'classic' },
-  { id: 'design1', name: 'Design1', description: 'Slate grey and blue, car from above', swatch: ['#22252f', '#2d7bff'], shell: 'side', home: 'design1', cluster: 'halo' },
+  { id: 'design1', name: 'Design1', description: 'Dark slate and blue, your car photo', swatch: ['#16181e', '#1f6fff'], shell: 'side', home: 'design1', cluster: 'halo' },
   { id: 'panorama', name: 'Panorama', description: 'Black glass, blue glow, three big panels', swatch: ['#020409', '#3a8bff'], shell: 'rail', home: 'panorama', cluster: 'aura' },
   { id: 'studio', name: 'Studio', description: 'Light: white cards floating over the map', swatch: ['#e9ebee', '#111111'], shell: 'float', home: 'studio', cluster: 'capsule' },
   { id: 'slate', name: 'Slate', description: 'Phone-like: widgets, song list, bottom dock', swatch: ['#15171c', '#7c5cff'], shell: 'dock', home: 'slate', cluster: 'mono' },
@@ -63,7 +63,14 @@ const RENAMED = {
   neon: 'cockpit',
 };
 
+/**
+ * While working on one style, every screen uses it and the style choice is
+ * hidden. Set to null to choose freely again.
+ */
+export const LOCKED_THEME = 'design1';
+
 const valid = (id) => {
+  if (LOCKED_THEME) return LOCKED_THEME;
   const name = RENAMED[id] ?? id;
   return THEMES.some((t) => t.id === name) ? name : 'media';
 };
@@ -95,7 +102,8 @@ export function nextId(list, id) {
 
 /** Settings → Display → "Design buttons" (temporary, for trying the styles). */
 export function useDesignButtons() {
-  return usePref('design.buttons', true);
+  const [show, setShow] = usePref('design.buttons', true);
+  return [!LOCKED_THEME && show, setShow];
 }
 
 export function useTheme() {
@@ -117,6 +125,6 @@ export function useClusterFace() {
 export function useHomeLayout() {
   const [theme] = usePref('theme', 'media');
   const [layout, setLayout] = usePref('home.layout', 'auto');
-  const chosen = HOME_LAYOUTS.some(([id]) => id === layout) ? layout : 'auto';
+  const chosen = !LOCKED_THEME && HOME_LAYOUTS.some(([id]) => id === layout) ? layout : 'auto';
   return [chosen === 'auto' ? themeInfo(theme).home : chosen, chosen, setLayout];
 }

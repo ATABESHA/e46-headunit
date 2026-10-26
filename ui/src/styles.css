@@ -2129,9 +2129,10 @@ code.block {
 }
 
 .d1-card {
+  border: 1px solid rgba(255, 255, 255, 0.055);
   position: relative;
   border-radius: 24px;
-  background: linear-gradient(180deg, #2a2e3a, #252935);
+  background: linear-gradient(180deg, #1f2229, #1a1c22);
   min-height: 0;
   color: var(--text);
 }
@@ -2143,87 +2144,135 @@ code.block {
   overflow: hidden;
 }
 
-/* The car comes in from the top edge; a blue light shines under its nose */
-.d1-car-art {
+/* Car photo (ui/public/face1.jpg). Its edges fade out, and the card behind
+   it goes from the photo's studio grey into the slate of the card. */
+.d1-car {
+  background:
+    radial-gradient(120% 190px at 50% 90px, #343437 0%, #26272b 55%, transparent 100%),
+    linear-gradient(180deg, #232428 0%, #1d1f25 42%, #1a1c22 100%);
+}
+
+.d1-face {
   position: relative;
-  height: 162px;
-  flex: none;
-  display: flex;
-  justify-content: center;
-  align-items: flex-end;
-  overflow: hidden;
-  isolation: isolate;
-}
-
-.d1-car-art::before {
-  content: '';
-  position: absolute;
-  left: 10%;
-  right: 10%;
-  bottom: -40px;
-  height: 120px;
-  z-index: -1;
-  background: radial-gradient(closest-side, color-mix(in srgb, var(--accent) 45%, transparent), transparent);
-}
-
-.d1-car-art .car-art {
-  width: 132px;
-  height: 290px;
-  flex: none;
-  margin-bottom: 4px;
-}
-
-.d1-speed {
-  margin-top: 6px;
-}
-
-.d1-speed small {
   display: block;
+  flex: none;
+  align-self: center;
+  width: calc(100% + 40px);
+  height: 178px;
+  overflow: hidden;
+}
+
+.d1-face img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 40%;
+  /* Fade the left, right and bottom edges into the card */
+  -webkit-mask-image:
+    linear-gradient(90deg, transparent 0%, #000 20%, #000 80%, transparent 100%),
+    linear-gradient(180deg, #000 62%, transparent 100%);
+  -webkit-mask-composite: source-in;
+  mask-image:
+    linear-gradient(90deg, transparent 0%, #000 20%, #000 80%, transparent 100%),
+    linear-gradient(180deg, #000 62%, transparent 100%);
+  mask-composite: intersect;
+}
+
+.d1-hello {
+  display: flex;
+  flex-direction: column;
+  margin-top: 2px;
+}
+
+.d1-hello strong {
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: -0.2px;
+}
+
+.d1-hello small {
+  font-size: 13px;
   color: var(--muted);
+}
+
+.d1-check {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: auto;
+  padding: 11px 14px;
+  border-radius: 14px;
+  background: #22252d;
+  border: 1px solid rgba(255, 255, 255, 0.06);
   font-size: 14px;
+  text-align: left;
 }
 
-.d1-speed span {
+.d1-check span {
   color: var(--muted);
-  font-size: 20px;
 }
 
-.d1-speed strong {
-  color: var(--text);
-  font-size: 46px;
-  font-weight: 400;
-  line-height: 1.05;
-  font-variant-numeric: tabular-nums;
+.d1-check strong {
+  margin-left: auto;
+  font-weight: 600;
+}
+
+.d1-check > svg:first-child {
+  color: var(--good);
+}
+
+.d1-check.warn > svg:first-child,
+.d1-check.warn strong {
+  color: var(--warn);
+}
+
+.d1-check.bad > svg:first-child,
+.d1-check.bad strong {
+  color: var(--bad);
+}
+
+.d1-chevron {
+  transform: rotate(180deg);
+  color: var(--muted);
 }
 
 .d1-tiles {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 10px;
-  margin-top: 12px;
+  gap: 8px;
+  margin-top: 10px;
 }
 
 .d1-tile {
   position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  padding: 12px;
+  min-width: 0;
+  display: grid;
+  grid-template-columns: 30px 1fr;
+  grid-template-rows: auto auto;
+  column-gap: 10px;
+  align-items: center;
+  padding: 9px 10px;
   border-radius: 14px;
-  background: #2f3341;
+  background: #24272f;
   border: 1px solid rgba(255, 255, 255, 0.04);
   text-align: left;
 }
 
 .d1-tile-icon {
+  grid-row: 1 / 3;
   display: grid;
   place-items: center;
-  width: 34px;
-  height: 34px;
-  margin-bottom: 10px;
+  width: 30px;
+  height: 30px;
   border-radius: 50%;
   background: var(--accent);
   color: #fff;
+}
+
+.d1-tile-icon.off {
+  background: #30333c;
+  color: #a3a9b8;
 }
 
 .d1-tile-icon.alert {
@@ -2233,72 +2282,33 @@ code.block {
 
 .d1-tile-info {
   position: absolute;
-  top: 12px;
-  right: 12px;
+  top: 6px;
+  right: 6px;
   color: var(--muted);
 }
 
 .d1-tile strong {
+  max-width: 100%;
   font-size: 15px;
   font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .d1-tile small {
+  min-width: 0;
   color: var(--muted);
   font-size: 12px;
-}
-
-.d1-meter {
-  margin-top: auto;
-  padding-top: 12px;
-}
-
-.d1-meter-head {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 8px;
-  font-size: 15px;
-}
-
-.d1-meter-head span {
-  color: var(--muted);
-}
-
-.d1-meter-head strong {
-  font-weight: 500;
-}
-
-.d1-bars {
-  display: flex;
-  align-items: stretch;
-  gap: 2px;
-  height: 22px;
-}
-
-.d1-bars i {
-  flex: 1;
-  border-radius: 1px;
-  background: #4a4f5e;
-}
-
-.d1-bars i.on {
-  background: color-mix(in srgb, var(--accent) 80%, #1a2b55);
-}
-
-.d1-bars i.mark {
-  background: #5d9bff;
-  margin: -3px 0;
-  border-radius: 2px;
-}
-
-.d1-bars.low i.on {
-  background: var(--bad);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* Map card */
 
 .d1-map {
-  --map-bg: #262a35;
+  --map-bg: #1a1d23;
   background: var(--map-bg);
 }
 
@@ -2343,8 +2353,8 @@ code.block {
   display: grid;
   place-items: center;
   border-radius: 50%;
-  background: #343947;
-  color: #9aa2b5;
+  background: #2a2d35;
+  color: #a1a8b8;
 }
 
 .d1-bottom {
@@ -2358,7 +2368,7 @@ code.block {
 }
 
 .d1-bottom > .d1-card {
-  background: #2c303d;
+  background: #21242b;
   border: 1px solid rgba(255, 255, 255, 0.05);
   border-radius: 16px;
   box-shadow: 0 14px 30px -18px rgba(0, 0, 0, 0.8);
@@ -2380,7 +2390,7 @@ code.block {
   width: 42px;
   height: 42px;
   border-radius: 12px;
-  background: #393e4c;
+  background: #2f323b;
 }
 
 .d1-trip-head span:last-child {
@@ -2470,7 +2480,7 @@ code.block {
   display: grid;
   place-items: center;
   border-radius: 50%;
-  background: #3b404f;
+  background: #32353e;
 }
 
 .d1-slider {
@@ -2478,7 +2488,7 @@ code.block {
   height: 3px;
   margin: 8px 6px 6px;
   border-radius: 2px;
-  background: #4a4f5e;
+  background: #3d414b;
 }
 
 .d1-slider i {
@@ -2496,7 +2506,7 @@ code.block {
   margin: -7px 0 0 -7px;
   border-radius: 50%;
   background: #fff;
-  border: 2px solid #2c303d;
+  border: 2px solid #21242b;
 }
 
 .d1-times {

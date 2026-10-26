@@ -133,6 +133,11 @@ graphics numbers in the performance display.
 
 ## Styles, cluster designs and your car
 
+**For now** the instrument cluster is paused (`CLUSTER_ENABLED` in `ui/src/view.js` and
+`ui/electron/main.cjs`; start with `--cluster` to see it anyway) and the style is fixed to
+**Design1** (`LOCKED_THEME` in `ui/src/theme.js`; set it to `null` to choose again). The
+Design1 car photo is `ui/public/face1.jpg`.
+
 Settings → Display → **Style** changes much more than colours: each style has its own
 menu position, home screen, buttons and cluster design. While trying them out, the
 **Style** button in the status bar (home screen) jumps to the next one, and the cluster has

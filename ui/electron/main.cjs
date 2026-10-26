@@ -20,6 +20,8 @@ app.commandLine.appendSwitch('enable-gpu-rasterization');
 const kiosk = process.argv.includes('--kiosk');
 const devUrl = process.env.E46_DEV_URL;
 
+// false = the instrument cluster window does not open by itself (paused for now).
+const CLUSTER_ENABLED = false;
 const windows = { headunit: null, cluster: null };
 const SIZES = { headunit: { width: 1082, height: 480 }, cluster: { width: 1920, height: 720 } };
 const PAGES = { headunit: 'index.html', cluster: 'cluster.html' };
@@ -154,10 +156,13 @@ app.whenReady().then(() => {
   session.defaultSession.setPermissionCheckHandler((_wc, permission) => allowed.has(permission));
 
   createWindow('headunit', displayFor('headunit'));
-  if (screen.getAllDisplays().length > 1 || process.argv.includes('--cluster')) openCluster();
+  // The cluster is switched off for now (work on the head unit first).
+  // Start with --cluster, or set CLUSTER_ENABLED = true, to bring it back.
+  if (CLUSTER_ENABLED && screen.getAllDisplays().length > 1) openCluster();
+  if (process.argv.includes('--cluster')) openCluster();
 
   // Screens plugged in or out while running.
-  screen.on('display-added', () => openCluster());
+  screen.on('display-added', () => CLUSTER_ENABLED && openCluster());
   screen.on('display-removed', () => {
     if (windows.cluster && screen.getAllDisplays().length < 2 && !process.argv.includes('--cluster')) windows.cluster.close();
   });

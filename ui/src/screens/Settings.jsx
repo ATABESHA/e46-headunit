@@ -3,10 +3,10 @@ import { command, useConnected, useTopic } from '../hub.js';
 import { Icon } from '../icons.jsx';
 import { CameraView, useCameras } from '../camera.jsx';
 import { usePref } from '../prefs.js';
-import { CLUSTER_FACES, DRIVE_MODES, HOME_LAYOUTS, THEMES, useClusterFace, useDesignButtons, useDriveMode, useHomeLayout, useTheme } from '../theme.js';
+import { CLUSTER_FACES, DRIVE_MODES, HOME_LAYOUTS, LOCKED_THEME, THEMES, themeInfo, useClusterFace, useDesignButtons, useDriveMode, useHomeLayout, useTheme } from '../theme.js';
 import { Lamp, LAMP_NAMES } from '../cluster/Lamps.jsx';
 import { PAINTS, usePaint } from '../CarArt.jsx';
-import { useSwapButton } from '../view.js';
+import { CLUSTER_ENABLED, useSwapButton } from '../view.js';
 import { Stepper } from '../widgets.jsx';
 import { FX_LEVELS, useFx } from '../fx.jsx';
 import SoftwareUpdate from './SoftwareUpdate.jsx';
@@ -88,33 +88,47 @@ function Display() {
   const [drive, setDrive] = useDriveMode();
   return (
     <div className="settings-body">
-      <div className="theme-grid">
-        {THEMES.map((t) => (
-          <button key={t.id} className={`theme-option ${theme === t.id ? 'active' : ''}`} onClick={() => setTheme(t.id)}>
-            <span className="theme-preview" style={{ background: t.swatch[0] }}>
-              <span style={{ background: t.swatch[1] }} />
-            </span>
-            <strong>{t.name}</strong>
-            <small>{t.description}</small>
-          </button>
-        ))}
-      </div>
-      <Choice label="Cluster" value={face} onChange={setFace} options={CLUSTER_FACES} wide />
-      <Choice label="Home screen" value={home} onChange={setHome} options={HOME_LAYOUTS} wide />
-      <Choice label="Drive mode colours" value={drive} onChange={setDrive} options={DRIVE_MODES} />
-      <Toggle label="Design buttons" value={designButtons} onChange={setDesignButtons} note="Temporary: “Style” on the home screen and “Design” + “Light test” on the cluster" />
-      <div className="setting-row column">
-        <span>Car colour</span>
-        <div className="paint-row">
-          {PAINTS.map(([id, name, color]) => (
-            <button key={id} className={`paint ${paint === id ? 'active' : ''}`} onClick={() => setPaint(id)} title={name}>
-              <i style={{ background: color }} />
-              <small>{name}</small>
-            </button>
-          ))}
+      {LOCKED_THEME ? (
+        <div className="setting-row">
+          <span>
+            Style
+            <small className="muted">Fixed while we work on this design (LOCKED_THEME in src/theme.js)</small>
+          </span>
+          <strong>{themeInfo(theme).name}</strong>
         </div>
-      </div>
-      <Toggle label="Swap screens button" value={swapButton} onChange={setSwapButton} note="In the status bar: shows the cluster on this screen when there is only one" />
+      ) : (
+        <>
+          <div className="theme-grid">
+            {THEMES.map((t) => (
+              <button key={t.id} className={`theme-option ${theme === t.id ? 'active' : ''}`} onClick={() => setTheme(t.id)}>
+                <span className="theme-preview" style={{ background: t.swatch[0] }}>
+                  <span style={{ background: t.swatch[1] }} />
+                </span>
+                <strong>{t.name}</strong>
+                <small>{t.description}</small>
+              </button>
+            ))}
+          </div>
+          <Choice label="Cluster" value={face} onChange={setFace} options={CLUSTER_FACES} wide />
+          <Choice label="Home screen" value={home} onChange={setHome} options={HOME_LAYOUTS} wide />
+          <Choice label="Drive mode colours" value={drive} onChange={setDrive} options={DRIVE_MODES} />
+          <Toggle label="Design buttons" value={designButtons} onChange={setDesignButtons} note="Temporary: “Style” on the home screen and “Design” + “Light test” on the cluster" />
+          <div className="setting-row column">
+            <span>Car colour</span>
+            <div className="paint-row">
+              {PAINTS.map(([id, name, color]) => (
+                <button key={id} className={`paint ${paint === id ? 'active' : ''}`} onClick={() => setPaint(id)} title={name}>
+                  <i style={{ background: color }} />
+                  <small>{name}</small>
+                </button>
+              ))}
+            </div>
+          </div>
+        </>
+      )}
+      {CLUSTER_ENABLED && (
+        <Toggle label="Swap screens button" value={swapButton} onChange={setSwapButton} note="In the status bar: shows the cluster on this screen when there is only one" />
+      )}
       <Choice
         label="Screen size"
         value={mode}
