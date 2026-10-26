@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import { useResizable } from '../resize.jsx';
 import { useTopic } from '../hub.js';
 import { Icon } from '../icons.jsx';
 import { CameraView } from '../camera.jsx';
@@ -59,6 +60,7 @@ function useParkingBeep(closest, enabled) {
 }
 
 export default function Parking({ onClose }) {
+  const rs = useResizable('parking', { minLeft: 300, minRight: 220 });
   const distances = useTopic('parking.distances', {});
   const [sound, setSound] = usePref('parking.beep', true);
   const values = SENSORS.map((s) => distances[s.key]).filter((v) => typeof v === 'number');
@@ -69,7 +71,7 @@ export default function Parking({ onClose }) {
   const cy = 150;
 
   return (
-    <div className="parking">
+    <div className={`parking ${rs.className}`} ref={rs.ref} style={rs.style}>
       <CameraView className="card camera" />
 
       <div className="card sensors">
@@ -111,6 +113,7 @@ export default function Parking({ onClose }) {
           {closest === null ? 'Clear' : `${closest} cm`}
         </div>
       </div>
+      {rs.handle}
     </div>
   );
 }

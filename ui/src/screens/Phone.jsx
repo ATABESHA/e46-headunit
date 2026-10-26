@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useResizable } from '../resize.jsx';
 import { command, useTopic } from '../hub.js';
 import { Icon } from '../icons.jsx';
 import { Tabs } from '../widgets.jsx';
@@ -15,6 +16,7 @@ const when = (at) => {
 };
 
 export default function Phone() {
+  const rs = useResizable('phone', { minLeft: 250, minRight: 360 });
   const state = useTopic('phone.state');
   const contacts = useTopic('phone.contacts', []);
   const history = useTopic('phone.history', []);
@@ -29,7 +31,7 @@ export default function Phone() {
   };
 
   return (
-    <div className="split">
+    <div className={`split ${rs.className}`} ref={rs.ref} style={rs.style}>
       <section className="panel phone-status">
         <div className={`phone-icon ${connected ? 'ok' : ''}`}>
           <Icon name="phone" size={40} />
@@ -125,6 +127,7 @@ export default function Phone() {
           </div>
         )}
       </section>
+      {rs.handle}
     </div>
   );
 }

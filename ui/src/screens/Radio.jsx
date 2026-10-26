@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useResizable } from '../resize.jsx';
 import { command, useTopic } from '../hub.js';
 import { Icon } from '../icons.jsx';
 import { playStation, toggle, usePlayer } from '../player.js';
@@ -136,6 +137,7 @@ function StationSearch({ current, onPlay }) {
 }
 
 export default function Radio() {
+  const rs = useResizable('radio', { minLeft: 250, minRight: 380 });
   const player = usePlayer();
   const presets = useTopic('radio.presets', []);
   const last = useTopic('radio.last');
@@ -168,7 +170,7 @@ export default function Radio() {
   };
 
   return (
-    <div className="split">
+    <div className={`split ${rs.className}`} ref={rs.ref} style={rs.style}>
       <section className="panel now-playing">
         <Artwork src={station?.favicon} icon="radio" className="large" />
         <div className="np-text">
@@ -256,6 +258,7 @@ export default function Radio() {
 
         {tab === 'search' && <StationSearch current={station} onPlay={play} />}
       </section>
+      {rs.handle}
     </div>
   );
 }

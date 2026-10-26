@@ -1,4 +1,5 @@
 import { command, useTopic } from '../../hub.js';
+import { useResizable } from '../../resize.jsx';
 import { Icon } from '../../icons.jsx';
 import { formatTime, next, previous, seek, toggle, usePlayer } from '../../player.js';
 import { useClockText } from './common.jsx';
@@ -109,6 +110,8 @@ function VehicleCheck({ codes, onClick }) {
 }
 
 export default function Design1Home({ onNavigate }) {
+  const rsBottom = useResizable('home.design1.bottom', { minLeft: 230, minRight: 170 });
+  const rs = useResizable('home.design1', { minLeft: 260, minRight: 420 });
   const speed = useTopic('vehicle.speed');
   const outside = useTopic('vehicle.outsideTemp');
   const phone = useTopic('phone.state');
@@ -122,7 +125,7 @@ export default function Design1Home({ onNavigate }) {
   const phoneOn = phone?.connection === 'connected';
 
   return (
-    <div className="d1">
+    <div className={`d1 ${rs.className}`} ref={rs.ref} style={rs.style}>
       <section className="d1-card d1-car">
         <button className="d1-face" onClick={() => onNavigate('vehicle', 'status')} aria-label="Vehicle">
           <img src="./face1.jpg" alt="" draggable="false" />
@@ -170,7 +173,7 @@ export default function Design1Home({ onNavigate }) {
           <Icon name="navigate" size={20} />
         </button>
 
-        <div className="d1-bottom">
+        <div className={`d1-bottom ${rsBottom.className}`} ref={rsBottom.ref} style={rsBottom.style}>
           <div className="d1-card d1-trip">
             <div className="d1-trip-head">
               <span className="d1-trip-icon">
@@ -194,8 +197,10 @@ export default function Design1Home({ onNavigate }) {
             </button>
           </div>
           <Music onNavigate={onNavigate} />
+          {rsBottom.handle}
         </div>
       </MapView>
+      {rs.handle}
     </div>
   );
 }

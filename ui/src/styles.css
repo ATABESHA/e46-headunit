@@ -2987,32 +2987,6 @@ code.block {
   background: var(--border);
 }
 
-.mixer-slider {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-  font-size: 13px;
-}
-
-.mixer-slider b {
-  min-width: 36px;
-  text-align: center;
-  font-variant-numeric: tabular-nums;
-}
-
-.mixer-slider span {
-  color: var(--muted);
-}
-
-.mixer-slider input {
-  writing-mode: vertical-lr;
-  direction: rtl;
-  width: 34px;
-  height: 190px;
-  accent-color: var(--accent);
-}
-
 /* ---------- Vehicle → Wheels ---------- */
 
 .wheels {
@@ -3160,4 +3134,300 @@ code.block {
 .tire-badge.low strong,
 .tire-badge.low span {
   color: var(--bad);
+}
+
+/* =====================================================================
+ * Touch screen: sizes and feedback for fingers
+ * A fingertip covers about 9 mm, so everything you tap is at least ~40 px,
+ * every press shows right away, and nothing reacts to a long press by itself
+ * (no browser menus, no text selection).
+ * ===================================================================== */
+
+* {
+  -webkit-touch-callout: none;
+}
+
+:where(button, [role='slider'], [role='separator']):active:not(:disabled) {
+  filter: brightness(1.25);
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  min-height: 38px;
+  padding: 0 14px;
+}
+
+.btn.small {
+  min-height: 40px;
+  padding: 0 14px;
+}
+
+.icon-btn.small {
+  width: 40px;
+  height: 40px;
+}
+
+.list,
+.album-grid,
+.settings-content,
+.settings-body,
+.swipe-track {
+  overscroll-behavior: contain;
+}
+
+/* Bigger round grip on every standard slider */
+input[type='range'] {
+  height: 34px;
+  accent-color: var(--accent);
+  touch-action: pan-y;
+}
+
+input[type='range']::-webkit-slider-thumb {
+  width: 26px;
+  height: 26px;
+}
+
+/* ---------- Resizable widgets: hold the gap, then drag ---------- */
+
+.resizable {
+  position: relative;
+}
+
+.d1-bottom.resizable {
+  position: absolute;
+}
+
+.resize-handle {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  z-index: 15;
+  width: 30px;
+  margin-left: -15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  touch-action: none;
+  cursor: col-resize;
+}
+
+/* A small grip shows where you can hold */
+.resize-handle i {
+  width: 4px;
+  height: 30px;
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.12);
+  transition:
+    height 0.2s,
+    width 0.15s,
+    background 0.15s,
+    box-shadow 0.15s;
+}
+
+/* Holding: the grip grows along the edge - when it reaches the ends, you can drag */
+.resize-handle.holding i {
+  height: 100%;
+  background: color-mix(in srgb, var(--accent) 55%, transparent);
+  transition:
+    height 0.45s linear,
+    background 0.45s;
+}
+
+.resize-handle.active i {
+  width: 6px;
+  height: 100%;
+  background: var(--accent);
+  box-shadow: 0 0 16px var(--accent);
+}
+
+.resize-handle b {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 46px;
+  height: 46px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--accent);
+  color: #fff;
+  font-size: 22px;
+  box-shadow: 0 6px 18px -4px rgba(0, 0, 0, 0.7);
+}
+
+/* While resizing, the two widgets light up along their edges */
+.resizable.resize-active > :not(.resize-handle) {
+  box-shadow:
+    inset 0 0 0 2px color-mix(in srgb, var(--accent) 75%, transparent),
+    0 0 24px -10px var(--accent);
+  transition: none;
+}
+
+.resizable.resize-active {
+  cursor: col-resize;
+}
+
+/* ---------- Finger slider and swipe strip (Settings → Sound) ---------- */
+
+.mixer-sliders {
+  align-items: stretch;
+  justify-content: flex-start;
+  padding: 10px 6px 6px;
+}
+
+.mixer-strip {
+  flex: 1;
+  min-width: 0;
+}
+
+.swipe-strip {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.swipe-track {
+  display: flex;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  touch-action: pan-x;
+}
+
+.swipe-track::-webkit-scrollbar {
+  display: none;
+}
+
+.swipe-track > * {
+  flex: 0 0 auto;
+  scroll-snap-align: start;
+}
+
+/* Soft fade at an edge where more sliders are waiting */
+.swipe-track.more-right {
+  -webkit-mask-image: linear-gradient(90deg, #000 85%, transparent);
+  mask-image: linear-gradient(90deg, #000 85%, transparent);
+}
+
+.swipe-track.more-left.more-right {
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 15%, #000 85%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 15%, #000 85%, transparent);
+}
+
+.swipe-track.more-left:not(.more-right) {
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 15%);
+  mask-image: linear-gradient(90deg, transparent, #000 15%);
+}
+
+.swipe-dots {
+  display: flex;
+  justify-content: center;
+  gap: 2px;
+}
+
+/* Tiny dot, big finger target */
+.swipe-dots button {
+  width: 30px;
+  height: 22px;
+  display: grid;
+  place-items: center;
+}
+
+.swipe-dots button::before {
+  content: '';
+  width: 8px;
+  height: 8px;
+  border-radius: 4px;
+  background: var(--surface-3);
+  transition: width 0.2s;
+}
+
+.swipe-dots button.on::before {
+  width: 20px;
+  background: var(--accent);
+}
+
+.finger-slider {
+  width: 78px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  font-size: 13px;
+}
+
+.finger-slider > b {
+  min-height: 18px;
+  font-variant-numeric: tabular-nums;
+}
+
+.finger-slider > span {
+  color: var(--muted);
+}
+
+.fs-step {
+  width: 44px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  border-radius: 12px;
+  background: var(--surface-3);
+  color: var(--text);
+}
+
+/* The grab area is the whole 60 px column, the line in it is thin */
+.fs-track {
+  position: relative;
+  width: 60px;
+  touch-action: pan-x;
+  cursor: ns-resize;
+}
+
+.fs-line,
+.fs-fill,
+.fs-zero {
+  position: absolute;
+  left: 50%;
+}
+
+.fs-line {
+  top: 0;
+  bottom: 0;
+  width: 8px;
+  margin-left: -4px;
+  border-radius: 4px;
+  background: var(--surface-3);
+}
+
+.fs-fill {
+  width: 8px;
+  margin-left: -4px;
+  border-radius: 4px;
+  background: var(--accent);
+}
+
+.fs-zero {
+  width: 22px;
+  height: 2px;
+  margin-left: -11px;
+  background: var(--muted);
+}
+
+.fs-thumb {
+  position: absolute;
+  left: 50%;
+  width: 30px;
+  height: 30px;
+  margin: 0 0 -15px -15px;
+  border-radius: 50%;
+  background: #fff;
+  border: 4px solid var(--accent);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.6);
+  transition: transform 0.1s;
+}
+
+.fs-track.active .fs-thumb {
+  transform: scale(1.25);
 }

@@ -12,6 +12,9 @@ import { useView } from './view.js';
 
 applySavedTheme();
 
+// A long press on a touch screen opens the browser's menu: never wanted here.
+window.addEventListener('contextmenu', (e) => e.preventDefault());
+
 /** This window shows the head unit, or the cluster after the swap button (one screen). */
 function Root() {
   const [view] = useView();

@@ -1,8 +1,10 @@
 import { useState } from 'react';
+import { useResizable } from '../resize.jsx';
+import { FingerSlider, SwipeStrip } from '../widgets.jsx';
 import { command, useConnected, useTopic } from '../hub.js';
 import { Icon } from '../icons.jsx';
 import { CameraView, useCameras } from '../camera.jsx';
-import { usePref } from '../prefs.js';
+import { clearPrefs, usePref } from '../prefs.js';
 import { CLUSTER_FACES, DRIVE_MODES, HOME_LAYOUTS, LOCKED_THEME, THEMES, themeInfo, useClusterFace, useDesignButtons, useDriveMode, useHomeLayout, useTheme } from '../theme.js';
 import { Lamp, LAMP_NAMES } from '../cluster/Lamps.jsx';
 import { PAINTS, usePaint } from '../CarArt.jsx';
@@ -66,21 +68,6 @@ const SPEAKERS = [
 ];
 const FOCUS = { x0: 18, x1: 82, front: 40, rear: 66 }; // where the sound point can go
 
-/** Slider standing up, -10..+10 (or 0..100 for volume). */
-function MixerSlider({ label, value, min = -10, max = 10, onChange, unit = '' }) {
-  return (
-    <label className="mixer-slider">
-      <b>
-        {value > 0 && min < 0 ? '+' : ''}
-        {value}
-        {unit}
-      </b>
-      <input type="range" min={min} max={max} step="1" value={value} onChange={(e) => onChange(Number(e.target.value))} />
-      <span>{label}</span>
-    </label>
-  );
-}
-
 /**
  * Where the sound is aimed: drag the point over the car. Left/right is the
  * balance, front/rear the fader (the fader needs a 4-channel sound card).
@@ -140,20 +127,26 @@ function SoundStage({ balance, fader, onChange }) {
 }
 
 function Sound() {
+  const rs = useResizable('sound', { minLeft: 170, minRight: 280 });
   const volume = useTopic('audio.volume');
   const sound = { bass: 0, mid: 0, treble: 0, balance: 0, fader: 0, ...useTopic('audio.sound', {}) };
   const set = (patch) => command('audio.setSound', patch).catch(() => {});
   const preset = EQ_PRESETS.find(([, p]) => p.bass === sound.bass && p.mid === sound.mid && p.treble === sound.treble)?.[0];
   return (
-    <div className="settings-body sound-body">
+    <div className={`settings-body sound-body ${rs.className}`} ref={rs.ref} style={rs.style}>
       <SoundStage balance={sound.balance} fader={sound.fader} onChange={set} />
       <div className="mixer">
         <div className="mixer-sliders">
-          <MixerSlider label="Volume" min={0} max={100} value={volume?.level ?? 0} onChange={(level) => command('audio.setVolume', { level }).catch(() => {})} />
+          {/* Volume always stays in the first column; the rest swipes sideways. */}
+          <FingerSlider label="Volume" min={0} max={100} step={2} value={volume?.level ?? 0} onChange={(level) => command('audio.setVolume', { level }).catch(() => {})} />
           <i className="mixer-gap" />
-          <MixerSlider label="Bass" value={sound.bass} onChange={(bass) => set({ bass })} />
-          <MixerSlider label="Mid" value={sound.mid} onChange={(mid) => set({ mid })} />
-          <MixerSlider label="Treble" value={sound.treble} onChange={(treble) => set({ treble })} />
+          <SwipeStrip className="mixer-strip">
+            <FingerSlider label="Bass" value={sound.bass} onChange={(bass) => set({ bass })} />
+            <FingerSlider label="Mid" value={sound.mid} onChange={(mid) => set({ mid })} />
+            <FingerSlider label="Treble" value={sound.treble} onChange={(treble) => set({ treble })} />
+            <FingerSlider label="Balance" value={sound.balance} onChange={(balance) => set({ balance })} format={(v) => (v === 0 ? 'C' : `${v < 0 ? 'L' : 'R'}${Math.abs(v)}`)} />
+            <FingerSlider label="Fader" value={sound.fader} onChange={(fader) => set({ fader })} format={(v) => (v === 0 ? 'C' : `${v > 0 ? 'F' : 'R'}${Math.abs(v)}`)} />
+          </SwipeStrip>
         </div>
         <div className="chips">
           {EQ_PRESETS.map(([name, values]) => (
@@ -167,6 +160,7 @@ function Sound() {
           {volume && !volume.available ? ' System volume is not available on this computer.' : ''}
         </p>
       </div>
+      {rs.handle}
     </div>
   );
 }
@@ -240,6 +234,15 @@ function Display() {
       <Toggle label="Performance display" value={hud} onChange={setHud} note="FPS, CPU, RAM and graphics chip, on both screens" />
       {fx === 'ultra' && <p className="muted small">Ultra is a stress test: every effect at maximum, to see what the computer can handle.</p>}
       <Toggle label="24-hour clock" value={clock24} onChange={setClock24} />
+      <div className="setting-row">
+        <span>
+          Widget sizes
+          <small className="muted">Hold the gap between two widgets, then drag. Double-tap the gap to reset one.</small>
+        </span>
+        <button className="btn small" onClick={() => clearPrefs('layout.')}>
+          Reset all
+        </button>
+      </div>
     </div>
   );
 }
@@ -434,11 +437,12 @@ function About() {
 }
 
 export default function Settings() {
+  const rs = useResizable('settings', { minLeft: 170, minRight: 480 });
   const [section, setSection] = useState('sound');
   const update = useTopic('system.update');
   const Body = { sound: Sound, display: Display, camera: Camera, connections: Connections, update: SoftwareUpdate, simulator: Simulator, about: About }[section];
   return (
-    <div className="settings-layout">
+    <div className={`settings-layout ${rs.className}`} ref={rs.ref} style={rs.style}>
       <div className="settings-menu">
         {SECTIONS.map(([id, label, icon]) => (
           <button key={id} className={`settings-item ${section === id ? 'active' : ''}`} onClick={() => setSection(id)}>
@@ -451,6 +455,7 @@ export default function Settings() {
       <div className="settings-content">
         <Body />
       </div>
+      {rs.handle}
     </div>
   );
 }

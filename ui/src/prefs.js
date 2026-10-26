@@ -53,3 +53,16 @@ export function usePref(key, fallback) {
   );
   return [value, (v) => setPref(key, v)];
 }
+
+/** Forget every preference whose name starts with `prefix` (e.g. "layout."). */
+export function clearPrefs(prefix) {
+  try {
+    for (const key of Object.keys(localStorage)) {
+      if (key.startsWith(PREFIX + prefix)) localStorage.removeItem(key);
+    }
+  } catch {
+    // Storage not available: the cache below still resets.
+  }
+  for (const key of [...cache.keys()]) if (key.startsWith(prefix)) cache.delete(key);
+  listeners.forEach((l) => l());
+}

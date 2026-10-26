@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { useResizable } from '../resize.jsx';
 import { HUB_HTTP, useTopic } from '../hub.js';
 import { Icon } from '../icons.jsx';
 import { cycleRepeat, formatTime, next, playTracks, previous, seek, setShuffle, toggle, usePlayer } from '../player.js';
@@ -139,6 +140,7 @@ function SourcePicker({ sources, sourceId, onPick, onNavigate }) {
 }
 
 export default function Media({ onNavigate }) {
+  const rs = useResizable('media', { minLeft: 250, minRight: 400 });
   const player = usePlayer();
   const sources = useTopic('media.sources', []);
   const carplayMedia = useTopic('carplay.media');
@@ -187,7 +189,7 @@ export default function Media({ onNavigate }) {
   };
 
   return (
-    <div className="split media-screen">
+    <div className={`split media-screen ${rs.className}`} ref={rs.ref} style={rs.style}>
       <section className="panel now-playing media-now" style={{ '--song-hue': songHue(t?.title ?? '') }}>
         <div className="media-cover">
           <Artwork src={art(t)} icon="media" className="large" key={t?.id ?? 'none'} />
@@ -312,6 +314,7 @@ export default function Media({ onNavigate }) {
           </>
         )}
       </section>
+      {rs.handle}
     </div>
   );
 }

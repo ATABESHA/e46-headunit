@@ -88,6 +88,14 @@ bash scripts/update.sh
 The update never overwrites files changed on the laptop itself — it stops and lists them.
 Make your changes on GitHub (or upload them from the laptop with `git commit` + `git push`).
 
+## Touch screen: resizing widgets
+
+Every screen with two widgets side by side (home, radio, media, phone, settings, sound,
+trips, wheels, parking) can be resized with a finger: **press and hold the gap** between
+them until it lights up blue, then drag. Double-tap the gap to go back to the original
+size; Settings → Display → *Widget sizes → Reset all* resets every screen. Sizes are
+remembered. Finger rules (hold time, wobble allowance) are in `ui/src/touch.js`.
+
 ## Just looking at it in a browser (demo mode)
 
 The demo build runs the car simulator inside the web page, so it works in any browser

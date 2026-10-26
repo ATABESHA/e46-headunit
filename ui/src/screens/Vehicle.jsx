@@ -1,4 +1,5 @@
 import { command, useTopic } from '../hub.js';
+import { useResizable } from '../resize.jsx';
 import { Icon } from '../icons.jsx';
 import { useState } from 'react';
 import { Tabs } from '../widgets.jsx';
@@ -65,6 +66,7 @@ function TripCard({ title, trip, which }) {
 }
 
 function DrivingData() {
+  const rs = useResizable('vehicle.trips', { minLeft: 260, minRight: 260 });
   const speed = useTopic('vehicle.speed');
   const rpm = useTopic('vehicle.rpm', 0);
   const coolant = useTopic('vehicle.coolant');
@@ -79,9 +81,10 @@ function DrivingData() {
         <Gauge icon="thermo" label="Coolant" value={coolant} unit="°C" percent={((coolant ?? 0) / 120) * 100} warn={coolant > 110} />
         <Gauge icon="fuel" label="Fuel" value={fuel !== undefined ? Math.round(fuel) : undefined} unit="%" percent={fuel} warn={fuel < 12} />
       </div>
-      <div className="trips">
+      <div className={`trips ${rs.className}`} ref={rs.ref} style={rs.style}>
         <TripCard title="Since start" trip={sinceStart} which="sinceStart" />
         <TripCard title="Long-term" trip={longTerm} which="longTerm" />
+        {rs.handle}
       </div>
     </div>
   );
@@ -112,6 +115,7 @@ function TireBadge({ id, tire, reference }) {
  * saves the new pressures as correct.
  */
 function Wheels() {
+  const rs = useResizable('vehicle.wheels', { minLeft: 240, minRight: 420 });
   const tires = useTopic('vehicle.tires');
   const [confirm, setConfirm] = useState(false);
   const low = tires ? Object.keys(WHEEL_NAMES).filter((w) => tires[w]?.low) : [];
@@ -125,7 +129,7 @@ function Wheels() {
     command('tires.reset').catch(() => {});
   };
   return (
-    <div className="wheels">
+    <div className={`wheels ${rs.className}`} ref={rs.ref} style={rs.style}>
       <section className={`card wheels-status ${low.length ? 'low' : 'ok'}`}>
         <span className="wheels-icon">
           <Icon name={low.length ? 'warning' : 'check'} size={26} />
@@ -164,6 +168,7 @@ function Wheels() {
           <TireBadge id="rr" tire={tires?.rr} reference={ref.rr} />
         </div>
       </section>
+      {rs.handle}
     </div>
   );
 }
