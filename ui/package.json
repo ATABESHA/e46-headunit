@@ -8,7 +8,8 @@
     "dev:browser": "vite --port 5173 --strictPort --host 127.0.0.1",
     "build": "vite build",
     "start": "electron .",
-    "kiosk": "electron . --kiosk"
+    "kiosk": "electron . --kiosk",
+    "build:demo": "vite build --mode demo --outDir dist-demo"
   },
   "devDependencies": {
     "@vitejs/plugin-react": "^6.1.2",

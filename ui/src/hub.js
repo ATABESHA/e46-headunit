@@ -56,7 +56,30 @@ function connect() {
   };
 }
 
-connect();
+// Demo mode (no core): the simulator runs inside this page. See demo.js.
+const DEMO = import.meta.env.VITE_DEMO === '1' || new URLSearchParams(window.location.search).has('demo');
+let demoHub = null;
+let queued = false;
+
+if (DEMO) {
+  import('./demo.js').then(({ startDemo }) => {
+    demoHub = startDemo((topic, value) => {
+      state = { ...state, [topic]: value };
+      // The simulator changes many values at once: redraw once for all of them.
+      if (!queued) {
+        queued = true;
+        queueMicrotask(() => {
+          queued = false;
+          notify();
+        });
+      }
+    });
+    connected = true;
+    notify();
+  });
+} else {
+  connect();
+}
 
 function subscribe(listener) {
   listeners.add(listener);
@@ -65,6 +88,7 @@ function subscribe(listener) {
 
 /** Send a command to the core. Resolves with the answer, rejects on error. */
 export function command(topic, value) {
+  if (demoHub) return demoHub.command(topic, value);
   if (!connected) return Promise.reject(new Error('Not connected to core'));
   const id = nextId++;
   return new Promise((resolve, reject) => {
@@ -79,7 +103,8 @@ export function command(topic, value) {
 
 /** Set a topic yourself (e.g. what is playing), so other screens can show it. */
 export function publish(topic, value) {
-  if (connected) ws.send(JSON.stringify({ type: 'publish', topic, value }));
+  if (demoHub) demoHub.set(topic, value);
+  else if (connected) ws.send(JSON.stringify({ type: 'publish', topic, value }));
 }
 
 /** Current value of one topic; the component re-renders when it changes. */

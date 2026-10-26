@@ -1536,6 +1536,10 @@ g.red .needle {
   color: #9aa4b5;
 }
 
+.vortex-clock {
+  margin-left: 440px;
+}
+
 .vortex-bottom .warning-row {
   max-width: 820px;
 }

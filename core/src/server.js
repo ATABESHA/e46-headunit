@@ -1,4 +1,7 @@
 import http from 'node:http';
+import { createReadStream } from 'node:fs';
+import { stat } from 'node:fs/promises';
+import path from 'node:path';
 import { WebSocketServer } from 'ws';
 
 /**
@@ -7,6 +10,8 @@ import { WebSocketServer } from 'ws';
  *   ws://127.0.0.1:8765/            JSON messages (state, commands) - see below
  *   ws://127.0.0.1:8765/<path>      extra binary streams registered with hub.socket()
  *   http://127.0.0.1:8765/<prefix>  files registered with hub.route() (music, artwork)
+ *   http://127.0.0.1:8765/           the screen app itself (ui/dist), for a web browser:
+ *                                    /  = head unit, /cluster.html = instrument cluster
  *
  * JSON messages:
  *   hub -> client  {type:"snapshot", state:{...}, commands:[...]}   on connect
@@ -15,7 +20,34 @@ import { WebSocketServer } from 'ws';
  *   hub -> client  {type:"result", id, ok, value | error}            command answer
  *   client -> hub  {type:"publish", topic, value}                    set a topic yourself
  */
-export function startServer(hub, { host = '127.0.0.1', port = 8765, log = console } = {}) {
+const TYPES = {
+  '.html': 'text/html; charset=utf-8',
+  '.js': 'text/javascript',
+  '.css': 'text/css',
+  '.svg': 'image/svg+xml',
+  '.png': 'image/png',
+  '.jpg': 'image/jpeg',
+  '.json': 'application/json',
+  '.woff2': 'font/woff2',
+  '.ico': 'image/x-icon',
+};
+
+/** Sends a file from the built screen app, or false if there is none. */
+async function serveUi(uiDir, url, res) {
+  const rel = decodeURIComponent(url.pathname === '/' ? '/index.html' : url.pathname);
+  const file = path.resolve(uiDir, `.${rel}`);
+  if (!file.startsWith(path.resolve(uiDir) + path.sep)) return false; // no "../" tricks
+  try {
+    if (!(await stat(file)).isFile()) return false;
+  } catch {
+    return false;
+  }
+  res.writeHead(200, { 'Content-Type': TYPES[path.extname(file)] ?? 'application/octet-stream', 'Cache-Control': 'no-cache' });
+  createReadStream(file).pipe(res);
+  return true;
+}
+
+export function startServer(hub, { host = '127.0.0.1', port = 8765, log = console, uiDir = null } = {}) {
   const server = http.createServer((req, res) => {
     const url = new URL(req.url, 'http://localhost');
     // The screen app is loaded from a file, so allow it to fetch from here.
@@ -30,8 +62,12 @@ export function startServer(hub, { host = '127.0.0.1', port = 8765, log = consol
         return;
       }
     }
-    res.writeHead(404);
-    res.end();
+    const served = uiDir && req.method === 'GET' ? serveUi(uiDir, url, res) : Promise.resolve(false);
+    served.then((ok) => {
+      if (ok) return;
+      res.writeHead(404);
+      res.end();
+    });
   });
 
   const wss = new WebSocketServer({ noServer: true });

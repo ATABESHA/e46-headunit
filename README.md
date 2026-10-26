@@ -88,6 +88,49 @@ bash scripts/update.sh
 The update never overwrites files changed on the laptop itself — it stops and lists them.
 Make your changes on GitHub (or upload them from the laptop with `git commit` + `git push`).
 
+## Just looking at it in a browser (demo mode)
+
+The demo build runs the car simulator inside the web page, so it works in any browser
+with nothing else running:
+
+```
+npm run build:demo -w ui
+```
+
+and open `ui/dist-demo/index.html` through any web server. You can also add `?demo` to the
+address of the normal app. Music library, radio, CarPlay and system volume need the core,
+so they are empty in the demo.
+
+## Running it on a Windows PC (Microsoft Edge)
+
+For trying the designs on a Windows computer. The simulator provides the car data;
+both screens open as windows in Edge.
+
+1. Install Node.js and Git. Open **PowerShell** and type:
+   ```
+   winget install OpenJS.NodeJS.LTS
+   winget install Git.Git
+   ```
+   Close PowerShell afterwards so it picks up the new programs.
+2. Download the project. Open PowerShell again:
+   ```
+   cd $HOME
+   git clone https://github.com/ATABESHA/e46-headunit
+   ```
+   (The repository is private: a GitHub sign-in window opens the first time.)
+3. Open the folder `e46-headunit\scripts\windows` in File Explorer and double-click
+   **`start.bat`**. The first start installs components (a few minutes). Then two Edge
+   windows open: the head unit and the cluster. Press **F11** in a window for full screen.
+4. To stop: close the black window. To open the screens again: `open-screens.bat`.
+
+You can also just open <http://127.0.0.1:8765/> (head unit) and
+<http://127.0.0.1:8765/cluster.html> (cluster) in any browser while `start.bat` runs.
+**Settings → Software update** works here too.
+
+Not on Windows (they need the car computer's Linux): Full Link / CarPlay, USB sticks
+(music from your **Music** folder works), the system volume, and the CPU temperature and
+graphics numbers in the performance display.
+
 ## Styles, cluster designs and your car
 
 Settings → Display → **Style** changes much more than colours: each style has its own

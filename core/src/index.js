@@ -47,7 +47,9 @@ async function main() {
     }
   }
 
-  const server = await startServer(hub, { host: config.host, port: config.port });
+  // The built screen app is also served, so a web browser can show it (e.g. Edge on Windows).
+  const uiDir = path.resolve(coreDir, '..', 'ui', 'dist');
+  const server = await startServer(hub, { host: config.host, port: config.port, uiDir: existsSync(uiDir) ? uiDir : null });
 
   const shutdown = async () => {
     console.info('[core] shutting down');

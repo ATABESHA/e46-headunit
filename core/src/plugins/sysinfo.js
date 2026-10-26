@@ -11,7 +11,7 @@
  *   }
  */
 import { readFile, readdir } from 'node:fs/promises';
-import { cpus } from 'node:os';
+import { cpus, freemem, totalmem } from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -25,6 +25,18 @@ const num = async (file) => {
   const n = text === null ? NaN : Number(text.trim());
   return Number.isFinite(n) ? n : null;
 };
+
+/** Busy and total CPU time of all cores, from Node (works on every system). */
+function osCpu() {
+  let busy = 0;
+  let total = 0;
+  for (const { times } of cpus()) {
+    const all = times.user + times.nice + times.sys + times.idle + times.irq;
+    total += all;
+    busy += all - times.idle;
+  }
+  return { busy, total };
+}
 
 /** "cpu  4705 356 584 3699 23 23 0 0 0 0" -> { busy, total } */
 export function parseCpuLine(line) {
@@ -108,14 +120,18 @@ export default async function sysinfo(hub, options = {}) {
     const seconds = (now - lastAt) / 1000;
     lastAt = now;
 
-    const statText = (await read('/proc/stat')) ?? 'cpu 0 0 0 0';
-    const cpuNow = parseCpuLine(statText.split('\n')[0]);
+    const statText = await read('/proc/stat');
+    // Windows / macOS have no /proc: add up the cores' times from Node instead.
+    const cpuNow = statText ? parseCpuLine(statText.split('\n')[0]) : osCpu();
     const cpu = lastCpu && cpuNow.total > lastCpu.total ? ((cpuNow.busy - lastCpu.busy) / (cpuNow.total - lastCpu.total)) * 100 : 0;
     lastCpu = cpuNow;
 
-    const mem = parseMeminfo((await read('/proc/meminfo')) ?? '');
+    const memText = await read('/proc/meminfo');
+    const mem = memText
+      ? parseMeminfo(memText)
+      : { totalMB: Math.round(totalmem() / 1048576), usedMB: Math.round((totalmem() - freemem()) / 1048576) };
 
-    const pids = await ourProcesses();
+    const pids = statText ? await ourProcesses() : [];
     const ticks = new Map();
     let appTicks = 0;
     let appMem = 0;
@@ -141,8 +157,9 @@ export default async function sysinfo(hub, options = {}) {
       memTotalMB: mem.totalMB,
       app: {
         cpu: Math.round((appTicks / CLK_TCK / seconds / cores) * 100),
-        memMB: Math.round(appMem),
-        processes: pids.length,
+        // Without /proc only the core itself can be measured (the browser is separate).
+        memMB: statText ? Math.round(appMem) : Math.round(process.memoryUsage().rss / 1048576),
+        processes: statText ? pids.length : 1,
       },
       gpu: gpuInfo,
     });

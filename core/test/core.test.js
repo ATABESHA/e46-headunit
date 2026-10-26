@@ -147,3 +147,26 @@ test('simulator: cluster lights do a bulb check, then follow forced warnings', a
     sim.stop();
   }
 });
+
+test('server: serves the built screen app for a web browser', async () => {
+  const { mkdtemp, writeFile } = await import('node:fs/promises');
+  const { tmpdir } = await import('node:os');
+  const path = await import('node:path');
+  const dir = await mkdtemp(path.join(tmpdir(), 'e46-ui-'));
+  await writeFile(path.join(dir, 'index.html'), '<h1>head unit</h1>');
+  await writeFile(path.join(dir, 'cluster.html'), '<h1>cluster</h1>');
+  const quiet = { info() {}, error() {} };
+  const server = await startServer(new Hub(), { port: 0, log: quiet, uiDir: dir });
+  const base = `http://127.0.0.1:${server.port}`;
+  try {
+    const home = await fetch(`${base}/`);
+    assert.equal(home.status, 200);
+    assert.match(home.headers.get('content-type'), /text\/html/);
+    assert.equal(await home.text(), '<h1>head unit</h1>');
+    assert.equal(await (await fetch(`${base}/cluster.html`)).text(), '<h1>cluster</h1>');
+    assert.equal((await fetch(`${base}/nope.js`)).status, 404);
+    assert.equal((await fetch(`${base}/%2e%2e/%2e%2e/etc/passwd`)).status, 404);
+  } finally {
+    await server.close();
+  }
+});

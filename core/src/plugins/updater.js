@@ -42,6 +42,8 @@ function run(cmd, args, { cwd, timeoutMs = 60_000 } = {}) {
         cwd,
         timeout: timeoutMs,
         maxBuffer: 10 * 1024 * 1024,
+        // On Windows "npm" is a .cmd script, which needs a shell to run.
+        shell: process.platform === 'win32' && cmd === 'npm',
         // Never wait for a password prompt; fail with a clear error instead.
         env: { ...process.env, GIT_TERMINAL_PROMPT: '0', GIT_ASKPASS: 'true' },
       },
@@ -134,6 +136,7 @@ export default function updater(hub, options = {}) {
   }
 
   async function sandboxOk() {
+    if (process.platform !== 'linux') return true; // only Linux needs the Electron sandbox step
     try {
       const electronPath = (await readFile(path.join(repo, 'node_modules', 'electron', 'path.txt'), 'utf8')).trim();
       const helper = path.join(repo, 'node_modules', 'electron', 'dist', path.dirname(electronPath), 'chrome-sandbox');
@@ -176,7 +179,7 @@ export default function updater(hub, options = {}) {
       // Only a reinstall of components can undo the Electron permission step.
       let needsTerminal = depsChanged && !(await sandboxOk()) ? 'cd ~/e46-headunit && bash scripts/update.sh' : null;
       // New system settings (permissions, packages) can only be applied with the password.
-      if (files.includes('scripts/install.sh')) needsTerminal = 'cd ~/e46-headunit && bash scripts/install.sh';
+      if (files.includes('scripts/install.sh') && process.platform === 'linux') needsTerminal = 'cd ~/e46-headunit && bash scripts/install.sh';
       await readVersion();
       setState({
         status: STATUS.DONE,
@@ -187,11 +190,16 @@ export default function updater(hub, options = {}) {
         restartApp: files.some((f) => f.startsWith('ui/electron/')),
       });
 
-      // Restart the core so new core code runs. systemd starts it again.
-      if ((coreChanged || depsChanged) && process.env.INVOCATION_ID && !options.noRestart) {
-        setTimeout(() => {
-          spawn('systemctl', ['--user', 'restart', 'e46-core.service'], { detached: true, stdio: 'ignore' }).unref();
-        }, 1500);
+      // Restart the core so new core code runs. systemd (Linux) or the start
+      // script's loop (Windows: scripts/windows/start.bat) starts it again.
+      if ((coreChanged || depsChanged) && !options.noRestart) {
+        if (process.env.INVOCATION_ID) {
+          setTimeout(() => {
+            spawn('systemctl', ['--user', 'restart', 'e46-core.service'], { detached: true, stdio: 'ignore' }).unref();
+          }, 1500);
+        } else if (process.env.E46_RESTART_LOOP) {
+          setTimeout(() => process.exit(0), 1500);
+        }
       }
       return state;
     } catch (err) {

@@ -96,12 +96,12 @@ export default function Vortex({ data, now }) {
         <IndicatorRow lamps={data.lamps} />
       </div>
       <div className="vortex-bottom">
-        <TripLine trip={data.trip} />
-        <WarningRow lamps={data.lamps} />
-        <span>
+        <span className="vortex-clock">
           {data.outside !== undefined ? `${data.outside}°C · ` : ''}
           {clockText(now)}
         </span>
+        <WarningRow lamps={data.lamps} />
+        <TripLine trip={data.trip} />
       </div>
       <Offline connected={data.connected} />
     </div>
