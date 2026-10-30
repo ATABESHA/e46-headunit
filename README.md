@@ -109,6 +109,25 @@ and open `ui/dist-demo/index.html` through any web server. You can also add `?de
 address of the normal app. Music library, radio, CarPlay and system volume need the core,
 so they are empty in the demo.
 
+## Raspberry Pi (head unit only)
+
+The head unit runs on a Raspberry Pi 4 or 5 (a Pi 3 works on Low graphics, slowly).
+On the Pi, open a terminal - or from a PC on the same network, PowerShell:
+`ssh yourname@raspberrypi.local` - and run:
+
+```bash
+bash <(curl -fsSL https://raw.githubusercontent.com/ATABESHA/e46-headunit/main/scripts/pi-setup.sh)
+```
+
+It checks the Pi first (model, system, memory, power supply, temperature, graphics driver),
+installs a current Node.js when the system's is too old, then installs the head unit with
+Pi settings and starts it full screen after every boot. Everything it finds is saved to
+`~/e46-pi-report.txt`. Add `--check` at the end to only check, without installing.
+
+For speed on a Pi: the official power supply (a weak one makes the Pi slow itself down), a
+heatsink or fan, the 64-bit Raspberry Pi OS, a USB SSD instead of the SD card, and the
+**Low** or **Premium** graphics setting.
+
 ## Running it on a Windows PC (Microsoft Edge)
 
 For trying the designs on a Windows computer. The simulator provides the car data;

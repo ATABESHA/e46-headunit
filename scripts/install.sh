@@ -4,6 +4,8 @@
 #   bash scripts/install.sh              install, add "E46 Head Unit" to the app menu
 #   bash scripts/install.sh --autostart  also start it fullscreen after every login
 #
+# E46_ELECTRON_FLAGS adds options to the screen app (scripts/pi-setup.sh uses it).
+#
 # Safe to run again (for example after an update).
 set -euo pipefail
 
@@ -16,7 +18,12 @@ step() { echo; echo "=== $* ==="; }
 step "1/6 Installing system packages"
 sudo apt update
 # pipewire-bin + wireplumber: sound and volume. alsa-utils: microphone for calls.
-sudo apt install -y nodejs npm git pipewire-bin wireplumber alsa-utils
+sudo apt install -y git pipewire-bin wireplumber alsa-utils
+# Node.js: keep a new enough one that is already installed (for example from
+# NodeSource on a Raspberry Pi; its npm clashes with the system npm package).
+if ! command -v node >/dev/null || (( $(node -p 'process.versions.node.split(".")[0]') < 20 )); then
+  sudo apt install -y nodejs npm
+fi
 
 NODE_MAJOR="$(node -p 'process.versions.node.split(".")[0]')"
 if (( NODE_MAJOR < 20 )); then
@@ -85,7 +92,7 @@ cat > "$HOME/.local/share/applications/e46-headunit.desktop" <<EOF
 Type=Application
 Name=E46 Head Unit
 Comment=Car infotainment system (Ctrl+Shift+Q to quit)
-Exec="$ELECTRON" "$REPO/ui" --kiosk
+Exec="$ELECTRON" "$REPO/ui" --kiosk ${E46_ELECTRON_FLAGS:-}
 Icon=applications-multimedia
 Terminal=false
 Categories=AudioVideo;
